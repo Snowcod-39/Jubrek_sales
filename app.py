@@ -8,6 +8,13 @@ from db import get_db_connection
 
 from routes.employee_routes import employee_routes
 from routes.category_routes import category_routes
+from routes.product_routes import product_routes
+from routes.stock_routes import stock_routes
+from routes.sales_routes import sales_routes
+from routes.expenses_routes import expenses_routes
+from routes.reports_routes import reports_routes
+from routes.receipt_books_routes import receipt_books_routes
+from routes.orders_routes import orders_routes
 
 load_dotenv()
 
@@ -16,6 +23,14 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.register_blueprint(employee_routes)
 app.register_blueprint(category_routes)
+app.register_blueprint(product_routes)
+app.register_blueprint(stock_routes)
+app.register_blueprint(sales_routes)
+app.register_blueprint(expenses_routes)
+app.register_blueprint(reports_routes)
+app.register_blueprint(receipt_books_routes)
+app.register_blueprint(orders_routes)
+
 
 @app.route("/")
 def home():
@@ -94,7 +109,7 @@ def admin_dashboard():
     if "user_id" not in session or session.get("role") != "ADMIN":
         return redirect(url_for("login"))
 
-    return f"Welcome Admin, {session['full_name']}!"
+    return render_template("admin_dashboard.html")
 
 
 @app.route("/employee/dashboard")
@@ -103,7 +118,7 @@ def employee_dashboard():
     if "user_id" not in session or session.get("role") != "EMPLOYEE":
         return redirect(url_for("login"))
 
-    return f"Welcome Employee, {session['full_name']}!"
+    return render_template("employee_dashboard.html")
 
 
 @app.route("/logout")
@@ -133,4 +148,4 @@ def test_db():
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Management - RUBREK ENTERPRISES</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8fc;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            background: #0b63ce;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: 0.5px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 7px;
+        }
+
+        header a:hover {
+            background: white;
+            color: #0b63ce;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            max-width: 1150px;
+            margin: 30px auto;
+            padding: 0 20px 40px;
+        }
+
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-title h2 {
+            margin: 0;
+            color: #123b68;
+            font-size: 26px;
+        }
+
+        .dashboard-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: white;
+            color: #0b63ce;
+            border: 1px solid #0b63ce;
+            padding: 9px 15px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .dashboard-btn:hover {
+            background: #0b63ce;
+            color: white;
+        }
+
+        /* ================= CARDS ================= */
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.08);
+            border: 1px solid #e2eaf3;
+        }
+
+        .section-card h3 {
+            margin: 0 0 18px;
+            color: #123b68;
+            font-size: 19px;
+        }
+
+        /* ================= FORM ================= */
+
+        .employee-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #0b63ce;
+            box-shadow: 0 0 0 2px rgba(11, 99, 206, 0.1);
+        }
+
+        .add-btn {
+            grid-column: 1 / -1;
+            width: fit-content;
+            background: #0b63ce;
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #084fa6;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        #message {
+            margin: 16px 0 0;
+            padding: 10px 13px;
+            border-radius: 7px;
+            font-size: 14px;
+            display: none;
+        }
+
+        #message.show {
+            display: block;
+            background: #eef6ff;
+            color: #0b63ce;
+            border: 1px solid #cfe3fa;
+        }
+
+        /* ================= EMPLOYEE LIST ================= */
+
+        #employee-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .employee-card {
+            border: 1px solid #e0e8f0;
+            border-radius: 10px;
+            padding: 17px;
+            background: #fbfdff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .employee-card:hover {
+            border-color: #b8d4f2;
+            box-shadow: 0 3px 10px rgba(11, 99, 206, 0.08);
+        }
+
+        .employee-info {
+            min-width: 0;
+        }
+
+        .employee-name {
+            margin: 0 0 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #123b68;
+        }
+
+        .employee-username {
+            margin: 0 0 9px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #e7f7ed;
+            color: #168044;
+        }
+
+        .status-inactive {
+            background: #f1f3f5;
+            color: #6b7280;
+        }
+
+        /* ================= ACTION BUTTON ================= */
+
+        .status-btn {
+            border: none;
+            padding: 9px 12px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .deactivate-btn {
+            background: #fff0f0;
+            color: #c62828;
+        }
+
+        .deactivate-btn:hover {
+            background: #c62828;
+            color: white;
+        }
+
+        .reactivate-btn {
+            background: #e8f3ff;
+            color: #0b63ce;
+        }
+
+        .reactivate-btn:hover {
+            background: #0b63ce;
+            color: white;
+        }
+
+        /* ================= EMPTY / LOADING ================= */
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            background: #f8fafc;
+            border-radius: 9px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* ================= BISCUIT LOADER ================= */
+
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-box {
+            text-align: center;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            animation: biscuitBounce 0.8s infinite alternate;
+        }
+
+        .loader-text {
+            margin-top: 8px;
+            color: #0b63ce;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        @keyframes biscuitBounce {
+            from {
+                transform: translateY(0) rotate(-8deg);
+            }
+
+            to {
+                transform: translateY(-10px) rotate(8deg);
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .employee-form {
+                grid-template-columns: 1fr;
+            }
+
+            .add-btn {
+                grid-column: auto;
+                width: 100%;
+            }
+
+            #employee-list {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .dashboard-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            header div {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            main {
+                margin-top: 20px;
+                padding: 0 12px 30px;
+            }
+
+            .section-card {
+                padding: 17px;
+            }
+
+            .employee-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .status-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= LOADING OVERLAY ================= -->
+
+    <div id="loading-overlay">
+        <div class="loader-box">
+            <div class="biscuit">🍪</div>
+            <div class="loader-text">Loading...</div>
+        </div>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <h1>RUBREK ENTERPRISES</h1>
+
+        <div>
+            <span>Welcome, {{ session["full_name"] }}</span>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+        </div>
+
+    </header>
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <div class="page-title">
+
+            <h2>Employee Management</h2>
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="dashboard-btn"
+            >
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- ================= ADD EMPLOYEE ================= -->
+
+        <section class="section-card">
+
+            <h3>Add New Employee</h3>
+
+            <form id="employee-form" class="employee-form">
+
+                <div class="form-group">
+
+                    <label for="full_name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        placeholder="Enter employee's full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter username"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="add-btn"
+                >
+                    + Add Employee
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+        </section>
+
+
+        <!-- ================= EMPLOYEES ================= -->
+
+        <section class="section-card">
+
+            <h3>Employees</h3>
+
+            <div id="employee-list">
+
+                <div class="empty-state">
+                    Loading employees...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        const loadingOverlay =
+            document.getElementById("loading-overlay");
+
+
+        function showLoader(text = "Loading...") {
+
+            document.querySelector(".loader-text").textContent = text;
+
+            loadingOverlay.style.display = "flex";
+
+        }
+
+
+        function hideLoader() {
+
+            loadingOverlay.style.display = "none";
+
+        }
+
+
+        function showMessage(text) {
+
+            const message =
+                document.getElementById("message");
+
+            message.textContent = text;
+
+            message.classList.add("show");
+
+        }
+
+
+        // ================= LOAD EMPLOYEES =================
+
+        async function loadEmployees() {
+
+            const employeeList =
+                document.getElementById("employee-list");
+
+            try {
+
+                const response =
+                    await fetch("/api/employees");
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    employeeList.innerHTML = `
+                        <div class="empty-state">
+                            ${data.error || "Could not load employees."}
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                if (data.employees.length === 0) {
+
+                    employeeList.innerHTML = `
+                        <div class="empty-state">
+                            No employees found.
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                employeeList.innerHTML = "";
+
+
+                data.employees.forEach(employee => {
+
+                    const employeeDiv =
+                        document.createElement("div");
+
+                    employeeDiv.className =
+                        "employee-card";
+
+
+                    const isActive =
+                        employee.status === "ACTIVE";
+
+
+                    const statusClass =
+                        isActive
+                            ? "status-active"
+                            : "status-inactive";
+
+
+                    const actionClass =
+                        isActive
+                            ? "deactivate-btn"
+                            : "reactivate-btn";
+
+
+                    const actionText =
+                        isActive
+                            ? "Deactivate"
+                            : "Reactivate";
+
+
+                    const action =
+                        isActive
+                            ? "deactivate"
+                            : "reactivate";
+
+
+                    employeeDiv.innerHTML = `
+
+                        <div class="employee-info">
+
+                            <p class="employee-name">
+                                ${employee.full_name}
+                            </p>
+
+                            <p class="employee-username">
+                                @${employee.username}
+                            </p>
+
+                            <span class="status-badge ${statusClass}">
+                                ${employee.status}
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="status-btn ${actionClass}"
+                            onclick="changeEmployeeStatus(
+                                ${employee.id},
+                                '${action}'
+                            )"
+                        >
+                            ${actionText}
+                        </button>
+
+                    `;
+
+
+                    employeeList.appendChild(employeeDiv);
+
+                });
+
+            } catch (error) {
+
+                employeeList.innerHTML = `
+                    <div class="empty-state">
+                        Could not connect to the server.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        // ================= ADD EMPLOYEE =================
+
+        document
+            .getElementById("employee-form")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const fullName =
+                        document
+                            .getElementById("full_name")
+                            .value
+                            .trim();
+
+
+                    const username =
+                        document
+                            .getElementById("username")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    try {
+
+                        showLoader("Adding employee...");
+
+
+                        const response =
+                            await fetch(
+                                "/api/employees",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body: JSON.stringify({
+                                        full_name: fullName,
+                                        username: username,
+                                        password: password
+                                    })
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            showMessage(
+                                data.error ||
+                                "Could not create employee."
+                            );
+
+                            return;
+                        }
+
+
+                        showMessage(data.message);
+
+
+                        document
+                            .getElementById("employee-form")
+                            .reset();
+
+
+                        await loadEmployees();
+
+                    } catch (error) {
+
+                        showMessage(
+                            "Could not connect to the server."
+                        );
+
+                    } finally {
+
+                        hideLoader();
+
+                    }
+
+                }
+            );
+
+
+        // ================= CHANGE STATUS =================
+
+        async function changeEmployeeStatus(
+            employeeId,
+            action
+        ) {
+
+            try {
+
+                showLoader(
+                    action === "deactivate"
+                        ? "Deactivating employee..."
+                        : "Reactivating employee..."
+                );
+
+
+                const response =
+                    await fetch(
+                        `/api/employees/${employeeId}/${action}`,
+                        {
+                            method: "PATCH"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        "Could not change employee status."
+                    );
+
+                    return;
+                }
+
+
+                showMessage(data.message);
+
+
+                await loadEmployees();
+
+            } catch (error) {
+
+                showMessage(
+                    "Could not connect to the server."
+                );
+
+            } finally {
+
+                hideLoader();
+
+            }
+
+        }
+
+
+        // ================= INITIAL LOAD =================
+
+        loadEmployees();
+
+    </script>
+
+</body>
+
+</html>

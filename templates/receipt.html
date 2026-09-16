@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Receipt</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .receipt {
+            width: 380px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .receipt-info {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .receipt-info div {
+            margin-bottom: 5px;
+        }
+
+        .items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .items th,
+        .items td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .items th:last-child,
+        .items td:last-child {
+            text-align: right;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+        }
+
+        .print-button {
+            display: block;
+            width: 380px;
+            margin: 20px auto;
+            padding: 12px;
+            border: none;
+            background: #222;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .print-button:hover {
+            background: #444;
+        }
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .receipt {
+                width: 100%;
+                box-shadow: none;
+                padding: 10px;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="receipt">
+
+        <div class="header">
+            <h1>WHOLESALER</h1>
+            <p>Sales Receipt</p>
+        </div>
+
+        <div class="receipt-info">
+
+            <div>
+                <strong>Receipt No:</strong>
+                <span id="receiptNumber"></span>
+            </div>
+
+            <div>
+                <strong>Date:</strong>
+                <span id="saleDate"></span>
+            </div>
+
+            <div>
+                <strong>Served By:</strong>
+                <span id="employeeName"></span>
+            </div>
+
+            <div>
+                <strong>Payment:</strong>
+                <span id="paymentMethod"></span>
+            </div>
+
+        </div>
+
+        <table class="items">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody id="itemsBody">
+            </tbody>
+
+        </table>
+
+        <div class="total">
+            Total: KSh <span id="totalAmount"></span>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for your business.</p>
+        </div>
+
+    </div>
+
+    <button class="print-button" onclick="window.print()">
+        Print Receipt
+    </button>
+
+
+    <script>
+
+        const saleId = new URLSearchParams(
+            window.location.search
+        ).get("sale_id");
+
+
+        async function loadReceipt() {
+
+            if (!saleId) {
+                alert("No sale specified.");
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/api/sales/${saleId}/receipt`
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert(data.error || "Could not load receipt.");
+                    return;
+                }
+
+                document.getElementById("receiptNumber").textContent =
+                    data.receipt_number;
+
+                document.getElementById("saleDate").textContent =
+                    new Date(data.sale_date).toLocaleString();
+
+                document.getElementById("employeeName").textContent =
+                    data.employee_name;
+
+                document.getElementById("paymentMethod").textContent =
+                    data.payment_method;
+
+                document.getElementById("totalAmount").textContent =
+                    data.total_amount;
+
+
+                const itemsBody =
+                    document.getElementById("itemsBody");
+
+                itemsBody.innerHTML = "";
+
+
+                data.items.forEach(item => {
+
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${item.product_name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.selling_price}</td>
+                        <td>${item.subtotal}</td>
+                    `;
+
+                    itemsBody.appendChild(row);
+
+                });
+
+            } catch (error) {
+
+                console.error("RECEIPT LOAD ERROR:", error);
+
+                alert("Could not load receipt.");
+
+            }
+
+        }
+
+
+        loadReceipt();
+
+    </script>
+
+</body>
+</html>
+

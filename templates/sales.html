@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sales Management - RUBREK ENTERPRISES</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            background: #0b63ce;
+            color: white;
+            padding: 18px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: 0.5px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+        }
+
+        header a:hover {
+            background: white;
+            color: #0b63ce;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            max-width: 1250px;
+            margin: 35px auto;
+            padding: 0 25px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 25px;
+            color: #172033;
+        }
+
+        .dashboard-btn {
+            text-decoration: none;
+            background: white;
+            color: #0b63ce;
+            border: 1px solid #d5deeb;
+            padding: 9px 15px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .dashboard-btn:hover {
+            background: #eef5ff;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .message {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #fff1f1;
+            color: #b42318;
+            border: 1px solid #f3c1c1;
+        }
+
+        .success {
+            background: #eaf7ef;
+            color: #167442;
+            border: 1px solid #bfe3cc;
+        }
+
+        /* ================= SALES CARD ================= */
+
+        .sales-card {
+            background: white;
+            border: 1px solid #e1e7ef;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-heading {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5eaf0;
+        }
+
+        .card-heading h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #172033;
+        }
+
+        .card-heading p {
+            margin: 6px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .sales-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .sales-table th {
+            background: #f1f5fa;
+            color: #344054;
+            padding: 13px 14px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            border-bottom: 1px solid #dfe6ee;
+        }
+
+        .sales-table td {
+            padding: 14px;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .sales-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        .receipt-number {
+            font-weight: bold;
+            color: #0b63ce;
+        }
+
+        .employee-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .total-amount {
+            font-weight: bold;
+            color: #172033;
+            white-space: nowrap;
+        }
+
+        /* ================= BADGES ================= */
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .released-label {
+            background: #e7f7ee;
+            color: #167442;
+        }
+
+        .not-released-label {
+            background: #fff1f1;
+            color: #b42318;
+        }
+
+        .type-badge {
+            background: #eef5ff;
+            color: #0b63ce;
+        }
+
+        .payment-badge {
+            background: #f1f3f5;
+            color: #495057;
+        }
+
+        .manual-label {
+            color: #6b7280;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .receipt-button,
+        .release-button {
+            border: none;
+            cursor: pointer;
+            padding: 7px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .receipt-button {
+            background: #0b63ce;
+            color: white;
+        }
+
+        .receipt-button:hover {
+            background: #084f9f;
+        }
+
+        .release-button {
+            background: #167442;
+            color: white;
+        }
+
+        .release-button:hover {
+            background: #105b32;
+        }
+
+        .release-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* ================= LOADING ================= */
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: #0b63ce;
+            font-weight: bold;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            display: inline-block;
+            animation: biscuitSpin 1s linear infinite;
+            margin-bottom: 8px;
+        }
+
+        @keyframes biscuitSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 15px 18px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            header div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            main {
+                margin: 25px auto;
+                padding: 0 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= LOADING ================= -->
+
+    <div id="loadingOverlay">
+
+        <div class="loader-content">
+
+            <div class="biscuit">🍪</div>
+
+            <div>Loading...</div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <h1>RUBREK ENTERPRISES</h1>
+
+        <div>
+
+            <span>
+                Welcome, {{ session["full_name"] }}
+            </span>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <div class="page-header">
+
+            <h2>Sales Management</h2>
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="dashboard-btn"
+            >
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- ================= MESSAGES ================= -->
+
+        <div
+            id="errorMessage"
+            class="message error"
+        ></div>
+
+        <div
+            id="successMessage"
+            class="message success"
+        ></div>
+
+
+        <!-- ================= SALES ================= -->
+
+        <section class="sales-card">
+
+            <div class="card-heading">
+
+                <h3>Sales History</h3>
+
+                <p>
+                    View recorded sales, receipts and release status.
+                </p>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="sales-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Receipt</th>
+                            <th>Employee</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Type</th>
+                            <th>Delivery</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="salesBody"></tbody>
+
+                </table>
+
+            </div>
+
+
+            <div
+                id="emptyMessage"
+                class="empty"
+                style="display: none;"
+            >
+                No sales recorded yet.
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        // =========================================================
+        // MESSAGE HELPERS
+        // =========================================================
+
+        function showError(message) {
+
+            const element =
+                document.getElementById("errorMessage");
+
+            element.textContent = message;
+            element.style.display = "block";
+
+        }
+
+
+        function showSuccess(message) {
+
+            const element =
+                document.getElementById("successMessage");
+
+            element.textContent = message;
+            element.style.display = "block";
+
+        }
+
+
+        function clearMessages() {
+
+            document.getElementById("errorMessage").textContent = "";
+            document.getElementById("successMessage").textContent = "";
+
+            document.getElementById("errorMessage").style.display = "none";
+            document.getElementById("successMessage").style.display = "none";
+
+        }
+
+
+        // =========================================================
+        // LOAD SALES
+        // =========================================================
+
+        async function loadSales() {
+
+            try {
+
+                const response =
+                    await fetch("/api/sales");
+
+                const data =
+                    await response.json();
+
+                console.log("Sales data:", data);
+
+                if (!response.ok) {
+
+                    showError(
+                        data.error ||
+                        "Could not load sales."
+                    );
+
+                    return;
+                }
+
+
+                const salesBody =
+                    document.getElementById("salesBody");
+
+                salesBody.innerHTML = "";
+
+
+                if (!data.sales || data.sales.length === 0) {
+
+                    document.getElementById(
+                        "emptyMessage"
+                    ).style.display = "block";
+
+                    return;
+                }
+
+
+                document.getElementById(
+                    "emptyMessage"
+                ).style.display = "none";
+
+
+                data.sales.forEach(sale => {
+
+                    const row =
+                        document.createElement("tr");
+
+
+                    // =================================================
+                    // DATE
+                    // =================================================
+
+                    const date =
+                        sale.sale_date
+                            ? new Date(
+                                sale.sale_date
+                            ).toLocaleString()
+                            : "-";
+
+
+                    // =================================================
+                    // DELIVERY STATUS
+                    // =================================================
+
+                    const deliveryStatus =
+                        String(
+                            sale.delivery_status || ""
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    let deliveryHTML;
+
+
+                    if (
+                        deliveryStatus === "RELEASED"
+                    ) {
+
+                        deliveryHTML = `
+                            <span class="status-badge released-label">
+                                RELEASED
+                            </span>
+                        `;
+
+                    } else {
+
+                        deliveryHTML = `
+                            <span class="status-badge not-released-label">
+                                NOT RELEASED
+                            </span>
+                        `;
+
+                    }
+
+
+                    // =================================================
+                    // ACTIONS
+                    // =================================================
+
+                    let action = "";
+
+
+                    // -----------------------------------------------
+                    // RECEIPT
+                    // -----------------------------------------------
+
+                    if (
+                        sale.receipt_type === "SYSTEM"
+                    ) {
+
+                        action += `
+                            <button
+                                class="receipt-button"
+                                onclick="viewReceipt(${sale.id})"
+                            >
+                                View Receipt
+                            </button>
+                        `;
+
+                    } else {
+
+                        action += `
+                            <span class="manual-label">
+                                Manual Receipt
+                            </span>
+                        `;
+
+                    }
+
+
+                    // -----------------------------------------------
+                    // RELEASE
+                    // -----------------------------------------------
+
+                    if (
+                        deliveryStatus !== "RELEASED"
+                    ) {
+
+                        action += `
+                            <button
+                                class="release-button"
+                                onclick="releaseSale(${sale.id})"
+                            >
+                                Release Sale
+                            </button>
+                        `;
+
+                    }
+
+
+                    // =================================================
+                    // TABLE ROW
+                    // =================================================
+
+                    row.innerHTML = `
+
+                        <td>
+                            <span class="receipt-number">
+                                #${sale.receipt_number}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="employee-name">
+                                ${sale.employee_name || "-"}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="total-amount">
+                                KSh ${Number(
+                                    sale.total_amount || 0
+                                ).toFixed(2)}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="status-badge payment-badge">
+                                ${sale.payment_method || "-"}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="status-badge type-badge">
+                                ${sale.receipt_type || "-"}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${deliveryHTML}
+                        </td>
+
+                        <td>
+                            ${date}
+                        </td>
+
+                        <td>
+                            ${action}
+                        </td>
+
+                    `;
+
+
+                    salesBody.appendChild(row);
+
+                });
+
+
+            } catch (error) {
+
+                console.error(
+                    "SALES LOAD ERROR:",
+                    error
+                );
+
+                showError(
+                    "Could not load sales."
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // RELEASE SALE
+        // =========================================================
+
+        async function releaseSale(saleId) {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to release this sale?\n\n" +
+                    "Stock will be deducted after the sale is released."
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            clearMessages();
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/sales/${saleId}/release`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    showError(
+                        data.error ||
+                        "Could not release sale."
+                    );
+
+                    return;
+                }
+
+
+                showSuccess(
+                    data.message ||
+                    "Sale released successfully."
+                );
+
+
+                await loadSales();
+
+
+            } catch (error) {
+
+                console.error(
+                    "RELEASE SALE ERROR:",
+                    error
+                );
+
+                showError(
+                    "Could not release sale."
+                );
+
+            }
+
+        }
+
+
+        // =========================================================
+        // VIEW RECEIPT
+        // =========================================================
+
+        function viewReceipt(saleId) {
+
+            window.location.href =
+                `/sales/receipt?sale_id=${saleId}`;
+
+        }
+
+
+        // =========================================================
+        // INITIAL LOAD
+        // =========================================================
+
+        loadSales();
+
+    </script>
+
+</body>
+
+</html>

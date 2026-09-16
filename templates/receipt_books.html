@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Receipt Books - RUBREK ENTERPRISES</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* =========================
+           LOADING OVERLAY
+        ========================= */
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            animation: biscuitSpin 1s infinite ease-in-out;
+        }
+
+        .loadingText {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1769d1;
+        }
+
+        @keyframes biscuitSpin {
+
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.12);
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #1769d1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            font-size: 18px;
+            color: #123b70;
+        }
+
+        .brand-text span {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .dashboard-btn {
+            text-decoration: none;
+            background: #1769d1;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .dashboard-btn:hover {
+            background: #1257ae;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            margin: 0 0 5px;
+            color: #123b70;
+            font-size: 25px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f7ee;
+            color: #18733d;
+            border: 1px solid #b9e6c9;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff0f0;
+            color: #b00020;
+            border: 1px solid #f0b8c0;
+        }
+
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e3e9f2;
+            margin-bottom: 22px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .section-header {
+            padding: 17px 20px;
+            border-bottom: 1px solid #e5eaf1;
+            background: #fbfcfe;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #123b70;
+            font-size: 17px;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cfd8e3;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            border-color: #1769d1;
+            box-shadow: 0 0 0 2px rgba(23, 105, 209, 0.1);
+        }
+
+        .add-button {
+            margin-top: 20px;
+            background: #1769d1;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .add-button:hover {
+            background: #1257ae;
+        }
+
+        .add-button:disabled {
+            background: #8aaed8;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #edf0f4;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #1769d1;
+            color: white;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        tbody tr:hover {
+            background: #f7faff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #e6f7ed;
+            color: #168344;
+        }
+
+        .pending {
+            background: #fff5d9;
+            color: #9a7000;
+        }
+
+        .closed {
+            background: #edf0f3;
+            color: #68717d;
+        }
+
+
+        /* =========================
+           CLOSE BUTTON
+        ========================= */
+
+        .close-button {
+            background: #fff0f0;
+            color: #b00020;
+            border: 1px solid #f0c1c8;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .close-button:hover {
+            background: #b00020;
+            color: white;
+        }
+
+
+        /* =========================
+           EMPTY / LOADING
+        ========================= */
+
+        .empty {
+            text-align: center;
+            color: #718096;
+            padding: 28px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .topbar {
+                padding: 14px 18px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .dashboard-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .page-heading h2 {
+                font-size: 21px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-content {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     LOADING OVERLAY
+========================= -->
+
+<div id="loadingOverlay">
+
+    <div class="biscuit">🍪</div>
+
+    <div class="loadingText">
+        Loading...
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     TOP BAR
+========================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            R
+        </div>
+
+        <div class="brand-text">
+
+            <h1>
+                RUBREK ENTERPRISES
+            </h1>
+
+            <span>
+                Sales Management System
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('admin_dashboard') }}"
+        class="dashboard-btn"
+    >
+        ← Back to Dashboard
+    </a>
+
+</header>
+
+
+
+<div class="container">
+
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading">
+
+        <h2>
+            Receipt Books
+        </h2>
+
+        <p>
+            Manage physical receipt books and receipt number ranges.
+        </p>
+
+    </div>
+
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+
+    <!-- =========================
+         ADD RECEIPT BOOK
+    ========================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <h3>
+                Add Receipt Book
+            </h3>
+
+            <p>
+                Create a new physical receipt book for manual receipts.
+            </p>
+
+        </div>
+
+
+        <div class="section-content">
+
+            <form id="receiptBookForm">
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="bookNumber">
+                            Book Number
+                        </label>
+
+                        <input
+                            type="number"
+                            id="bookNumber"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="bookYear">
+                            Year
+                        </label>
+
+                        <input
+                            type="number"
+                            id="bookYear"
+                            min="2000"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="startNumber">
+                            Starting Receipt Number
+                        </label>
+
+                        <input
+                            type="number"
+                            id="startNumber"
+                            min="0"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="endNumber">
+                            Ending Receipt Number
+                        </label>
+
+                        <input
+                            type="number"
+                            id="endNumber"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="numberWidth">
+                            Number Width
+                        </label>
+
+                        <input
+                            type="number"
+                            id="numberWidth"
+                            value="4"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="add-button"
+                >
+                    + Add Receipt Book
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         RECEIPT BOOK HISTORY
+    ========================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <h3>
+                Receipt Book History
+            </h3>
+
+            <p>
+                View active, pending and closed receipt books.
+            </p>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Book
+                        </th>
+
+                        <th>
+                            Year
+                        </th>
+
+                        <th>
+                            Receipt Range
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Started
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="receiptBooksBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// =========================================================
+// LOADING
+// =========================================================
+
+function showLoading(text = "Loading...") {
+
+    const overlay =
+        document.getElementById("loadingOverlay");
+
+    const loadingText =
+        document.querySelector(".loadingText");
+
+    loadingText.textContent = text;
+
+    overlay.style.display = "flex";
+
+}
+
+
+function hideLoading() {
+
+    document
+        .getElementById("loadingOverlay")
+        .style.display = "none";
+
+}
+
+
+
+// =========================================================
+// SHOW MESSAGE
+// =========================================================
+
+function showMessage(message, type) {
+
+    const element =
+        document.getElementById("message");
+
+    element.textContent = message;
+
+    element.className =
+        `message ${type}`;
+
+}
+
+
+
+// =========================================================
+// LOAD RECEIPT BOOKS
+// =========================================================
+
+async function loadReceiptBooks() {
+
+    const body =
+        document.getElementById(
+            "receiptBooksBody"
+        );
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="6"
+                class="empty"
+            >
+                Loading receipt books...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/receipt-books"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        ${data.error || "Could not load receipt books."}
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML = "";
+
+
+        if (data.length === 0) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        No receipt books found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        data.forEach(book => {
+
+            const row =
+                document.createElement("tr");
+
+
+            const statusClass =
+                book.status.toLowerCase();
+
+
+            let action = "";
+
+
+            if (book.status === "ACTIVE") {
+
+                action = `
+
+                    <button
+                        class="close-button"
+                        onclick="closeReceiptBook(${book.id})"
+                    >
+                        Close Book
+                    </button>
+
+                `;
+
+            } else {
+
+                action = "-";
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+                    <strong>
+                        #${book.book_number}
+                    </strong>
+                </td>
+
+                <td>
+                    ${book.book_year}
+                </td>
+
+                <td>
+                    ${book.start_number}
+                    -
+                    ${book.end_number}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${statusClass}"
+                    >
+                        ${book.status}
+                    </span>
+
+                </td>
+
+                <td>
+                    ${formatDate(book.started_at)}
+                </td>
+
+                <td>
+                    ${action}
+                </td>
+
+            `;
+
+
+            body.appendChild(row);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "RECEIPT BOOK LOAD ERROR:",
+            error
+        );
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    Could not load receipt books.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+// =========================================================
+// ADD RECEIPT BOOK
+// =========================================================
+
+document
+    .getElementById("receiptBookForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const bookNumber =
+                document.getElementById(
+                    "bookNumber"
+                ).value;
+
+
+            const bookYear =
+                document.getElementById(
+                    "bookYear"
+                ).value;
+
+
+            const startNumber =
+                document.getElementById(
+                    "startNumber"
+                ).value;
+
+
+            const endNumber =
+                document.getElementById(
+                    "endNumber"
+                ).value;
+
+
+            const numberWidth =
+                document.getElementById(
+                    "numberWidth"
+                ).value;
+
+
+            try {
+
+                showLoading(
+                    "Adding receipt book..."
+                );
+
+
+                const response =
+                    await fetch(
+                        "/api/receipt-books",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                book_number:
+                                    bookNumber,
+
+                                book_year:
+                                    bookYear,
+
+                                start_number:
+                                    startNumber,
+
+                                end_number:
+                                    endNumber,
+
+                                number_width:
+                                    numberWidth
+
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        "Could not add receipt book.",
+                        "error"
+                    );
+
+                    hideLoading();
+
+                    return;
+                }
+
+
+                showMessage(
+                    `Receipt book added successfully. Status: ${data.status}`,
+                    "success"
+                );
+
+
+                document
+                    .getElementById(
+                        "receiptBookForm"
+                    )
+                    .reset();
+
+
+                document
+                    .getElementById(
+                        "numberWidth"
+                    )
+                    .value = 4;
+
+
+                await loadReceiptBooks();
+
+                hideLoading();
+
+
+            } catch (error) {
+
+                console.error(
+                    "RECEIPT BOOK ADD ERROR:",
+                    error
+                );
+
+
+                hideLoading();
+
+
+                showMessage(
+                    "Could not add receipt book.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+
+// =========================================================
+// CLOSE RECEIPT BOOK
+// =========================================================
+
+async function closeReceiptBook(bookId) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to close this receipt book?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        showLoading(
+            "Closing receipt book..."
+        );
+
+
+        const response =
+            await fetch(
+                `/api/receipt-books/${bookId}/close`,
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            showMessage(
+                data.error ||
+                "Could not close receipt book.",
+                "error"
+            );
+
+            hideLoading();
+
+            return;
+        }
+
+
+        showMessage(
+            "Receipt book closed successfully.",
+            "success"
+        );
+
+
+        await loadReceiptBooks();
+
+        hideLoading();
+
+
+    } catch (error) {
+
+        console.error(
+            "RECEIPT BOOK CLOSE ERROR:",
+            error
+        );
+
+
+        hideLoading();
+
+
+        showMessage(
+            "Could not close receipt book.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+// =========================================================
+// FORMAT DATE
+// =========================================================
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(dateString);
+
+
+    if (isNaN(date.getTime())) {
+        return "-";
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+
+// =========================================================
+// INITIAL LOAD
+// =========================================================
+
+loadReceiptBooks();
+
+</script>
+
+</body>
+
+</html>

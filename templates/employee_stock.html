@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Stock Management - RUBREK ENTERPRISES</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+
+        /* =========================
+           LOADING OVERLAY
+        ========================= */
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            animation: biscuitSpin 1s infinite ease-in-out;
+        }
+
+        .loadingText {
+            margin-top: 8px;
+            color: #1769d1;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @keyframes biscuitSpin {
+
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.12);
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e1e7ef;
+            padding: 15px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+
+            background: #1769d1;
+            color: white;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .brand-name {
+            margin: 0;
+            color: #123b70;
+            font-size: 18px;
+        }
+
+        .brand-subtitle {
+            margin: 3px 0 0;
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome {
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: #b00020;
+            border: 1px solid #f0c1c8;
+            background: #fff5f5;
+
+            padding: 8px 13px;
+            border-radius: 6px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #b00020;
+            color: white;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            margin: 0 0 5px;
+            color: #123b70;
+            font-size: 25px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            padding: 20px;
+            margin-bottom: 20px;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .card h3 {
+            margin: 0 0 17px;
+            color: #123b70;
+            font-size: 17px;
+        }
+
+        .card-description {
+            margin: -8px 0 18px;
+            color: #718096;
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           FORMS
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+
+            border: 1px solid #cfd8e3;
+            border-radius: 7px;
+
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #1769d1;
+            box-shadow: 0 0 0 2px rgba(23, 105, 209, 0.1);
+        }
+
+        .reason-field {
+            grid-column: span 1;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        button {
+            border: none;
+            cursor: pointer;
+
+            padding: 10px 16px;
+            border-radius: 7px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .primary-button {
+            background: #1769d1;
+            color: white;
+            margin-top: 17px;
+        }
+
+        .primary-button:hover {
+            background: #1257ae;
+        }
+
+        .remove-button {
+            background: #b00020;
+            color: white;
+            margin-top: 17px;
+        }
+
+        .remove-button:hover {
+            background: #8f001b;
+        }
+
+        .adjust-button {
+            background: #4b5563;
+            color: white;
+            margin-top: 17px;
+        }
+
+        .adjust-button:hover {
+            background: #374151;
+        }
+
+        .refresh-button {
+            background: #eaf2fc;
+            color: #1769d1;
+            border: 1px solid #c8dcf4;
+
+            margin-bottom: 18px;
+        }
+
+        .refresh-button:hover {
+            background: #1769d1;
+            color: white;
+        }
+
+
+        /* =========================
+           HISTORY TABLE
+        ========================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #edf0f4;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #1769d1;
+            color: white;
+
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        tbody tr:hover {
+            background: #f7faff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .empty {
+            text-align: center;
+            color: #718096;
+            padding: 25px;
+        }
+
+
+        /* =========================
+           TRANSACTION TYPES
+        ========================= */
+
+        .transaction-type {
+            display: inline-block;
+
+            padding: 5px 8px;
+            border-radius: 15px;
+
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .stock-in {
+            background: #e7f7ed;
+            color: #168344;
+        }
+
+        .stock-out {
+            background: #fff0f0;
+            color: #b00020;
+        }
+
+        .adjustment {
+            background: #fff5dc;
+            color: #9a7000;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            header {
+                padding: 14px 18px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-right {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 6px;
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            main {
+                padding: 15px;
+            }
+
+            .page-heading h2 {
+                font-size: 21px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reason-field {
+                grid-column: span 1;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     LOADING
+========================= -->
+
+<div id="loadingOverlay">
+
+    <div class="biscuit">
+        🍪
+    </div>
+
+    <div class="loadingText">
+        Loading...
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            R
+        </div>
+
+        <div>
+
+            <h1 class="brand-name">
+                RUBREK ENTERPRISES
+            </h1>
+
+            <p class="brand-subtitle">
+                Sales Management System
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span class="welcome">
+            Welcome, {{ session["full_name"] }}
+        </span>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+
+    <div class="page-heading">
+
+        <h2>
+            Stock Management
+        </h2>
+
+        <p>
+            Add, remove, adjust and monitor stock movements.
+        </p>
+
+    </div>
+
+
+
+    <!-- =========================
+         ADD STOCK
+    ========================= -->
+
+    <section class="card">
+
+        <h3>
+            Add Stock
+        </h3>
+
+        <p class="card-description">
+            Increase the available quantity of an existing product.
+        </p>
+
+
+        <form id="addStockForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="addProductId">
+                        Product ID
+                    </label>
+
+                    <input
+                        type="number"
+                        id="addProductId"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="addQuantity">
+                        Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="addQuantity"
+                        min="1"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                + Add Stock
+            </button>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =========================
+         REMOVE STOCK
+    ========================= -->
+
+    <section class="card">
+
+        <h3>
+            Remove Stock
+        </h3>
+
+        <p class="card-description">
+            Remove stock and record the reason for the movement.
+        </p>
+
+
+        <form id="removeStockForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="removeProductId">
+                        Product ID
+                    </label>
+
+                    <input
+                        type="number"
+                        id="removeProductId"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="removeQuantity">
+                        Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="removeQuantity"
+                        min="1"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="removeReason">
+                        Reason
+                    </label>
+
+                    <input
+                        type="text"
+                        id="removeReason"
+                        placeholder="e.g. Damaged goods"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="remove-button"
+            >
+                Remove Stock
+            </button>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =========================
+         ADJUST STOCK
+    ========================= -->
+
+    <section class="card">
+
+        <h3>
+            Adjust Stock
+        </h3>
+
+        <p class="card-description">
+            Set the product's stock to an exact quantity and record why.
+        </p>
+
+
+        <form id="adjustStockForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="adjustProductId">
+                        Product ID
+                    </label>
+
+                    <input
+                        type="number"
+                        id="adjustProductId"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="adjustQuantity">
+                        New Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="adjustQuantity"
+                        min="0"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="adjustReason">
+                        Reason
+                    </label>
+
+                    <input
+                        type="text"
+                        id="adjustReason"
+                        placeholder="Reason for adjustment"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="adjust-button"
+            >
+                Adjust Stock
+            </button>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =========================
+         STOCK HISTORY
+    ========================= -->
+
+    <section class="card">
+
+        <h3>
+            Stock History
+        </h3>
+
+        <p class="card-description">
+            View all stock movements and the employee responsible.
+        </p>
+
+
+        <button
+            onclick="loadStockHistory()"
+            class="refresh-button"
+        >
+            ↻ Refresh Stock History
+        </button>
+
+
+        <div
+            id="stockHistory"
+        >
+            Loading...
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+function showLoading(text = "Processing...") {
+
+    document
+        .querySelector(".loadingText")
+        .textContent = text;
+
+    document
+        .getElementById("loadingOverlay")
+        .style.display = "flex";
+
+}
+
+
+function hideLoading() {
+
+    document
+        .getElementById("loadingOverlay")
+        .style.display = "none";
+
+}
+
+
+
+/* =========================================================
+   GENERIC POST REQUEST
+========================================================= */
+
+async function sendRequest(url, data) {
+
+    try {
+
+        showLoading("Updating stock...");
+
+
+        const response =
+            await fetch(url, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(data)
+
+            });
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Request failed."
+            );
+
+        }
+
+
+        alert(
+            result.message ||
+            "Operation successful."
+        );
+
+
+        await loadStockHistory();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    } finally {
+
+        hideLoading();
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ADD STOCK
+========================================================= */
+
+document
+    .getElementById("addStockForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            sendRequest(
+                "/api/stock/in",
+                {
+
+                    product_id:
+                        Number(
+                            document
+                                .getElementById(
+                                    "addProductId"
+                                )
+                                .value
+                        ),
+
+                    quantity:
+                        Number(
+                            document
+                                .getElementById(
+                                    "addQuantity"
+                                )
+                                .value
+                        )
+
+                }
+            );
+
+        }
+    );
+
+
+
+/* =========================================================
+   REMOVE STOCK
+========================================================= */
+
+document
+    .getElementById("removeStockForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            sendRequest(
+                "/api/stock/removal",
+                {
+
+                    product_id:
+                        Number(
+                            document
+                                .getElementById(
+                                    "removeProductId"
+                                )
+                                .value
+                        ),
+
+                    quantity:
+                        Number(
+                            document
+                                .getElementById(
+                                    "removeQuantity"
+                                )
+                                .value
+                        ),
+
+                    reason:
+                        document
+                            .getElementById(
+                                "removeReason"
+                            )
+                            .value
+
+                }
+            );
+
+        }
+    );
+
+
+
+/* =========================================================
+   ADJUST STOCK
+========================================================= */
+
+document
+    .getElementById("adjustStockForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            sendRequest(
+                "/api/stock/adjustment",
+                {
+
+                    product_id:
+                        Number(
+                            document
+                                .getElementById(
+                                    "adjustProductId"
+                                )
+                                .value
+                        ),
+
+                    /*
+                     * Backend expects:
+                     * new_quantity
+                     */
+
+                    new_quantity:
+                        Number(
+                            document
+                                .getElementById(
+                                    "adjustQuantity"
+                                )
+                                .value
+                        ),
+
+                    reason:
+                        document
+                            .getElementById(
+                                "adjustReason"
+                            )
+                            .value
+
+                }
+            );
+
+        }
+    );
+
+
+
+/* =========================================================
+   STOCK HISTORY
+========================================================= */
+
+async function loadStockHistory() {
+
+    const container =
+        document.getElementById(
+            "stockHistory"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="empty">
+            Loading stock history...
+        </div>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/stock"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Could not load stock history."
+            );
+
+        }
+
+
+        /* =========================
+           NO TRANSACTIONS
+        ========================= */
+
+        if (
+            !result.transactions ||
+            result.transactions.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty">
+                    No stock transactions found.
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* =========================
+           CREATE TABLE
+        ========================= */
+
+        let html = `
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Previous
+                            </th>
+
+                            <th>
+                                New
+                            </th>
+
+                            <th>
+                                Employee
+                            </th>
+
+                            <th>
+                                Reason
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+        `;
+
+
+        /* =========================
+           TRANSACTIONS
+        ========================= */
+
+        result.transactions.forEach(
+            transaction => {
+
+                let typeClass = "";
+
+                const type =
+                    transaction.transaction_type;
+
+
+                if (
+                    type === "STOCK_IN" ||
+                    type === "IN"
+                ) {
+
+                    typeClass = "stock-in";
+
+                } else if (
+                    type === "STOCK_OUT" ||
+                    type === "OUT" ||
+                    type === "SALE_OUT"
+                ) {
+
+                    typeClass = "stock-out";
+
+                } else if (
+                    type === "ADJUSTMENT"
+                ) {
+
+                    typeClass = "adjustment";
+
+                }
+
+
+                html += `
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                ${
+                                    transaction.product_name ||
+                                    transaction.product_id
+                                }
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="transaction-type ${typeClass}"
+                            >
+                                ${type}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${transaction.quantity}
+                        </td>
+
+
+                        <td>
+                            ${transaction.previous_quantity}
+                        </td>
+
+
+                        <td>
+                            ${transaction.new_quantity}
+                        </td>
+
+
+                        <td>
+                            ${
+                                transaction.employee_name ||
+                                "Unknown"
+                            }
+                        </td>
+
+
+                        <td>
+                            ${
+                                transaction.reason ||
+                                "-"
+                            }
+                        </td>
+
+
+                        <td>
+                            ${
+                                transaction.transaction_date ||
+                                "-"
+                            }
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        html += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+
+        container.innerHTML = html;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Error loading stock history:
+                ${error.message}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadStockHistory();
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - RUBREK ENTERPRISES</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8fc;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            background: #0b63ce;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: 0.6px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 7px;
+        }
+
+        header a:hover {
+            background: white;
+            color: #0b63ce;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px 45px;
+        }
+
+        .dashboard-title {
+            margin-bottom: 25px;
+        }
+
+        .dashboard-title h2 {
+            margin: 0;
+            color: #123b68;
+            font-size: 28px;
+        }
+
+        .dashboard-title p {
+            margin: 7px 0 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* ================= ALERT SECTIONS ================= */
+
+        .alerts-section {
+            background: white;
+            border: 1px solid #e2eaf3;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.07);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #123b68;
+            font-size: 18px;
+        }
+
+        .alert-count {
+            background: #eef5ff;
+            color: #0b63ce;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ================= ALERT CARDS ================= */
+
+        .alerts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .receipt-alert {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 17px;
+            border: 1px solid #e4eaf1;
+            border-radius: 9px;
+            background: #fbfdff;
+        }
+
+        .receipt-alert:hover {
+            border-color: #bfd8f2;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content h3 {
+            margin: 0 0 8px;
+            color: #123b68;
+            font-size: 15px;
+        }
+
+        .alert-content p {
+            margin: 5px 0;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .alert-content small {
+            display: block;
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .resolve-btn {
+            background: #0b63ce;
+            color: white;
+            border: none;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .resolve-btn:hover {
+            background: #084fa6;
+        }
+
+        .no-alerts {
+            padding: 14px;
+            background: #f0f9f4;
+            border: 1px solid #d4eddd;
+            border-radius: 8px;
+            color: #168044;
+        }
+
+        .no-alerts p {
+            margin: 0;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* ================= DASHBOARD CARDS ================= */
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2eaf3;
+            border-radius: 12px;
+            padding: 21px;
+            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.07);
+            display: flex;
+            flex-direction: column;
+            min-height: 170px;
+            transition: 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #b8d4f2;
+            box-shadow: 0 6px 18px rgba(11, 99, 206, 0.1);
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            color: #123b68;
+            font-size: 18px;
+        }
+
+        .card p {
+            margin: 0 0 18px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .card a {
+            display: inline-block;
+            width: fit-content;
+            text-decoration: none;
+            background: #0b63ce;
+            color: white;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .card a:hover {
+            background: #084fa6;
+        }
+
+        /* ================= BISCUIT LOADER ================= */
+
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-box {
+            text-align: center;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            animation: biscuitBounce 0.8s infinite alternate;
+        }
+
+        .loader-text {
+            margin-top: 8px;
+            color: #0b63ce;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        @keyframes biscuitBounce {
+            from {
+                transform: translateY(0) rotate(-8deg);
+            }
+
+            to {
+                transform: translateY(-10px) rotate(8deg);
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            header div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            main {
+                margin-top: 20px;
+                padding: 0 12px 30px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .receipt-alert {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .resolve-btn {
+                width: 100%;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= LOADING OVERLAY ================= -->
+
+    <div id="loading-overlay">
+
+        <div class="loader-box">
+
+            <div class="biscuit">🍪</div>
+
+            <div class="loader-text">
+                Loading...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <h1>RUBREK ENTERPRISES</h1>
+
+        <div>
+
+            <span>
+                Welcome, {{ session["full_name"] }}
+            </span>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <div class="dashboard-title">
+
+            <h2>Admin Dashboard</h2>
+
+            <p>
+                Manage your business operations from one place.
+            </p>
+
+        </div>
+
+
+        <!-- ================= RECEIPT ALERTS ================= -->
+
+        <section class="alerts-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Receipt Alerts
+                </h2>
+
+                <span
+                    id="alertCount"
+                    class="alert-count"
+                >
+                    0 unresolved
+                </span>
+
+            </div>
+
+
+            <div
+                id="receiptAlerts"
+                class="alerts-container"
+            >
+
+                <p>
+                    Loading receipt alerts...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= LOW STOCK ALERTS ================= -->
+
+        <section class="alerts-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Low Stock Alerts
+                </h2>
+
+                <span
+                    id="lowStockCount"
+                    class="alert-count"
+                >
+                    0 products
+                </span>
+
+            </div>
+
+
+            <div
+                id="lowStockAlerts"
+                class="alerts-container"
+            >
+
+                <p>
+                    Loading stock alerts...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ADMIN MODULES ================= -->
+
+        <section class="dashboard-cards">
+
+
+            <div class="card">
+
+                <h3>
+                    Employees
+                </h3>
+
+                <p>
+                    Manage employee accounts, activation,
+                    and access.
+                </p>
+
+                <a href="{{ url_for('employee_routes.employee_management') }}">
+                    Manage Employees
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Categories
+                </h3>
+
+                <p>
+                    Create and manage product categories.
+                </p>
+
+                <a href="{{ url_for('category_routes.category_management') }}">
+                    Manage Categories
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Products
+                </h3>
+
+                <p>
+                    Manage products, prices, stock settings,
+                    and product status.
+                </p>
+
+                <a href="{{ url_for('product_routes.product_management') }}">
+                    Manage Products
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Sales
+                </h3>
+
+                <p>
+                    View recorded sales and manage
+                    completed transactions.
+                </p>
+
+                <a href="{{ url_for('sales_routes.sales_page') }}">
+                    View Sales
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Expenses
+                </h3>
+
+                <p>
+                    Record and review business expenses.
+                </p>
+
+                <a href="{{ url_for('expenses_routes.expenses_page') }}">
+                    Manage Expenses
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Reports
+                </h3>
+
+                <p>
+                    View business reports and performance
+                    information.
+                </p>
+
+                <a href="{{ url_for('reports_routes.reports_page') }}">
+                    View Reports
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Receipt Books
+                </h3>
+
+                <p>
+                    Manage receipt books, numbering,
+                    and receipt records.
+                </p>
+
+                <a href="{{ url_for('receipt_books_routes.receipt_books_page') }}">
+                    Manage Receipt Books
+                </a>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /* ================================
+           RECEIPT ALERTS
+        ================================= */
+
+        async function loadReceiptAlerts() {
+
+            const alertsContainer =
+                document.getElementById("receiptAlerts");
+
+            const alertCount =
+                document.getElementById("alertCount");
+
+
+            try {
+
+                const response =
+                    await fetch("/api/receipt-alerts");
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alertsContainer.innerHTML =
+                        `<p>${data.error || "Could not load alerts."}</p>`;
+
+                    return;
+
+                }
+
+
+                const alerts =
+                    data.alerts || [];
+
+
+                alertCount.textContent =
+                    `${alerts.length} unresolved`;
+
+
+                if (alerts.length === 0) {
+
+                    alertsContainer.innerHTML = `
+                        <div class="no-alerts">
+                            <p>✓ No unresolved receipt alerts.</p>
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                alertsContainer.innerHTML =
+                    alerts.map(alert => {
+
+                        const date =
+                            new Date(alert.created_at)
+                                .toLocaleString();
+
+
+                        return `
+
+                            <div class="receipt-alert">
+
+                                <div class="alert-content">
+
+                                    <h3>
+                                        ⚠️ Receipt Number Alert
+                                    </h3>
+
+                                    <p>
+                                        ${alert.message}
+                                    </p>
+
+                                    <p>
+                                        <strong>Receipt Book:</strong>
+                                        ${alert.book_number}
+                                        (${alert.book_year})
+                                    </p>
+
+                                    <p>
+                                        <strong>Receipt Entered:</strong>
+                                        ${alert.entered_receipt_number}
+                                    </p>
+
+                                    <p>
+                                        <strong>Employee:</strong>
+                                        ${alert.employee_name}
+                                    </p>
+
+                                    <small>
+                                        ${date}
+                                    </small>
+
+                                </div>
+
+
+                                <button
+                                    class="resolve-btn"
+                                    onclick="resolveReceiptAlert(${alert.id})"
+                                >
+                                    Mark as Resolved
+                                </button>
+
+                            </div>
+
+                        `;
+
+                    }).join("");
+
+
+            } catch (error) {
+
+                console.error(
+                    "Receipt alerts error:",
+                    error
+                );
+
+
+                alertsContainer.innerHTML =
+                    "<p>Could not load receipt alerts.</p>";
+
+            }
+
+        }
+
+
+        /* ================================
+           RESOLVE RECEIPT ALERT
+        ================================= */
+
+        async function resolveReceiptAlert(alertId) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/receipt-alerts/${alertId}/resolve`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.error ||
+                        "Could not resolve receipt alert."
+                    );
+
+                    return;
+
+                }
+
+
+                loadReceiptAlerts();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Resolve alert error:",
+                    error
+                );
+
+
+                alert(
+                    "Could not resolve receipt alert."
+                );
+
+            }
+
+        }
+
+
+        /* ================================
+           LOW STOCK ALERTS
+        ================================= */
+
+        async function loadLowStockAlerts() {
+
+            const container =
+                document.getElementById("lowStockAlerts");
+
+            const count =
+                document.getElementById("lowStockCount");
+
+
+            try {
+
+                const response =
+                    await fetch("/api/stock/alerts");
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    container.innerHTML =
+                        `<p>${data.error || "Could not load stock alerts."}</p>`;
+
+                    return;
+
+                }
+
+
+                const alerts =
+                    data.alerts || [];
+
+
+                count.textContent =
+                    `${alerts.length} product${alerts.length === 1 ? "" : "s"}`;
+
+
+                if (alerts.length === 0) {
+
+                    container.innerHTML = `
+                        <div class="no-alerts">
+                            <p>✓ No low stock products.</p>
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                container.innerHTML =
+                    alerts.map(product => {
+
+                        return `
+
+                            <div class="receipt-alert">
+
+                                <div class="alert-content">
+
+                                    <h3>
+                                        ⚠️ Low Stock: ${product.product_name}
+                                    </h3>
+
+                                    <p>
+                                        <strong>Current Stock:</strong>
+                                        ${product.quantity}
+                                    </p>
+
+                                    <p>
+                                        <strong>Minimum Stock:</strong>
+                                        ${product.minimum_stock}
+                                    </p>
+
+                                    ${
+                                        product.category_name
+                                        ? `
+                                            <p>
+                                                <strong>Category:</strong>
+                                                ${product.category_name}
+                                            </p>
+                                          `
+                                        : ""
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }).join("");
+
+
+            } catch (error) {
+
+                console.error(
+                    "Low stock alerts error:",
+                    error
+                );
+
+
+                container.innerHTML =
+                    "<p>Could not load stock alerts.</p>";
+
+            }
+
+        }
+
+
+        /* ================================
+           LOAD DASHBOARD ALERTS
+        ================================= */
+
+        loadReceiptAlerts();
+
+        loadLowStockAlerts();
+
+
+        /*
+            Refresh low-stock alerts every 10 seconds.
+            This allows the dashboard to detect changes
+            made through stock and sales activity.
+        */
+
+        setInterval(
+            loadLowStockAlerts,
+            10000
+        );
+
+    </script>
+
+</body>
+
+</html>

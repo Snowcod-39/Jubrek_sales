@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
 from werkzeug.security import generate_password_hash
 
 from db import get_db_connection
@@ -9,6 +9,13 @@ employee_routes = Blueprint("employee_routes", __name__)
 
 def admin_required():
     return "user_id" in session and session.get("role") == "ADMIN"
+
+@employee_routes.route("/admin/employees")
+def employee_management():
+    if not admin_required():
+        return redirect(url_for("login"))
+
+    return render_template("employee_management.html")
 
 
 @employee_routes.route("/api/employees", methods=["POST"])

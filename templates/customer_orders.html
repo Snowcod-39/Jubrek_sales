@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rubrek Enterprises | Customer Orders</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            height: 70px;
+            background: #0d6efd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* ================= MAIN ================= */
+
+        .page {
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* ================= ORDER PANEL ================= */
+
+        .order-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .panel-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #0d6efd;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d7dde5;
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            border-color: #0d6efd;
+        }
+
+        /* ================= CART ================= */
+
+        .cart {
+            margin-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+
+        .cart-header {
+            display: grid;
+            grid-template-columns: 1fr 45px 70px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 45px 70px;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 13px;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+        }
+
+        .cart-item small {
+            display: block;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .remove-btn {
+            border: none;
+            background: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+            padding: 20px 0;
+        }
+
+        .total-box {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .total-amount {
+            color: #0d6efd;
+        }
+
+        .place-order {
+            width: 100%;
+            border: none;
+            background: #0d6efd;
+            color: white;
+            padding: 13px;
+            margin-top: 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .place-order:hover {
+            background: #095dcc;
+        }
+
+        .place-order:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* ================= PRODUCTS ================= */
+
+        .products-panel {
+            min-width: 0;
+        }
+
+        .products-top {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .products-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 13px 15px 13px 42px;
+            border: 1px solid #d7dde5;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #0d6efd;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        /* ================= CATEGORIES ================= */
+
+        .categories {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .category-btn {
+            border: 1px solid #d7dde5;
+            background: white;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .category-btn:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+        .category-btn.active {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        /* ================= PRODUCT GRID ================= */
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 18px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 9px;
+            padding: 17px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid transparent;
+            transition: 0.15s;
+        }
+
+        .product-card:hover {
+            border-color: #0d6efd;
+            transform: translateY(-2px);
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .product-category {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-size: 17px;
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+
+        .availability {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .available {
+            color: #198754;
+        }
+
+        .unavailable {
+            color: #dc3545;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 9px;
+            border: none;
+            border-radius: 5px;
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #095dcc;
+        }
+
+        .add-btn:disabled {
+            background: #c5cbd3;
+            cursor: not-allowed;
+        }
+
+        .no-products {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            border-radius: 8px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .message {
+            margin-top: 15px;
+            padding: 11px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* ================= LOADING ================= */
+
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.88);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-box {
+            text-align: center;
+        }
+
+        .biscuit {
+            font-size: 45px;
+            display: inline-block;
+            animation: biscuitSpin 1s infinite ease-in-out;
+        }
+
+        .loading-text {
+            margin-top: 8px;
+            color: #0d6efd;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        @keyframes biscuitSpin {
+            0% {
+                transform: rotate(0deg) translateY(0);
+            }
+
+            25% {
+                transform: rotate(-12deg) translateY(-5px);
+            }
+
+            50% {
+                transform: rotate(12deg) translateY(0);
+            }
+
+            75% {
+                transform: rotate(-8deg) translateY(-3px);
+            }
+
+            100% {
+                transform: rotate(0deg) translateY(0);
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .order-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 500px) {
+            header {
+                padding: 0 15px;
+            }
+
+            .brand {
+                font-size: 18px;
+            }
+
+            .header-title {
+                display: none;
+            }
+
+            .page {
+                padding: 10px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">RUBREK ENTERPRISES</div>
+    <div class="header-title">Customer Ordering</div>
+</header>
+
+
+<div class="page">
+
+    <!-- ================= CURRENT ORDER ================= -->
+
+    <section class="order-panel">
+
+        <div class="panel-title">Current Order</div>
+
+        <div class="input-group">
+            <label>Customer Name</label>
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Enter your name"
+            >
+        </div>
+
+        <div class="input-group">
+            <label>Contact</label>
+            <input
+                type="text"
+                id="customerContact"
+                placeholder="Phone number"
+            >
+        </div>
+
+        <div class="cart">
+
+            <div class="cart-header">
+                <span>PRODUCT</span>
+                <span>QTY</span>
+                <span>AMOUNT</span>
+            </div>
+
+            <div id="cartItems">
+                <div class="empty-cart">
+                    No products selected.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="total-box">
+            <span>Total</span>
+            <span class="total-amount" id="cartTotal">KSh 0.00</span>
+        </div>
+
+        <button
+            class="place-order"
+            id="placeOrderBtn"
+            onclick="placeOrder()"
+            disabled
+        >
+            PLACE ORDER
+        </button>
+
+        <div id="message" class="message"></div>
+
+    </section>
+
+
+    <!-- ================= PRODUCTS ================= -->
+
+    <section class="products-panel">
+
+        <div class="products-top">
+
+            <div class="products-title">
+                Products
+            </div>
+
+            <div class="search-box">
+
+                <span class="search-icon">🔎</span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search product..."
+                    oninput="filterProducts()"
+                >
+
+            </div>
+
+            <div
+                class="categories"
+                id="categories"
+            ></div>
+
+        </div>
+
+
+        <div
+            class="product-grid"
+            id="productGrid"
+        ></div>
+
+    </section>
+
+</div>
+
+
+<!-- ================= BISCUIT LOADER ================= -->
+
+<div
+    class="loader-overlay"
+    id="loader"
+>
+
+    <div class="loader-box">
+
+        <div class="biscuit">🍪</div>
+
+        <div class="loading-text">
+            Loading Rubrek...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let products = [];
+    let cart = [];
+    let selectedCategory = "ALL";
+
+
+    // ================= LOADER =================
+
+    function showLoader() {
+        document.getElementById("loader").style.display = "flex";
+    }
+
+    function hideLoader() {
+        document.getElementById("loader").style.display = "none";
+    }
+
+
+    // ================= LOAD PRODUCTS =================
+
+    async function loadProducts() {
+
+        showLoader();
+
+        try {
+
+            const response = await fetch("/api/customer/products");
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Could not load products.");
+            }
+
+            products = data.products || [];
+
+            buildCategories();
+
+            displayProducts();
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("productGrid").innerHTML = `
+                <div class="no-products">
+                    Could not load products.
+                </div>
+            `;
+
+        } finally {
+
+            hideLoader();
+
+        }
+    }
+
+
+    // ================= CATEGORIES =================
+
+    function buildCategories() {
+
+        const categories = [
+            ...new Set(
+                products
+                    .map(product => product.category_name)
+                    .filter(category => category)
+            )
+        ];
+
+        const container = document.getElementById("categories");
+
+        container.innerHTML = "";
+
+        const allButton = document.createElement("button");
+
+        allButton.className = "category-btn active";
+        allButton.textContent = "All";
+
+        allButton.onclick = () => {
+
+            selectedCategory = "ALL";
+
+            document
+                .querySelectorAll(".category-btn")
+                .forEach(button => button.classList.remove("active"));
+
+            allButton.classList.add("active");
+
+            filterProducts();
+        };
+
+        container.appendChild(allButton);
+
+
+        categories.forEach(category => {
+
+            const button = document.createElement("button");
+
+            button.className = "category-btn";
+            button.textContent = category;
+
+            button.onclick = () => {
+
+                selectedCategory = category;
+
+                document
+                    .querySelectorAll(".category-btn")
+                    .forEach(btn => btn.classList.remove("active"));
+
+                button.classList.add("active");
+
+                filterProducts();
+            };
+
+            container.appendChild(button);
+
+        });
+
+    }
+
+
+    // ================= FILTER =================
+
+    function filterProducts() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const filtered = products.filter(product => {
+
+            const matchesSearch =
+                product.product_name
+                    .toLowerCase()
+                    .includes(search)
+                ||
+                (product.category_name || "")
+                    .toLowerCase()
+                    .includes(search);
+
+
+            const matchesCategory =
+                selectedCategory === "ALL"
+                ||
+                product.category_name === selectedCategory;
+
+
+            return matchesSearch && matchesCategory;
+
+        });
+
+
+        displayProducts(filtered);
+
+    }
+
+
+    // ================= DISPLAY PRODUCTS =================
+
+    function displayProducts(list = products) {
+
+        const grid =
+            document.getElementById("productGrid");
+
+        grid.innerHTML = "";
+
+
+        if (list.length === 0) {
+
+            grid.innerHTML = `
+                <div class="no-products">
+                    No products found.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        list.forEach(product => {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "product-card";
+
+
+            const available =
+                product.available === true;
+
+
+            card.innerHTML = `
+
+                <div class="product-name">
+                    ${escapeHtml(product.product_name)}
+                </div>
+
+                <div class="product-category">
+                    ${escapeHtml(product.category_name || "Uncategorized")}
+                </div>
+
+                <div class="product-price">
+                    KSh ${Number(product.selling_price).toFixed(2)}
+                </div>
+
+                <div class="availability ${
+                    available ? "available" : "unavailable"
+                }">
+
+                    ${
+                        available
+                        ? "● Available"
+                        : "● Out of stock"
+                    }
+
+                </div>
+
+                <button
+                    class="add-btn"
+                    ${
+                        available
+                        ? ""
+                        : "disabled"
+                    }
+                    onclick="addToCart(${product.id})"
+                >
+                    ${available ? "ADD TO ORDER" : "UNAVAILABLE"}
+                </button>
+
+            `;
+
+
+            grid.appendChild(card);
+
+        });
+
+    }
+
+
+    // ================= ADD TO CART =================
+
+    function addToCart(productId) {
+
+        const product =
+            products.find(p => p.id === productId);
+
+        if (!product || !product.available) {
+            return;
+        }
+
+
+        const existing =
+            cart.find(item => item.id === productId);
+
+
+        if (existing) {
+
+            existing.quantity++;
+
+        } else {
+
+            cart.push({
+                id: product.id,
+                product_name: product.product_name,
+                selling_price: Number(product.selling_price),
+                quantity: 1
+            });
+
+        }
+
+
+        updateCart();
+
+    }
+
+
+    // ================= UPDATE CART =================
+
+    function updateCart() {
+
+        const container =
+            document.getElementById("cartItems");
+
+        const totalElement =
+            document.getElementById("cartTotal");
+
+        const orderButton =
+            document.getElementById("placeOrderBtn");
+
+
+        container.innerHTML = "";
+
+
+        if (cart.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-cart">
+                    No products selected.
+                </div>
+            `;
+
+            totalElement.textContent = "KSh 0.00";
+
+            orderButton.disabled = true;
+
+            return;
+        }
+
+
+        let total = 0;
+
+
+        cart.forEach((item, index) => {
+
+            const amount =
+                item.selling_price * item.quantity;
+
+            total += amount;
+
+
+            const row =
+                document.createElement("div");
+
+            row.className = "cart-item";
+
+            row.innerHTML = `
+
+                <div>
+                    <div class="cart-item-name">
+                        ${escapeHtml(item.product_name)}
+                    </div>
+
+                    <small>
+                        KSh ${item.selling_price.toFixed(2)}
+                    </small>
+                </div>
+
+                <div>
+                    ${item.quantity}
+                </div>
+
+                <div>
+                    ${amount.toFixed(2)}
+                    <br>
+                    <button
+                        class="remove-btn"
+                        onclick="removeFromCart(${index})"
+                    >
+                        Remove
+                    </button>
+                </div>
+
+            `;
+
+
+            container.appendChild(row);
+
+        });
+
+
+        totalElement.textContent =
+            `KSh ${total.toFixed(2)}`;
+
+        orderButton.disabled = false;
+
+    }
+
+
+    // ================= REMOVE =================
+
+    function removeFromCart(index) {
+
+        cart.splice(index, 1);
+
+        updateCart();
+
+    }
+
+
+    // ================= PLACE ORDER =================
+
+    async function placeOrder() {
+
+        const customerName =
+            document
+                .getElementById("customerName")
+                .value
+                .trim();
+
+        const customerContact =
+            document
+                .getElementById("customerContact")
+                .value
+                .trim();
+
+
+        if (!customerName || !customerContact) {
+
+            showMessage(
+                "Please enter your name and contact.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (cart.length === 0) {
+
+            showMessage(
+                "Please add at least one product.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const items =
+            cart.map(item => ({
+                product_id: item.id,
+                quantity: item.quantity
+            }));
+
+
+        showLoader();
+
+
+        try {
+
+            const response =
+                await fetch("/api/orders", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        customer_name: customerName,
+                        customer_contact: customerContact,
+                        items: items
+                    })
+
+                });
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error || "Could not place order."
+                );
+
+            }
+
+
+            showMessage(
+                `Order #${data.order_id} placed successfully. Status: ${data.status}.`,
+                "success"
+            );
+
+
+            cart = [];
+
+            updateCart();
+
+            document
+                .getElementById("customerName")
+                .value = "";
+
+            document
+                .getElementById("customerContact")
+                .value = "";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+        } finally {
+
+            hideLoader();
+
+        }
+
+    }
+
+
+    // ================= MESSAGE =================
+
+    function showMessage(text, type) {
+
+        const message =
+            document.getElementById("message");
+
+        message.textContent = text;
+
+        message.className =
+            `message ${type}`;
+
+        message.style.display = "block";
+
+
+        setTimeout(() => {
+
+            message.style.display = "none";
+
+        }, 5000);
+
+    }
+
+
+    // ================= SECURITY =================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    // ================= START =================
+
+    loadProducts();
+
+</script>
+
+</body>
+</html>

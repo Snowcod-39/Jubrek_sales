@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Management - RUBREK ENTERPRISES</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+
+        /* =========================
+           LOADING OVERLAY
+        ========================= */
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .biscuit {
+            font-size: 42px;
+            animation: biscuitSpin 1s infinite ease-in-out;
+        }
+
+        .loadingText {
+            margin-top: 8px;
+            color: #1769d1;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @keyframes biscuitSpin {
+
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.12);
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e1e7ef;
+
+            padding: 15px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+
+            background: #1769d1;
+            color: white;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .brand-name {
+            margin: 0;
+            color: #123b70;
+            font-size: 18px;
+        }
+
+        .brand-subtitle {
+            margin: 3px 0 0;
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome {
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .logout {
+            text-decoration: none;
+
+            color: #b00020;
+            background: #fff5f5;
+
+            border: 1px solid #f0c1c8;
+
+            padding: 8px 13px;
+            border-radius: 6px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #b00020;
+            color: white;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            margin: 0 0 5px;
+
+            color: #123b70;
+            font-size: 25px;
+        }
+
+        .page-heading p {
+            margin: 0;
+
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+
+            margin-top: 12px;
+
+            text-decoration: none;
+
+            color: #1769d1;
+            background: #eaf2fc;
+
+            border: 1px solid #c8dcf4;
+
+            padding: 8px 13px;
+            border-radius: 6px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .dashboard-link:hover {
+            background: #1769d1;
+            color: white;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        #message {
+            display: none;
+
+            padding: 12px 15px;
+
+            border-radius: 7px;
+
+            margin-bottom: 18px;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #message.success {
+            display: block;
+
+            background: #e8f7ee;
+            color: #18733d;
+
+            border: 1px solid #b9e6c9;
+        }
+
+        #message.error {
+            display: block;
+
+            background: #fff0f0;
+            color: #b00020;
+
+            border: 1px solid #f0b8c0;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        section {
+            background: white;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            padding: 20px;
+            margin-bottom: 22px;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        section h3 {
+            margin: 0 0 6px;
+
+            color: #123b70;
+            font-size: 17px;
+        }
+
+        .section-description {
+            margin: 0 0 20px;
+
+            color: #718096;
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           PRODUCT FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 7px;
+
+            color: #374151;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+
+            padding: 11px 12px;
+
+            border: 1px solid #cfd8e3;
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1769d1;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(23, 105, 209, 0.1);
+        }
+
+
+        /* =========================
+           ADD BUTTON
+        ========================= */
+
+        .add-button {
+            margin-top: 20px;
+
+            background: #1769d1;
+            color: white;
+
+            border: none;
+            border-radius: 7px;
+
+            padding: 11px 18px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .add-button:hover {
+            background: #1257ae;
+        }
+
+
+        /* =========================
+           PRODUCT GRID
+        ========================= */
+
+        #productList {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 16px;
+        }
+
+        .product-card {
+            border: 1px solid #e2e8f0;
+
+            border-radius: 9px;
+
+            padding: 17px;
+
+            background: #ffffff;
+
+            transition: 0.2s;
+        }
+
+        .product-card:hover {
+            border-color: #b8d0ed;
+
+            box-shadow:
+                0 4px 12px
+                rgba(0, 0, 0, 0.06);
+        }
+
+        .product-top {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            margin: 0;
+
+            color: #123b70;
+
+            font-size: 16px;
+        }
+
+        .product-category {
+            margin: 4px 0 0;
+
+            color: #718096;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           STATUS BADGES
+        ========================= */
+
+        .status {
+            padding: 5px 8px;
+
+            border-radius: 15px;
+
+            font-size: 10px;
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #e7f7ed;
+            color: #168344;
+        }
+
+        .status-inactive {
+            background: #fff0f0;
+            color: #b00020;
+        }
+
+
+        /* =========================
+           PRODUCT DETAILS
+        ========================= */
+
+        .product-details {
+            border-top: 1px solid #edf0f4;
+
+            padding-top: 12px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+        }
+
+        .detail-label {
+            display: block;
+
+            color: #718096;
+
+            font-size: 10px;
+
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            color: #1f2937;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           PRODUCT ACTION
+        ========================= */
+
+        .product-action {
+            margin-top: 15px;
+        }
+
+        .deactivate-button,
+        .reactivate-button {
+
+            width: 100%;
+
+            padding: 9px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .deactivate-button {
+            background: #fff0f0;
+
+            color: #b00020;
+
+            border: 1px solid #f0c1c8;
+        }
+
+        .deactivate-button:hover {
+            background: #b00020;
+            color: white;
+        }
+
+        .reactivate-button {
+            background: #eaf2fc;
+
+            color: #1769d1;
+
+            border: 1px solid #c8dcf4;
+        }
+
+        .reactivate-button:hover {
+            background: #1769d1;
+            color: white;
+        }
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            grid-column: 1 / -1;
+
+            text-align: center;
+
+            color: #718096;
+
+            padding: 30px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            #productList {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 14px 18px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #productList {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+
+                justify-content: space-between;
+            }
+
+            main {
+                padding: 15px;
+            }
+
+            section {
+                padding: 16px;
+            }
+
+            .page-heading h2 {
+                font-size: 21px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     LOADING OVERLAY
+========================= -->
+
+<div id="loadingOverlay">
+
+    <div class="biscuit">
+        🍪
+    </div>
+
+    <div class="loadingText">
+        Loading...
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            R
+        </div>
+
+        <div>
+
+            <h1 class="brand-name">
+                RUBREK ENTERPRISES
+            </h1>
+
+            <p class="brand-subtitle">
+                Sales Management System
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span class="welcome">
+            Welcome, {{ session["full_name"] }}
+        </span>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading">
+
+        <h2>
+            Product Management
+        </h2>
+
+        <p>
+            Add products, manage stock limits and control product availability.
+        </p>
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="dashboard-link"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+
+
+    <!-- MESSAGE -->
+
+    <p id="message"></p>
+
+
+
+    <!-- =========================
+         ADD PRODUCT
+    ========================= -->
+
+    <section>
+
+        <h3>
+            Add Product
+        </h3>
+
+        <p class="section-description">
+            Create a product and set its pricing and stock levels.
+        </p>
+
+
+        <form id="productForm">
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="productName">
+                        Product Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="buyingPrice">
+                        Buying Price
+                    </label>
+
+                    <input
+                        type="number"
+                        id="buyingPrice"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="sellingPrice">
+                        Selling Price
+                    </label>
+
+                    <input
+                        type="number"
+                        id="sellingPrice"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="quantity">
+                        Initial Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        min="0"
+                        step="0.001"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="minimumStock">
+                        Minimum Stock
+                    </label>
+
+                    <input
+                        type="number"
+                        id="minimumStock"
+                        min="0"
+                        step="0.001"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="add-button"
+            >
+                + Add Product
+            </button>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =========================
+         PRODUCT LIST
+    ========================= -->
+
+    <section>
+
+        <h3>
+            Products
+        </h3>
+
+        <p class="section-description">
+            View product details and manage their active status.
+        </p>
+
+
+        <div id="productList">
+
+            <div class="empty">
+                Loading products...
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+function showLoading(text = "Processing...") {
+
+    document
+        .querySelector(".loadingText")
+        .textContent = text;
+
+    document
+        .getElementById("loadingOverlay")
+        .style.display = "flex";
+
+}
+
+
+function hideLoading() {
+
+    document
+        .getElementById("loadingOverlay")
+        .style.display = "none";
+
+}
+
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(message, type) {
+
+    const element =
+        document.getElementById("message");
+
+    element.textContent = message;
+
+    element.className = type;
+
+}
+
+
+
+/* =========================================================
+   LOAD CATEGORIES
+========================================================= */
+
+async function loadCategories() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/categories"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            showMessage(
+                data.error ||
+                "Could not load categories.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const categorySelect =
+            document.getElementById(
+                "category"
+            );
+
+
+        categorySelect.innerHTML =
+            '<option value="">Select Category</option>';
+
+
+        data.categories.forEach(
+            category => {
+
+                if (
+                    category.status ===
+                    "ACTIVE"
+                ) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        category.id;
+
+                    option.textContent =
+                        category.category_name;
+
+
+                    categorySelect
+                        .appendChild(
+                            option
+                        );
+
+                }
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+            "Could not connect to the server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   LOAD PRODUCTS
+========================================================= */
+
+async function loadProducts() {
+
+    const productList =
+        document.getElementById(
+            "productList"
+        );
+
+
+    productList.innerHTML = `
+
+        <div class="empty">
+            Loading products...
+        </div>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/products"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            showMessage(
+                data.error ||
+                "Could not load products.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        productList.innerHTML = "";
+
+
+        if (
+            !data.products ||
+            data.products.length === 0
+        ) {
+
+            productList.innerHTML = `
+
+                <div class="empty">
+                    No products found.
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        data.products.forEach(
+            product => {
+
+                const productDiv =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                productDiv.className =
+                    "product-card";
+
+
+                let actionButton = "";
+
+
+                if (
+                    product.status ===
+                    "ACTIVE"
+                ) {
+
+                    actionButton = `
+
+                        <button
+                            class="deactivate-button"
+                            onclick="
+                                changeProductStatus(
+                                    ${product.id},
+                                    'deactivate'
+                                )
+                            "
+                        >
+                            Deactivate Product
+                        </button>
+
+                    `;
+
+                } else {
+
+                    actionButton = `
+
+                        <button
+                            class="reactivate-button"
+                            onclick="
+                                changeProductStatus(
+                                    ${product.id},
+                                    'reactivate'
+                                )
+                            "
+                        >
+                            Reactivate Product
+                        </button>
+
+                    `;
+
+                }
+
+
+                const statusClass =
+                    product.status ===
+                    "ACTIVE"
+                        ? "status-active"
+                        : "status-inactive";
+
+
+                productDiv.innerHTML = `
+
+                    <div class="product-top">
+
+                        <div>
+
+                            <h4 class="product-name">
+                                ${product.product_name}
+                            </h4>
+
+                            <p class="product-category">
+                                ${
+                                    product.category_name ||
+                                    "No category"
+                                }
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="status ${statusClass}"
+                        >
+                            ${product.status}
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-details">
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Buying Price
+                            </span>
+
+                            <span class="detail-value">
+                                ${product.buying_price}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Selling Price
+                            </span>
+
+                            <span class="detail-value">
+                                ${product.selling_price}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Quantity
+                            </span>
+
+                            <span class="detail-value">
+                                ${product.quantity}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Minimum Stock
+                            </span>
+
+                            <span class="detail-value">
+                                ${product.minimum_stock}
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="product-action">
+
+                        ${actionButton}
+
+                    </div>
+
+                `;
+
+
+                productList.appendChild(
+                    productDiv
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        productList.innerHTML = `
+
+            <div class="empty">
+                Could not connect to the server.
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   CHANGE PRODUCT STATUS
+========================================================= */
+
+async function changeProductStatus(
+    productId,
+    action
+) {
+
+    try {
+
+        showLoading(
+            action === "deactivate"
+                ? "Deactivating product..."
+                : "Reactivating product..."
+        );
+
+
+        const response =
+            await fetch(
+                `/api/products/${productId}/${action}`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            showMessage(
+                data.error ||
+                "Could not change product status.",
+                "error"
+            );
+
+            hideLoading();
+
+            return;
+
+        }
+
+
+        showMessage(
+            data.message,
+            "success"
+        );
+
+
+        await loadProducts();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+            "Could not connect to the server.",
+            "error"
+        );
+
+    } finally {
+
+        hideLoading();
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ADD PRODUCT
+========================================================= */
+
+document
+    .getElementById("productForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const productName =
+                document
+                    .getElementById(
+                        "productName"
+                    )
+                    .value
+                    .trim();
+
+
+            const categoryId =
+                document
+                    .getElementById(
+                        "category"
+                    )
+                    .value;
+
+
+            const buyingPrice =
+                document
+                    .getElementById(
+                        "buyingPrice"
+                    )
+                    .value;
+
+
+            const sellingPrice =
+                document
+                    .getElementById(
+                        "sellingPrice"
+                    )
+                    .value;
+
+
+            const quantity =
+                document
+                    .getElementById(
+                        "quantity"
+                    )
+                    .value;
+
+
+            const minimumStock =
+                document
+                    .getElementById(
+                        "minimumStock"
+                    )
+                    .value;
+
+
+            try {
+
+                showLoading(
+                    "Adding product..."
+                );
+
+
+                const response =
+                    await fetch(
+                        "/api/products",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    product_name:
+                                        productName,
+
+                                    category_id:
+                                        categoryId,
+
+                                    buying_price:
+                                        buyingPrice,
+
+                                    selling_price:
+                                        sellingPrice,
+
+                                    quantity:
+                                        quantity,
+
+                                    minimum_stock:
+                                        minimumStock
+
+                                })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        "Could not create product.",
+                        "error"
+                    );
+
+                    hideLoading();
+
+                    return;
+
+                }
+
+
+                showMessage(
+                    data.message,
+                    "success"
+                );
+
+
+                document
+                    .getElementById(
+                        "productForm"
+                    )
+                    .reset();
+
+
+                document
+                    .getElementById(
+                        "quantity"
+                    )
+                    .value = 0;
+
+
+                document
+                    .getElementById(
+                        "minimumStock"
+                    )
+                    .value = 0;
+
+
+                await loadProducts();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                showMessage(
+                    "Could not connect to the server.",
+                    "error"
+                );
+
+            } finally {
+
+                hideLoading();
+
+            }
+
+        }
+    );
+
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadCategories();
+loadProducts();
+
+</script>
+
+
+</body>
+
+</html>

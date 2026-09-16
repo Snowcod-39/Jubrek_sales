@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Orders - RUBREK ENTERPRISES</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+    /* =========================================================
+       RUBREK ENTERPRISES — BLUE & WHITE THEME
+    ========================================================= */
+
+    :root {
+        --primary-blue: #0b5ed7;
+        --dark-blue: #084298;
+        --light-blue: #eaf3ff;
+        --lighter-blue: #f5f9ff;
+
+        --white: #ffffff;
+        --text-dark: #172033;
+        --text-muted: #667085;
+
+        --border: #d9e2f0;
+        --success: #198754;
+        --danger: #dc3545;
+        --warning: #f59f00;
+
+        --shadow: 0 4px 14px rgba(11, 94, 215, 0.08);
+    }
+
+
+    /* =========================================================
+       PAGE HEADER
+    ========================================================= */
+
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 20px;
+        gap: 20px;
+    }
+
+    .orders-header h2 {
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .orders-header button,
+    .dashboard-btn {
+        white-space: nowrap;
+
+        background: var(--primary-blue);
+        color: white;
+
+        border: none;
+        padding: 10px 16px;
+
+        border-radius: 6px;
+
+        font-weight: 600;
+        font-size: 14px;
+
+        cursor: pointer;
+
+        text-decoration: none;
+
+        transition: 0.2s ease;
+    }
+
+    .orders-header button:hover,
+    .dashboard-btn:hover {
+        background: var(--dark-blue);
+    }
+
+    .dashboard-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+
+    /* =========================================================
+       SECTIONS
+    ========================================================= */
+
+    .orders-section {
+        margin-bottom: 35px;
+    }
+
+    .orders-section > h2 {
+        color: var(--dark-blue);
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .orders-list {
+        display: grid;
+        gap: 15px;
+    }
+
+
+    /* =========================================================
+       ORDER CARD
+    ========================================================= */
+
+    .order-card {
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--primary-blue);
+
+        border-radius: 8px;
+
+        padding: 20px;
+
+        box-shadow: var(--shadow);
+
+        transition: 0.2s ease;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 6px 18px rgba(11, 94, 215, 0.13);
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+       ORDER CARD HEADER
+    ========================================================= */
+
+    .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 20px;
+
+        margin-bottom: 15px;
+    }
+
+    .order-card-header h3 {
+        margin: 0;
+
+        color: var(--text-dark);
+        font-size: 18px;
+    }
+
+
+    /* =========================================================
+       STATUS BADGES
+    ========================================================= */
+
+    .order-status {
+        display: inline-block;
+
+        padding: 5px 10px;
+
+        border-radius: 5px;
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background: #dbeafe;
+        color: #084298;
+    }
+
+    .status-paid {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-released {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-cancelled,
+    .status-rejected {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+
+    /* =========================================================
+       ORDER INFORMATION
+    ========================================================= */
+
+    .order-info {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 8px 25px;
+
+        margin-bottom: 15px;
+    }
+
+    .order-info p {
+        margin: 5px 0;
+        color: var(--text-muted);
+    }
+
+    .order-info strong {
+        color: var(--text-dark);
+    }
+
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+
+    .order-actions {
+        display: flex;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+    .order-actions button {
+        cursor: pointer;
+
+        border: none;
+
+        border-radius: 6px;
+
+        padding: 9px 14px;
+
+        font-weight: 600;
+
+        transition: 0.2s ease;
+    }
+
+    .order-actions button {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .order-actions button:hover {
+        background: var(--dark-blue);
+    }
+
+
+    /* =========================================================
+       ORDER DETAILS
+    ========================================================= */
+
+    .order-details {
+        margin-top: 20px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid var(--border);
+    }
+
+    .order-details h4 {
+        margin-top: 0;
+        color: var(--dark-blue);
+    }
+
+
+    /* =========================================================
+       ORDER ITEMS
+    ========================================================= */
+
+    .order-item {
+        display: flex;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 10px 0;
+
+        border-bottom: 1px solid #edf1f7;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+
+    /* =========================================================
+       TOTAL
+    ========================================================= */
+
+    .detail-total {
+        display: flex;
+
+        justify-content: space-between;
+
+        margin-top: 15px;
+
+        padding-top: 15px;
+
+        border-top: 2px solid var(--border);
+
+        font-size: 18px;
+
+        font-weight: 700;
+
+        color: var(--dark-blue);
+    }
+
+
+    /* =========================================================
+       ACTION AREA
+    ========================================================= */
+
+    .action-area {
+        margin-top: 15px;
+
+        padding: 15px;
+
+        background: var(--lighter-blue);
+
+        border: 1px solid var(--border);
+
+        border-radius: 8px;
+    }
+
+    .action-area h4 {
+        margin-top: 0;
+        margin-bottom: 12px;
+
+        color: var(--dark-blue);
+    }
+
+    .action-area select {
+        padding: 10px;
+
+        border: 1px solid #c8d5e6;
+
+        border-radius: 5px;
+
+        margin-right: 10px;
+
+        background: white;
+
+        color: var(--text-dark);
+    }
+
+
+    /* =========================================================
+       RECEIPT
+    ========================================================= */
+
+    .receipt-box {
+        margin-top: 15px;
+
+        padding: 15px;
+
+        background: var(--lighter-blue);
+
+        border: 1px solid var(--border);
+
+        border-radius: 8px;
+    }
+
+    .receipt-box h4 {
+        margin-bottom: 10px;
+        color: var(--dark-blue);
+    }
+
+    .receipt-box p {
+        margin: 6px 0;
+    }
+
+
+    /* =========================================================
+       SUCCESS / RELEASE MESSAGES
+    ========================================================= */
+
+    .paid-message {
+        margin-top: 15px;
+
+        padding: 12px;
+
+        background: #d1e7dd;
+
+        color: #0f5132;
+
+        border-left: 4px solid var(--success);
+
+        border-radius: 6px;
+    }
+
+    .released-message {
+        margin-top: 15px;
+
+        padding: 12px;
+
+        background: #cfe2ff;
+
+        color: #084298;
+
+        border-left: 4px solid var(--primary-blue);
+
+        border-radius: 6px;
+    }
+
+
+    /* =========================================================
+       GENERAL MESSAGE
+    ========================================================= */
+
+    .message {
+        margin: 15px 0;
+
+        padding: 10px;
+
+        border-radius: 5px;
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+    ========================================================= */
+
+    .no-orders {
+        background: white;
+
+        border: 1px solid var(--border);
+
+        border-radius: 8px;
+
+        padding: 20px;
+
+        color: var(--text-muted);
+    }
+
+
+    /* =========================================================
+       LOADING
+    ========================================================= */
+
+    .loading {
+        padding: 10px;
+
+        color: var(--text-muted);
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 700px) {
+
+        .orders-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .dashboard-btn,
+        .orders-header button {
+            flex: 1;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .order-info {
+            grid-template-columns: 1fr;
+        }
+
+        .order-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .order-item {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .action-area select {
+            margin-bottom: 10px;
+            margin-right: 0;
+        }
+    }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>RUBREK ENTERPRISES</h1>
+
+    <div>
+
+        <span>
+            Welcome, {{ session["full_name"] }}
+        </span>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="orders-header">
+
+        <h2>Customer Orders</h2>
+
+
+        <div class="header-actions">
+
+            <!-- BACK TO DASHBOARD -->
+
+            <a
+    href="/employee/dashboard"
+    class="dashboard-btn"
+>
+    ← Dashboard
+</a>
+
+            <!-- REFRESH -->
+
+            <button
+                type="button"
+                onclick="loadOrders()"
+            >
+                Refresh Orders
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <p id="pageMessage"></p>
+
+
+    <!-- =====================================================
+         NEW CUSTOMER ORDERS
+    ====================================================== -->
+
+    <section class="orders-section">
+
+        <h2>New Orders</h2>
+
+        <div
+            id="pendingOrders"
+            class="orders-list"
+        >
+
+            <p class="loading">
+                Loading orders...
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MY / ACTIVE ORDERS
+    ====================================================== -->
+
+    <section class="orders-section">
+
+        <h2>My Orders</h2>
+
+        <div
+            id="myOrders"
+            class="orders-list"
+        >
+
+            <p class="loading">
+                Loading orders...
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+
+/* =========================================================
+   LOAD ALL ORDERS
+========================================================= */
+
+async function loadOrders() {
+
+    await Promise.all([
+        loadPendingOrders(),
+        loadMyOrders()
+    ]);
+
+}
+
+
+/* =========================================================
+   LOAD PENDING ORDERS
+========================================================= */
+
+async function loadPendingOrders() {
+
+    const container =
+        document.getElementById("pendingOrders");
+
+    try {
+
+        const response =
+            await fetch("/api/orders/pending");
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <div class="no-orders">
+                    <p>
+                        ${data.error || "Could not load pending orders."}
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        const orders =
+            data.orders || [];
+
+
+        if (orders.length === 0) {
+
+            container.innerHTML = `
+                <div class="no-orders">
+                    <p>
+                        No new customer orders.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            orders
+                .map(order => createPendingOrderCard(order))
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Pending orders error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="no-orders">
+                <p>
+                    Could not load pending orders.
+                </p>
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   CREATE PENDING ORDER CARD
+========================================================= */
+
+function createPendingOrderCard(order) {
+
+    return `
+
+        <div class="order-card"
+             id="pending-order-${order.id}">
+
+            <div class="order-card-header">
+
+                <h3>
+                    Order #${order.id}
+                </h3>
+
+                <span class="order-status status-pending">
+                    PENDING
+                </span>
+
+            </div>
+
+
+            <div class="order-info">
+
+                <p>
+                    <strong>Customer:</strong>
+                    ${order.customer_name}
+                </p>
+
+                <p>
+                    <strong>Contact:</strong>
+                    ${order.customer_contact || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Total:</strong>
+                    KSh ${formatMoney(order.total_amount)}
+                </p>
+
+                <p>
+                    <strong>Placed:</strong>
+                    ${formatDate(order.created_at)}
+                </p>
+
+            </div>
+
+
+            <div class="order-actions">
+
+                <button
+                    type="button"
+                    onclick="viewOrder(${order.id}, 'pending')">
+
+                    View Order
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="acceptOrder(${order.id})">
+
+                    Accept Order
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="rejectOrder(${order.id})">
+
+                    Reject Order
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="details-pending-${order.id}"
+                class="order-details"
+                style="display:none;">
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   LOAD MY ORDERS
+========================================================= */
+
+async function loadMyOrders() {
+
+    const container =
+        document.getElementById("myOrders");
+
+    try {
+
+        const response =
+            await fetch("/api/orders/my-orders");
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <div class="no-orders">
+                    <p>
+                        ${data.error || "Could not load your orders."}
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        const orders =
+            data.orders || [];
+
+
+        if (orders.length === 0) {
+
+            container.innerHTML = `
+                <div class="no-orders">
+                    <p>
+                        You have not processed any orders yet.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            orders
+                .map(order => createMyOrderCard(order))
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "My orders error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="no-orders">
+                <p>
+                    Could not load your orders.
+                </p>
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   CREATE MY ORDER CARD
+========================================================= */
+
+function createMyOrderCard(order) {
+
+    const status =
+        order.status || "UNKNOWN";
+
+    const statusClass =
+        "status-" + status.toLowerCase();
+
+
+    return `
+
+        <div class="order-card"
+             id="my-order-${order.id}">
+
+            <div class="order-card-header">
+
+                <h3>
+                    Order #${order.id}
+                </h3>
+
+                <span class="order-status ${statusClass}">
+                    ${status}
+                </span>
+
+            </div>
+
+
+            <div class="order-info">
+
+                <p>
+                    <strong>Customer:</strong>
+                    ${order.customer_name}
+                </p>
+
+                <p>
+                    <strong>Contact:</strong>
+                    ${order.customer_contact || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Total:</strong>
+                    KSh ${formatMoney(order.total_amount)}
+                </p>
+
+                <p>
+                    <strong>Last Updated:</strong>
+                    ${formatDate(order.updated_at)}
+                </p>
+
+            </div>
+
+
+            <div class="order-actions">
+
+                <button
+                    type="button"
+                    onclick="viewOrder(${order.id}, 'my')">
+
+                    View Order
+
+                </button>
+
+
+                ${
+                    status === "PROCESSING"
+
+                    ?
+
+                    `
+                    <button
+                        type="button"
+                        onclick="showPaymentArea(${order.id})">
+
+                        Receive Payment
+
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="cancelOrder(${order.id})">
+
+                        Cancel Order
+
+                    </button>
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
+                    status === "PAID"
+
+                    ?
+
+                    `
+                    <button
+                        type="button"
+                        onclick="releaseSale(${order.id})">
+
+                        Release Sale
+
+                    </button>
+                    `
+
+                    :
+
+                    ""
+                }
+
+            </div>
+
+
+            <div
+                id="payment-area-${order.id}"
+                class="action-area"
+                style="display:none;">
+
+                <h4>
+                    Receive Payment
+                </h4>
+
+                <p>
+                    Select the payment method used by the customer.
+                </p>
+
+                <select id="payment-${order.id}">
+
+                    <option value="CASH">
+                        CASH
+                    </option>
+
+                    <option value="MPESA">
+                        MPESA
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="button"
+                    onclick="payOrder(${order.id})">
+
+                    Confirm Payment
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="details-my-${order.id}"
+                class="order-details"
+                style="display:none;">
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   VIEW FULL ORDER
+========================================================= */
+
+async function viewOrder(orderId, source) {
+
+    const detailsId =
+        source === "pending"
+        ? `details-pending-${orderId}`
+        : `details-my-${orderId}`;
+
+    const details =
+        document.getElementById(detailsId);
+
+    if (!details) {
+        return;
+    }
+
+
+    if (details.style.display === "block") {
+
+        details.style.display = "none";
+
+        return;
+    }
+
+
+    details.style.display = "block";
+
+    details.innerHTML =
+        "<p>Loading order details...</p>";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/orders/${orderId}`
+            );
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            details.innerHTML = `
+                <p>
+                    ${data.error || "Could not load order."}
+                </p>
+            `;
+
+            return;
+        }
+
+
+        const order =
+            data.order;
+
+
+        details.innerHTML =
+            buildOrderDetails(order);
+
+
+    } catch (error) {
+
+        console.error(
+            "View order error:",
+            error
+        );
+
+        details.innerHTML =
+            "<p>Could not load order details.</p>";
+    }
+}
+
+
+/* =========================================================
+   BUILD ORDER DETAILS
+========================================================= */
+
+function buildOrderDetails(order) {
+
+    const items =
+        order.items || [];
+
+
+    let html = `
+
+        <h4>
+            Order Items
+        </h4>
+
+    `;
+
+
+    if (items.length === 0) {
+
+        html += `
+            <p>
+                No items found.
+            </p>
+        `;
+
+    } else {
+
+        html += items.map(item => {
+
+            return `
+
+                <div class="order-item">
+
+                    <span>
+
+                        <strong>
+                            ${item.product_name}
+                        </strong>
+
+                        × ${item.quantity}
+
+                        <br>
+
+                        <small>
+                            KSh ${formatMoney(item.unit_price)}
+                            each
+                        </small>
+
+                    </span>
+
+
+                    <strong>
+                        KSh ${formatMoney(item.subtotal)}
+                    </strong>
+
+                </div>
+
+            `;
+
+        }).join("");
+    }
+
+
+    html += `
+
+        <div class="detail-total">
+
+            <strong>
+                Total
+            </strong>
+
+            <strong>
+                KSh ${formatMoney(order.total_amount)}
+            </strong>
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       PAYMENT / RECEIPT INFORMATION
+    ===================================================== */
+
+    if (
+        order.receipt_number !== undefined &&
+        order.receipt_number !== null
+    ) {
+
+        html += `
+
+            <div class="receipt-box">
+
+                <h4>
+                    Payment / Receipt
+                </h4>
+
+                <p>
+                    <strong>Receipt Number:</strong>
+                    ${order.receipt_number}
+                </p>
+
+                ${
+                    order.payment_method
+
+                    ?
+
+                    `
+                    <p>
+                        <strong>Payment Method:</strong>
+                        ${order.payment_method}
+                    </p>
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
+                    order.payment_status
+
+                    ?
+
+                    `
+                    <p>
+                        <strong>Payment Status:</strong>
+                        ${order.payment_status}
+                    </p>
+                    `
+
+                    :
+
+                    ""
+                }
+
+            </div>
+
+        `;
+    }
+
+
+    /* =====================================================
+       PROCESSING
+    ===================================================== */
+
+    if (order.status === "PROCESSING") {
+
+        html += `
+
+            <div class="action-area">
+
+                <h4>
+                    Receive Payment
+                </h4>
+
+                <p>
+                    Select the customer's payment method.
+                </p>
+
+                <select
+                    id="details-payment-${order.id}">
+
+                    <option value="CASH">
+                        CASH
+                    </option>
+
+                    <option value="MPESA">
+                        MPESA
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="button"
+                    onclick="payOrderFromDetails(${order.id})">
+
+                    Confirm Payment
+
+                </button>
+
+            </div>
+
+        `;
+    }
+
+
+    /* =====================================================
+       PAID
+    ===================================================== */
+
+    if (order.status === "PAID") {
+
+        html += `
+
+            <div class="paid-message">
+
+                <strong>
+                    Payment received.
+                </strong>
+
+                <p>
+                    The sale is paid and ready to be released.
+                </p>
+
+            </div>
+
+
+            <div class="action-area">
+
+                <h4>
+                    Release Sale
+                </h4>
+
+                <p>
+                    Confirm that the goods are being handed over
+                    to the customer.
+                </p>
+
+                <button
+                    type="button"
+                    onclick="releaseSale(${order.id})">
+
+                    Release Sale
+
+                </button>
+
+            </div>
+
+        `;
+    }
+
+
+    /* =====================================================
+       RELEASED
+    ===================================================== */
+
+    if (order.status === "RELEASED") {
+
+        html += `
+
+            <div class="released-message">
+
+                <strong>
+                    Sale Released
+                </strong>
+
+                <p>
+                    Payment was received and the goods have
+                    been released to the customer.
+                </p>
+
+            </div>
+
+        `;
+    }
+
+
+    return html;
+}
+
+
+/* =========================================================
+   ACCEPT ORDER
+========================================================= */
+
+async function acceptOrder(orderId) {
+
+    const confirmed =
+        confirm(
+            `Accept Order #${orderId} and move it to PROCESSING?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/orders/${orderId}/process`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.error ||
+                "Could not accept order."
+            );
+
+            return;
+        }
+
+
+        alert(
+            `Order #${orderId} has been accepted.`
+        );
+
+
+        await loadOrders();
+
+
+    } catch (error) {
+
+        console.error(
+            "Accept order error:",
+            error
+        );
+
+        alert(
+            "Could not accept order."
+        );
+    }
+}
+
+
+/* =========================================================
+   SHOW PAYMENT AREA
+========================================================= */
+
+function showPaymentArea(orderId) {
+
+    const area =
+        document.getElementById(
+            `payment-area-${orderId}`
+        );
+
+    if (!area) {
+        return;
+    }
+
+
+    if (area.style.display === "block") {
+
+        area.style.display = "none";
+
+    } else {
+
+        area.style.display = "block";
+
+    }
+}
+
+
+/* =========================================================
+   RECEIVE PAYMENT
+========================================================= */
+
+async function payOrder(orderId) {
+
+    const paymentSelect =
+        document.getElementById(
+            `payment-${orderId}`
+        );
+
+    if (!paymentSelect) {
+        return;
+    }
+
+
+    const paymentMethod =
+        paymentSelect.value;
+
+
+    const confirmed =
+        confirm(
+            `Confirm that Order #${orderId} has been paid by ${paymentMethod}?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await submitPayment(
+        orderId,
+        paymentMethod
+    );
+}
+
+
+/* =========================================================
+   RECEIVE PAYMENT FROM DETAILS
+========================================================= */
+
+async function payOrderFromDetails(orderId) {
+
+    const paymentSelect =
+        document.getElementById(
+            `details-payment-${orderId}`
+        );
+
+    if (!paymentSelect) {
+        return;
+    }
+
+
+    const paymentMethod =
+        paymentSelect.value;
+
+
+    const confirmed =
+        confirm(
+            `Confirm that Order #${orderId} has been paid by ${paymentMethod}?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await submitPayment(
+        orderId,
+        paymentMethod
+    );
+}
+
+
+/* =========================================================
+   SUBMIT PAYMENT
+========================================================= */
+
+async function submitPayment(
+    orderId,
+    paymentMethod
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/orders/${orderId}/pay`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        payment_method:
+                            paymentMethod
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.error ||
+                "Could not receive payment."
+            );
+
+            return;
+        }
+
+
+        alert(
+            `Payment received successfully.\n\n` +
+            `Order #${orderId}\n` +
+            `Receipt Number: ${data.receipt_number}\n` +
+            `Payment Method: ${data.payment_method}\n` +
+            `Amount: KSh ${formatMoney(data.total_amount)}\n\n` +
+            `The sale is now PAID and ready for release.`
+        );
+
+
+        await loadOrders();
+
+
+    } catch (error) {
+
+        console.error(
+            "Payment error:",
+            error
+        );
+
+        alert(
+            "Could not receive payment."
+        );
+    }
+}
+
+
+/* =========================================================
+   RELEASE SALE
+========================================================= */
+
+async function releaseSale(orderId) {
+
+    const confirmed =
+        confirm(
+            `Release the goods for Order #${orderId}?\n\n` +
+            `This will deduct the sold quantities from stock.`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/orders/${orderId}/release`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.error ||
+                "Could not release sale."
+            );
+
+            return;
+        }
+
+
+        alert(
+            `Sale released successfully.\n\n` +
+            `Order #${orderId}\n` +
+            `Receipt Number: ${data.receipt_number}\n` +
+            `Stock has been updated.`
+        );
+
+
+        await loadOrders();
+
+
+    } catch (error) {
+
+        console.error(
+            "Release sale error:",
+            error
+        );
+
+        alert(
+            "Could not release sale."
+        );
+    }
+}
+
+
+/* =========================================================
+   CANCEL ORDER
+========================================================= */
+
+async function cancelOrder(orderId) {
+
+    const confirmed =
+        confirm(
+            `Are you sure you want to cancel Order #${orderId}?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await changeOrderStatus(
+        orderId,
+        "CANCELLED"
+    );
+}
+
+
+/* =========================================================
+   REJECT ORDER
+========================================================= */
+
+async function rejectOrder(orderId) {
+
+    const confirmed =
+        confirm(
+            `Are you sure you want to reject Order #${orderId}?`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await changeOrderStatus(
+        orderId,
+        "REJECTED"
+    );
+}
+
+
+/* =========================================================
+   CHANGE ORDER STATUS
+========================================================= */
+
+async function changeOrderStatus(
+    orderId,
+    status
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/orders/${orderId}/status`,
+                {
+                    method: "PATCH",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        status: status
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.error ||
+                "Could not update order."
+            );
+
+            return;
+        }
+
+
+        alert(
+            `Order #${orderId} is now ${data.status}.`
+        );
+
+
+        await loadOrders();
+
+
+    } catch (error) {
+
+        console.error(
+            "Change order status error:",
+            error
+        );
+
+        alert(
+            "Could not update order."
+        );
+    }
+}
+
+
+/* =========================================================
+   FORMAT MONEY
+========================================================= */
+
+function formatMoney(value) {
+
+    const number =
+        Number(value || 0);
+
+    return number.toLocaleString(
+        "en-KE",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+}
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+        return "N/A";
+    }
+
+
+    const date =
+        new Date(dateString);
+
+
+    if (isNaN(date.getTime())) {
+        return dateString;
+    }
+
+
+    return date.toLocaleString();
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadOrders();
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+setInterval(
+    loadOrders,
+    10000
+);
+
+</script>
+
+
+</body>
+</html>
