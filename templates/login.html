@@ -1,31 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8"> 
-        <meta name="viewport" content="width=device-width", initial-scale="1.0">
-        <title> LOGIN - SALES MANAGEMENT SYSTEM</title>
-    </head>
 
-    <body>
-        <h1>SALES MANAGEMENT SYSTEM</h1>
-        <h2> Login</h2>
+<head>
 
-        <form method="post" action="/login">
-            <label for="username">Username:</label>
-            <br>
-            <input type="text" id="username" name="username" required>
-            <br><br>
-            <label for="password">Password:</label>
-            <br>
-            <input type="password" id="password" name="password" required>
-            <br><br>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <button type="submit">Login</button>
-        </form>
+    <title>Login - JUBREK ENTERPRISES</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #202421;
+            color: #393d3a;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+        }
+
+
+        /* ================= LOGIN WRAPPER ================= */
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 430px;
+        }
+
+
+        /* ================= BRAND ================= */
+
+        .brand {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            color: white;
+            font-size: 25px;
+            letter-spacing: 1px;
+        }
+
+        .brand p {
+            margin: 7px 0 0;
+            color: #aeb5b0;
+            font-size: 13px;
+        }
+
+
+        /* ================= LOGIN CARD ================= */
+
+        .login-card {
+            background: #737a75;
+            border: 1px solid #858c87;
+            border-radius: 13px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+        }
+
+
+        /* ================= TITLE ================= */
+
+        .login-card h2 {
+            margin: 0 0 6px;
+            color: #202421;
+            font-size: 23px;
+        }
+
+        .login-subtitle {
+            margin: 0 0 25px;
+            color: #3f4642;
+            font-size: 13px;
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #aeb5b0;
+            border-radius: 7px;
+            background: #eeeeeb;
+            color: #202421;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        input:focus {
+            border-color: #81d8d0;
+            box-shadow: 0 0 0 2px rgba(129, 216, 208, 0.25);
+            background: white;
+        }
+
+        input::placeholder {
+            color: #858b87;
+        }
+
+
+        /* ================= LOGIN BUTTON ================= */
+
+        button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px 16px;
+
+            border: 1px solid #1769aa;
+            border-radius: 7px;
+
+            background: #1769aa;
+            color: white;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background: #81d8d0;
+            border-color: #81d8d0;
+            color: #202421;
+        }
+
+
+        /* ================= ERROR ================= */
+
+        .error {
+            margin-bottom: 18px;
+            padding: 11px 13px;
+
+            background: #3a2424;
+            border: 1px solid #704040;
+            border-radius: 7px;
+
+            color: #ffb6b6;
+            font-size: 13px;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        .login-footer {
+            text-align: center;
+            margin-top: 18px;
+            color: #9fa7a2;
+            font-size: 11px;
+        }
+
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .brand h1 {
+                font-size: 21px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-wrapper">
+
+
+    <!-- ================= BRAND ================= -->
+
+    <div class="brand">
+
+        <h1>
+            JUBREK ENTERPRISES
+        </h1>
+
+       
+    </div>
+
+
+    <!-- ================= LOGIN CARD ================= -->
+
+    <div class="login-card">
+
+        <h2>
+            Login
+        </h2>
+
+        <p class="login-subtitle">
+            Sign in to access the system.
+        </p>
+
 
         {% if error %}
-        <p>{{ error }}</p>
+
+        <div class="error">
+            {{ error }}
+        </div>
+
         {% endif %}
-    </body>
-    
+
+
+        <form method="post" action="/login">
+
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                    autocomplete="username"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button type="submit">
+                Login
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+    <div class="login-footer">
+        Designed by: Optimum Softwares
+    </div>
+
+
+</div>
+
+
+</body>
+
 </html>

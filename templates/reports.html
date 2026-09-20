@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Reports - RUBREK ENTERPRISES</title>
+    <title>Reports - JUBREK ENTERPRISES</title>
 
     <style>
 
@@ -14,393 +14,840 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+            --charcoal-light: #292d2a;
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+            --tiffany-blue: #81d8d0;
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+            --white: #ffffff;
+            --border-light: rgba(32, 36, 33, 0.13);
+            --border-dark: rgba(255, 255, 255, 0.10);
+        }
+
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f8fc;
-            color: #1f2937;
+            background: var(--charcoal);
+            color: var(--primary-text);
         }
 
 
-        /* ================= HEADER ================= */
+        /* =========================================================
+           ADMIN LAYOUT
+        ========================================================= */
 
-        header {
-            background: #0b63ce;
-            color: white;
-            padding: 16px 28px;
+        .admin-layout {
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+
+            width: 250px;
+
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            flex-direction: column;
+
+            box-sizing: border-box;
+
+            padding: 22px 14px 18px;
+
+            background: var(--charcoal-dark);
+            color: var(--white);
+
+            border-right: 1px solid var(--border-dark);
+
+            overflow-y: auto;
+
+            z-index: 1000;
         }
 
-        header h1 {
-            margin: 0;
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 4px 8px 22px;
+        }
+
+
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--action-blue);
+            color: var(--white);
+
+            border-radius: 9px;
+
             font-size: 21px;
-            letter-spacing: 0.6px;
+            font-weight: bold;
         }
 
-        header div {
+
+        .sidebar-brand-name {
+            font-size: 17px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+        }
+
+
+        .sidebar-brand-subtitle {
+            margin-top: 2px;
+
+            font-size: 10px;
+            letter-spacing: 1.5px;
+
+            color: #aeb5b0;
+        }
+
+
+        .sidebar-section-title {
+            padding: 10px 10px 8px;
+
+            font-size: 10px;
+            font-weight: bold;
+
+            color: #858c87;
+
+            letter-spacing: 1.2px;
+        }
+
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+
+        .sidebar-link {
             display: flex;
             align-items: center;
-            gap: 18px;
-            font-size: 14px;
-        }
 
-        header a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 13px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            min-height: 42px;
+
+            padding: 10px 12px;
+
             border-radius: 7px;
+
+            color: #dfe3e0;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            transition: 0.2s ease;
         }
 
-        header a:hover {
-            background: white;
-            color: #0b63ce;
+
+        .sidebar-link:hover {
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
         }
 
 
-        /* ================= CONTAINER ================= */
+        .sidebar-link.active {
+            background: var(--action-blue);
+            color: var(--white);
+        }
+
+
+        .sidebar-link.active:hover {
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
+        }
+
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 18px;
+
+            border-top: 1px solid var(--border-dark);
+        }
+
+
+        .logout-link {
+            color: #dfe3e0;
+        }
+
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           TOP HEADER
+        ========================================================= */
+
+        .top-header {
+            background: var(--charcoal-dark);
+            color: var(--white);
+
+            padding: 17px 30px;
+
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            gap: 18px;
+
+            border-bottom: 1px solid #343936;
+        }
+
+
+        .welcome-text {
+            font-size: 14px;
+            color: #dfe3e0;
+        }
+
+
+        .logout-button {
+            color: var(--white);
+            text-decoration: none;
+
+            font-weight: bold;
+            font-size: 13px;
+
+            padding: 8px 14px;
+
+            border: 1px solid var(--action-blue);
+            border-radius: 7px;
+
+            transition: 0.2s ease;
+        }
+
+
+        .logout-button:hover {
+            background: var(--tiffany-blue);
+            border-color: var(--tiffany-blue);
+            color: var(--charcoal);
+        }
+
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
 
         .container {
             max-width: 1200px;
+
             margin: 30px auto;
+
             padding: 0 20px 45px;
         }
 
 
-        /* ================= PAGE HEADER ================= */
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
 
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             gap: 20px;
+
             margin-bottom: 25px;
         }
 
+
         .page-header h2 {
             margin: 0;
-            color: #123b68;
+
+            color: var(--white);
+
             font-size: 28px;
         }
 
+
         .page-header p {
             margin: 7px 0 0;
-            color: #64748b;
+
+            color: #b9c0bb;
+
             font-size: 14px;
         }
 
+
         .back-link {
             text-decoration: none;
-            color: #0b63ce;
-            background: white;
-            border: 1px solid #0b63ce;
+
+            color: var(--white);
+
+            background: var(--action-blue);
+            border: 1px solid var(--action-blue);
+
             padding: 9px 14px;
+
             border-radius: 7px;
+
             font-size: 13px;
             font-weight: bold;
+
             white-space: nowrap;
+
+            transition: 0.2s ease;
         }
+
 
         .back-link:hover {
-            background: #0b63ce;
-            color: white;
+            background: var(--tiffany-blue);
+            border-color: var(--tiffany-blue);
+            color: var(--charcoal);
         }
 
 
-        /* ================= ERROR ================= */
+        /* =========================================================
+           ERROR
+        ========================================================= */
 
         .error {
             display: none;
-            background: #fff1f1;
-            border: 1px solid #f1caca;
-            color: #b42318;
+
+            background: #3a2424;
+
+            border: 1px solid #704040;
+
+            color: #ffb6b6;
+
             padding: 11px 14px;
+
             border-radius: 8px;
+
             margin-bottom: 18px;
+
             font-size: 13px;
         }
+
 
         .error:not(:empty) {
             display: block;
         }
 
 
-        /* ================= PERIOD ================= */
+        /* =========================================================
+           PERIOD
+        ========================================================= */
 
         .period-box {
-            background: white;
+            background: var(--card-grey);
+
             padding: 18px 20px;
+
             border-radius: 11px;
+
             margin-bottom: 28px;
+
             display: flex;
             align-items: center;
+
             gap: 14px;
-            border: 1px solid #e2eaf3;
-            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.07);
+
+            border: 1px solid #858c87;
+
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
         }
+
 
         .period-box label {
             font-weight: bold;
-            color: #123b68;
+
+            color: var(--charcoal);
+
             font-size: 14px;
         }
+
 
         .period-box select {
             padding: 10px 14px;
-            border: 1px solid #cbd5e1;
+
+            border: 1px solid #b8beb9;
+
             border-radius: 7px;
+
             font-size: 14px;
-            background: white;
-            color: #1f2937;
+
+            background: #eeeeeb;
+
+            color: var(--charcoal);
+
             outline: none;
+
             cursor: pointer;
         }
 
+
         .period-box select:focus {
-            border-color: #0b63ce;
-            box-shadow: 0 0 0 2px rgba(11, 99, 206, 0.1);
+            border-color: var(--tiffany-blue);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(129, 216, 208, 0.25);
         }
 
 
-        /* ================= SECTION TITLE ================= */
+        /* =========================================================
+           SECTION TITLE
+        ========================================================= */
 
         .section-title {
             margin: 28px 0 14px;
+
             font-size: 19px;
-            color: #123b68;
+
+            color: var(--white);
         }
 
 
-        /* ================= CARDS ================= */
+        /* =========================================================
+           CARDS
+        ========================================================= */
 
         .cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
             gap: 17px;
         }
 
+
         .card {
-            background: white;
+            background: var(--card-grey);
+
             padding: 21px;
+
             border-radius: 11px;
-            border: 1px solid #e2eaf3;
-            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.06);
+
+            border: 1px solid #858c87;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.18);
+
             min-height: 145px;
+
+            transition: 0.2s ease;
         }
 
-        .card:hover {
-            border-color: #bfd8f2;
+
+        .card:not(.profit-card):hover {
+            background: var(--tiffany-blue);
+
+            border-color: var(--tiffany-blue);
         }
+
 
         .card-title {
             font-size: 13px;
-            color: #64748b;
+
+            color: var(--charcoal);
+
             margin-bottom: 12px;
+
             font-weight: bold;
         }
+
 
         .card-value {
             font-size: 25px;
+
             font-weight: bold;
-            color: #123b68;
+
+            color: var(--charcoal);
+
             word-break: break-word;
         }
 
+
         .card-description {
             font-size: 12px;
-            color: #94a3b8;
+
+            color: #353b37;
+
             margin-top: 8px;
+
             line-height: 1.4;
         }
 
 
-        /* ================= PROFIT CARD ================= */
+        /* =========================================================
+           PROFIT CARD
+        ========================================================= */
 
         .profit-card {
-            background: #0b63ce;
-            color: white;
-            border-color: #0b63ce;
+            background: var(--card-grey);
+
+            color: var(--charcoal);
+
+            border-color: #858c87;
         }
+
 
         .profit-card .card-title {
-            color: #dcecff;
+            color: var(--charcoal);
         }
+
 
         .profit-card .card-value {
-            color: white;
+            color: var(--charcoal);
         }
+
 
         .profit-card .card-description {
-            color: #dcecff;
+            color: #353b37;
         }
 
 
-        /* ================= TABLE SECTIONS ================= */
+        .profit-card:hover {
+            background: var(--tiffany-blue);
+
+            border-color: var(--tiffany-blue);
+        }
+
+
+        /* =========================================================
+           TABLE SECTIONS
+        ========================================================= */
 
         .section {
-            background: white;
+            background: var(--card-grey);
+
             padding: 21px;
+
             border-radius: 11px;
+
             margin-top: 24px;
-            border: 1px solid #e2eaf3;
-            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.06);
+
+            border: 1px solid #858c87;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.18);
         }
+
 
         .section h3 {
             margin: 0 0 18px;
-            color: #123b68;
+
+            color: var(--charcoal);
+
             font-size: 17px;
         }
 
+
         .table-wrapper {
             width: 100%;
+
             overflow-x: auto;
         }
 
+
         table {
             width: 100%;
+
             min-width: 550px;
+
             border-collapse: collapse;
         }
+
 
         th,
         td {
             padding: 13px;
+
             text-align: left;
-            border-bottom: 1px solid #edf1f5;
+
+            border-bottom:
+                1px solid #929893;
         }
 
+
         th {
-            background: #0b63ce;
-            color: white;
+            background: var(--charcoal);
+
+            color: var(--white);
+
             font-size: 12px;
+
             font-weight: bold;
         }
+
 
         th:first-child {
             border-radius: 6px 0 0 0;
         }
 
+
         th:last-child {
             border-radius: 0 6px 0 0;
         }
 
+
         td {
             font-size: 13px;
-            color: #475569;
+
+            color: var(--charcoal);
         }
 
-        tbody tr:hover {
-            background: #f8fbff;
+
+        tbody tr {
+            transition: 0.15s ease;
         }
+
+
+        tbody tr:hover {
+            background: var(--tiffany-blue);
+        }
+
 
         tbody tr:last-child td {
             border-bottom: none;
         }
 
+
         .empty {
             text-align: center;
-            color: #94a3b8;
+
+            color: #3f4642;
+
             padding: 25px !important;
         }
 
 
-        /* ================= BISCUIT LOADER ================= */
+        /* =========================================================
+           BISCUIT LOADER
+        ========================================================= */
 
         #loading-overlay {
             position: fixed;
+
             inset: 0;
-            background: rgba(255, 255, 255, 0.82);
+
+            background:
+                rgba(23, 26, 24, 0.88);
+
             display: none;
+
             justify-content: center;
             align-items: center;
+
             z-index: 9999;
         }
+
 
         .loader-box {
             text-align: center;
         }
 
+
         .biscuit {
             font-size: 42px;
-            animation: biscuitBounce 0.8s infinite alternate;
+
+            animation:
+                biscuitBounce
+                0.8s
+                infinite alternate;
         }
+
 
         .loader-text {
             margin-top: 8px;
-            color: #0b63ce;
+
+            color: var(--tiffany-blue);
+
             font-weight: bold;
+
             font-size: 13px;
         }
+
 
         @keyframes biscuitBounce {
 
             from {
-                transform: translateY(0) rotate(-8deg);
+                transform:
+                    translateY(0)
+                    rotate(-8deg);
             }
 
             to {
-                transform: translateY(-10px) rotate(8deg);
+                transform:
+                    translateY(-10px)
+                    rotate(8deg);
             }
 
         }
 
 
-        /* ================= MOBILE ================= */
+        /* =========================================================
+           TABLET
+        ========================================================= */
 
         @media (max-width: 850px) {
 
+            .sidebar {
+                width: 210px;
+            }
+
+
+            .main-content {
+                margin-left: 210px;
+            }
+
+
             .cards {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .top-header {
+                padding: 15px 20px;
             }
 
         }
 
 
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
         @media (max-width: 600px) {
 
-            header {
-                flex-direction: column;
-                align-items: flex-start;
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+                min-height: auto;
+
+                padding: 15px;
+
+                border-right: none;
+
+                border-bottom:
+                    1px solid var(--border-dark);
             }
 
-            header div {
-                width: 100%;
-                justify-content: space-between;
+
+            .sidebar-brand {
+                padding-bottom: 15px;
             }
+
+
+            .sidebar-nav {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 5px;
+            }
+
+
+            .sidebar-link {
+                min-height: 38px;
+
+                font-size: 12px;
+
+                padding: 8px 9px;
+            }
+
+
+            .sidebar-footer {
+                margin-top: 12px;
+
+                padding-top: 12px;
+            }
+
+
+            .main-content {
+                margin-left: 0;
+            }
+
+
+            .top-header {
+                padding: 14px 15px;
+
+                justify-content:
+                    space-between;
+            }
+
+
+            .welcome-text {
+                font-size: 12px;
+            }
+
 
             .container {
                 margin-top: 20px;
-                padding: 0 12px 30px;
+
+                padding:
+                    0 12px 30px;
             }
+
 
             .page-header {
                 flex-direction: column;
+
                 align-items: flex-start;
             }
+
 
             .back-link {
                 width: 100%;
+
                 text-align: center;
             }
 
+
             .period-box {
                 flex-direction: column;
+
                 align-items: flex-start;
             }
+
 
             .period-box select {
                 width: 100%;
             }
 
+
             .cards {
                 grid-template-columns: 1fr;
             }
+
 
             .section {
                 padding: 16px;
@@ -416,344 +863,504 @@
 <body>
 
 
-<!-- ================= HEADER ================= -->
-
-<header>
-
-    <h1>
-        RUBREK ENTERPRISES
-    </h1>
-
-    <div>
-
-        <span>
-            Welcome, {{ session["full_name"] }}
-        </span>
-
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
-
-    </div>
-
-</header>
+<div class="admin-layout">
 
 
-<!-- ================= LOADING ================= -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-<div id="loading-overlay">
-
-    <div class="loader-box">
-
-        <div class="biscuit">
-            🍪
-        </div>
-
-        <div class="loader-text">
-            Loading report...
-        </div>
-
-    </div>
-
-</div>
+    <aside class="sidebar">
 
 
-<div class="container">
+        <div class="sidebar-brand">
 
-
-    <!-- ================= PAGE HEADER ================= -->
-
-    <div class="page-header">
-
-        <div>
-
-            <h2>
-                Business Reports
-            </h2>
-
-            <p>
-                View sales, expenses, and profit for the selected period.
-            </p>
-
-        </div>
-
-
-        <a
-            href="{{ url_for('admin_dashboard') }}"
-            class="back-link"
-        >
-            ← Back to Dashboard
-        </a>
-
-    </div>
-
-
-    <div
-        id="errorMessage"
-        class="error"
-    ></div>
-
-
-    <!-- ================= PERIOD ================= -->
-
-    <div class="period-box">
-
-        <label for="period">
-            Report Period
-        </label>
-
-        <select
-            id="period"
-            onchange="loadReport()"
-        >
-
-            <option value="daily">
-                Today
-            </option>
-
-            <option value="weekly">
-                This Week
-            </option>
-
-            <option value="monthly">
-                This Month
-            </option>
-
-            <option value="annually">
-                This Year
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <!-- ================= SALES ================= -->
-
-    <h3 class="section-title">
-        Sales
-    </h3>
-
-
-    <div class="cards">
-
-        <div class="card">
-
-            <div class="card-title">
-                Number of Sales
+            <div class="sidebar-brand-icon">
+                J
             </div>
+
+            <div>
+
+                <div class="sidebar-brand-name">
+                    JUBREK
+                </div>
+
+                <div class="sidebar-brand-subtitle">
+                    ENTERPRISES
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-section-title">
+            MAIN MENU
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="sidebar-link"
+            >
+                🏠 Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('employee_routes.employee_management') }}"
+                class="sidebar-link"
+            >
+                👥 Employees
+            </a>
+
+
+            <a
+                href="{{ url_for('category_routes.category_management') }}"
+                class="sidebar-link"
+            >
+                📂 Categories
+            </a>
+
+
+            <a
+                href="{{ url_for('product_routes.product_management') }}"
+                class="sidebar-link"
+            >
+                📦 Products
+            </a>
+
+
+            <a
+                href="{{ url_for('sales_routes.sales_page') }}"
+                class="sidebar-link"
+            >
+                🛒 Sales
+            </a>
+
+
+            <a
+                href="{{ url_for('expenses_routes.expenses_page') }}"
+                class="sidebar-link"
+            >
+                💰 Expenses
+            </a>
+
+
+            <a
+                href="{{ url_for('reports_routes.reports_page') }}"
+                class="sidebar-link active"
+            >
+                📊 Reports
+            </a>
+
+
+            <a
+                href="{{ url_for('receipt_books_routes.receipt_books_page') }}"
+                class="sidebar-link"
+            >
+                🧾 Receipt Books
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="sidebar-link logout-link"
+            >
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOP HEADER
+        ================================================== -->
+
+        <header class="top-header">
+
+            <span class="welcome-text">
+                Welcome, {{ session["full_name"] }}
+            </span>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-button"
+            >
+                Logout
+            </a>
+
+        </header>
+
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div id="loading-overlay">
+
+            <div class="loader-box">
+
+                <div class="biscuit">
+                    🍪
+                </div>
+
+                <div class="loader-text">
+                    Loading report...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="container">
+
+
+            <!-- =============================================
+                 PAGE HEADER
+            ============================================== -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h2>
+                        Business Reports
+                    </h2>
+
+                    <p>
+                        View sales, expenses, and profit for the selected period.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="back-link"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
 
             <div
-                id="totalSales"
-                class="card-value"
-            >
-                0
+                id="errorMessage"
+                class="error"
+            ></div>
+
+
+            <!-- =============================================
+                 PERIOD
+            ============================================== -->
+
+            <div class="period-box">
+
+                <label for="period">
+                    Report Period
+                </label>
+
+
+                <select
+                    id="period"
+                    onchange="loadReport()"
+                >
+
+                    <option value="daily">
+                        Today
+                    </option>
+
+                    <option value="weekly">
+                        This Week
+                    </option>
+
+                    <option value="monthly">
+                        This Month
+                    </option>
+
+                    <option value="annually">
+                        This Year
+                    </option>
+
+                </select>
+
             </div>
 
-            <div class="card-description">
-                Number of completed sales
+
+            <!-- =============================================
+                 SALES
+            ============================================== -->
+
+            <h3 class="section-title">
+                Sales
+            </h3>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Number of Sales
+                    </div>
+
+
+                    <div
+                        id="totalSales"
+                        class="card-value"
+                    >
+                        0
+                    </div>
+
+
+                    <div class="card-description">
+                        Number of completed sales
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Money from Sales
+                    </div>
+
+
+                    <div
+                        id="salesRevenue"
+                        class="card-value"
+                    >
+                        KSh 0.00
+                    </div>
+
+
+                    <div class="card-description">
+                        Total money received from sales
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Cost of Products Sold
+                    </div>
+
+
+                    <div
+                        id="costOfGoodsSold"
+                        class="card-value"
+                    >
+                        KSh 0.00
+                    </div>
+
+
+                    <div class="card-description">
+                        What those sold products cost the business
+                    </div>
+
+                </div>
+
             </div>
+
+
+            <!-- =============================================
+                 PROFIT
+            ============================================== -->
+
+            <h3 class="section-title">
+                Profit
+            </h3>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Profit Before Expenses
+                    </div>
+
+
+                    <div
+                        id="grossProfit"
+                        class="card-value"
+                    >
+                        KSh 0.00
+                    </div>
+
+
+                    <div class="card-description">
+                        Sales money minus product costs
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Business Expenses
+                    </div>
+
+
+                    <div
+                        id="totalExpenses"
+                        class="card-value"
+                    >
+                        KSh 0.00
+                    </div>
+
+
+                    <div class="card-description">
+                        Expenses recorded during this period
+                    </div>
+
+                </div>
+
+
+                <div class="card profit-card">
+
+                    <div class="card-title">
+                        Profit After Expenses
+                    </div>
+
+
+                    <div
+                        id="netProfit"
+                        class="card-value"
+                    >
+                        KSh 0.00
+                    </div>
+
+
+                    <div class="card-description">
+                        Money left after product costs and expenses
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 EMPLOYEE SALES
+            ============================================== -->
+
+            <div class="section">
+
+                <h3>
+                    Sales Made by Each Employee
+                </h3>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Employee
+                                </th>
+
+                                <th>
+                                    Number of Sales
+                                </th>
+
+                                <th>
+                                    Money from Sales
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="salesEmployeeBody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 EMPLOYEE EXPENSES
+            ============================================== -->
+
+            <div class="section">
+
+                <h3>
+                    Expenses Recorded by Each Employee
+                </h3>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Employee
+                                </th>
+
+                                <th>
+                                    Number of Expenses
+                                </th>
+
+                                <th>
+                                    Total Expenses
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="expensesEmployeeBody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
 
         </div>
 
-
-        <div class="card">
-
-            <div class="card-title">
-                Money from Sales
-            </div>
-
-            <div
-                id="salesRevenue"
-                class="card-value"
-            >
-                KSh 0.00
-            </div>
-
-            <div class="card-description">
-                Total money received from sales
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                Cost of Products Sold
-            </div>
-
-            <div
-                id="costOfGoodsSold"
-                class="card-value"
-            >
-                KSh 0.00
-            </div>
-
-            <div class="card-description">
-                What those sold products cost the business
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ================= PROFIT ================= -->
-
-    <h3 class="section-title">
-        Profit
-    </h3>
-
-
-    <div class="cards">
-
-        <div class="card">
-
-            <div class="card-title">
-                Profit Before Expenses
-            </div>
-
-            <div
-                id="grossProfit"
-                class="card-value"
-            >
-                KSh 0.00
-            </div>
-
-            <div class="card-description">
-                Sales money minus product costs
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                Business Expenses
-            </div>
-
-            <div
-                id="totalExpenses"
-                class="card-value"
-            >
-                KSh 0.00
-            </div>
-
-            <div class="card-description">
-                Expenses recorded during this period
-            </div>
-
-        </div>
-
-
-        <div class="card profit-card">
-
-            <div class="card-title">
-                Profit After Expenses
-            </div>
-
-            <div
-                id="netProfit"
-                class="card-value"
-            >
-                KSh 0.00
-            </div>
-
-            <div class="card-description">
-                Money left after product costs and expenses
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ================= EMPLOYEE SALES ================= -->
-
-    <div class="section">
-
-        <h3>
-            Sales Made by Each Employee
-        </h3>
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Employee
-                        </th>
-
-                        <th>
-                            Number of Sales
-                        </th>
-
-                        <th>
-                            Money from Sales
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="salesEmployeeBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-    <!-- ================= EMPLOYEE EXPENSES ================= -->
-
-    <div class="section">
-
-        <h3>
-            Expenses Recorded by Each Employee
-        </h3>
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Employee
-                        </th>
-
-                        <th>
-                            Number of Expenses
-                        </th>
-
-                        <th>
-                            Total Expenses
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="expensesEmployeeBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
+    </main>
 
 </div>
 
@@ -803,10 +1410,13 @@ async function loadReport() {
     const period =
         document.getElementById("period").value;
 
+
     const errorMessage =
         document.getElementById("errorMessage");
 
+
     errorMessage.textContent = "";
+
 
     showLoader();
 
@@ -850,13 +1460,17 @@ async function loadReport() {
         document.getElementById(
             "salesRevenue"
         ).textContent =
-            `KSh ${formatMoney(summary.sales_revenue)}`;
+            `KSh ${formatMoney(
+                summary.sales_revenue
+            )}`;
 
 
         document.getElementById(
             "costOfGoodsSold"
         ).textContent =
-            `KSh ${formatMoney(summary.cost_of_goods_sold)}`;
+            `KSh ${formatMoney(
+                summary.cost_of_goods_sold
+            )}`;
 
 
         // -----------------------------------------
@@ -866,19 +1480,25 @@ async function loadReport() {
         document.getElementById(
             "grossProfit"
         ).textContent =
-            `KSh ${formatMoney(summary.gross_profit)}`;
+            `KSh ${formatMoney(
+                summary.gross_profit
+            )}`;
 
 
         document.getElementById(
             "totalExpenses"
         ).textContent =
-            `KSh ${formatMoney(summary.total_expense_amount)}`;
+            `KSh ${formatMoney(
+                summary.total_expense_amount
+            )}`;
 
 
         document.getElementById(
             "netProfit"
         ).textContent =
-            `KSh ${formatMoney(summary.net_profit)}`;
+            `KSh ${formatMoney(
+                summary.net_profit
+            )}`;
 
 
         // -----------------------------------------
@@ -889,6 +1509,7 @@ async function loadReport() {
             document.getElementById(
                 "salesEmployeeBody"
             );
+
 
         salesBody.innerHTML = "";
 
@@ -957,6 +1578,7 @@ async function loadReport() {
                 "expensesEmployeeBody"
             );
 
+
         expensesBody.innerHTML = "";
 
 
@@ -1021,6 +1643,7 @@ async function loadReport() {
             "REPORT LOAD ERROR:",
             error
         );
+
 
         errorMessage.textContent =
             "Could not load report.";

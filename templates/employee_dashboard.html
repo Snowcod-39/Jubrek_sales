@@ -5,64 +5,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Employee Dashboard - RUBREK ENTERPRISES</title>
+    <title>Employee Dashboard - JUBREK ENTERPRISES</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
+
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+            --charcoal-light: #292d2a;
+
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+
+            --tiffany-blue: #81d8d0;
+
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+
+            --white: #ffffff;
+
+            --border-light: rgba(32, 36, 33, 0.13);
+            --border-dark: rgba(255, 255, 255, 0.10);
+        }
+
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
             margin: 0;
-            background: #f4f7fb;
-            color: #172033;
+            background: var(--charcoal);
+            color: var(--primary-text);
             font-family: Arial, Helvetica, sans-serif;
         }
+
 
         /* =========================
            HEADER
         ========================= */
 
         header {
-            background: #0b5ed7;
-            color: white;
+            background: var(--charcoal-dark);
+            color: var(--white);
+
             min-height: 72px;
+
             padding: 0 35px;
 
             display: flex;
             align-items: center;
             justify-content: space-between;
 
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            border-bottom: 1px solid var(--border-dark);
         }
+
 
         header h1 {
             margin: 0;
+
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: 0.5px;
+
+            letter-spacing: 0.6px;
         }
+
 
         header > div {
             display: flex;
             align-items: center;
+
             gap: 22px;
         }
+
 
         header span {
             font-size: 14px;
             font-weight: 500;
+
+            color: #e5e8e6;
         }
 
+
         header a {
-            color: white;
+            color: var(--white);
+
             text-decoration: none;
 
             padding: 9px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+
+            border: 1px solid rgba(255, 255, 255, 0.35);
+
             border-radius: 7px;
 
             font-size: 13px;
@@ -71,9 +111,13 @@
             transition: 0.2s ease;
         }
 
+
         header a:hover {
-            background: white;
-            color: #0b5ed7;
+            background: var(--tiffany-blue);
+
+            color: var(--charcoal);
+
+            border-color: var(--tiffany-blue);
         }
 
 
@@ -83,118 +127,95 @@
 
         main {
             width: min(1180px, 94%);
+
             margin: 32px auto 50px;
         }
+
 
         main > h2 {
             margin: 0 0 25px;
 
             font-size: 28px;
             font-weight: 750;
-            color: #172033;
+
+            color: var(--white);
         }
 
 
         /* =========================
-           LOW STOCK SECTION
+           LOW STOCK BUTTON SECTION
         ========================= */
 
-        .receipt-alerts-section {
-            background: white;
+        .low-stock-section {
+            background: var(--card-grey);
+
             border-radius: 12px;
 
             padding: 22px 24px;
+
             margin-bottom: 28px;
 
-            border: 1px solid #e3e9f2;
-            box-shadow: 0 3px 12px rgba(21, 44, 78, 0.06);
-        }
+            border: 1px solid var(--border-light);
 
-        .section-header {
+            box-shadow:
+                0 5px 18px rgba(0, 0, 0, 0.18);
+
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
 
-            margin-bottom: 18px;
-            padding-bottom: 15px;
-
-            border-bottom: 1px solid #e8edf4;
+            gap: 20px;
         }
 
-        .section-header h2 {
-            margin: 0;
+
+        .low-stock-info h2 {
+            margin: 0 0 7px;
+
             font-size: 18px;
-            color: #172033;
-        }
 
-        #lowStockCount {
-            background: #eef5ff;
-            color: #0b5ed7;
-
-            padding: 6px 11px;
-            border-radius: 20px;
-
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        #lowStockAlerts > p {
-            color: #6d7788;
-            font-size: 14px;
+            color: var(--primary-text);
         }
 
 
-        /* =========================
-           LOW STOCK ALERT CARDS
-        ========================= */
+        .low-stock-info p {
+            margin: 0;
 
-        .receipt-alert {
-            background: #fff8e8;
-            border: 1px solid #f3d98b;
-            border-left: 5px solid #f0ad00;
-
-            border-radius: 8px;
-            padding: 15px 18px;
-
-            margin-bottom: 10px;
-        }
-
-        .receipt-alert:last-child {
-            margin-bottom: 0;
-        }
-
-        .alert-content h3 {
-            margin: 0 0 10px;
-
-            font-size: 15px;
-            color: #765500;
-        }
-
-        .alert-content p {
-            margin: 5px 0;
+            color: var(--secondary-text);
 
             font-size: 13px;
-            color: #5f6570;
+
+            line-height: 1.5;
         }
 
-        .alert-content strong {
-            color: #333b48;
+
+        .low-stock-button {
+            display: inline-block;
+
+            background: var(--action-blue);
+
+            color: var(--white);
+
+            text-decoration: none;
+
+            padding: 11px 18px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            transition: 0.2s ease;
         }
 
-        .no-alerts {
-            background: #eefaf2;
-            border: 1px solid #c8ead4;
-            border-radius: 8px;
 
-            padding: 14px 18px;
-        }
+        .low-stock-button:hover {
+            background: var(--tiffany-blue);
 
-        .no-alerts p {
-            margin: 0;
+            color: var(--charcoal);
 
-            color: #267344;
-            font-size: 14px;
-            font-weight: 600;
+            transform: translateY(-1px);
         }
 
 
@@ -211,10 +232,12 @@
             gap: 18px;
         }
 
-        .card {
-            background: white;
 
-            border: 1px solid #e1e7f0;
+        .card {
+            background: var(--card-grey);
+
+            border: 1px solid var(--border-light);
+
             border-radius: 12px;
 
             padding: 22px;
@@ -225,49 +248,61 @@
             flex-direction: column;
 
             box-shadow:
-                0 3px 12px rgba(21, 44, 78, 0.055);
+                0 5px 18px rgba(0, 0, 0, 0.16);
 
             transition:
                 transform 0.2s ease,
-                box-shadow 0.2s ease,
-                border-color 0.2s ease;
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
         }
+
 
         .card:hover {
             transform: translateY(-3px);
 
-            border-color: #b9d3f7;
+            background: var(--tiffany-blue);
+
+            border-color: var(--tiffany-blue);
 
             box-shadow:
-                0 8px 22px rgba(21, 44, 78, 0.10);
+                0 9px 25px rgba(0, 0, 0, 0.22);
         }
+
 
         .card h3 {
             margin: 0 0 10px;
 
             font-size: 18px;
-            color: #0b5ed7;
+
+            color: var(--primary-text);
         }
+
 
         .card p {
             margin: 0 0 20px;
 
-            color: #687386;
+            color: var(--secondary-text);
+
             font-size: 13px;
+
             line-height: 1.55;
 
             flex: 1;
         }
+
 
         .card a {
             display: inline-block;
 
             width: 100%;
 
-            background: #0b5ed7;
-            color: white;
+            background: var(--action-blue);
+
+            color: var(--white);
 
             text-align: center;
+
             text-decoration: none;
 
             padding: 10px 14px;
@@ -280,8 +315,11 @@
             transition: 0.2s ease;
         }
 
+
         .card a:hover {
-            background: #084db2;
+            background: var(--tiffany-blue);
+
+            color: var(--charcoal);
         }
 
 
@@ -305,10 +343,12 @@
                 padding: 15px 18px;
 
                 flex-direction: column;
+
                 align-items: flex-start;
 
                 gap: 12px;
             }
+
 
             header > div {
                 width: 100%;
@@ -316,33 +356,44 @@
                 justify-content: space-between;
             }
 
+
             header h1 {
                 font-size: 19px;
             }
 
+
             main {
                 width: 92%;
+
                 margin-top: 25px;
             }
+
 
             main > h2 {
                 font-size: 24px;
             }
 
+
+            .low-stock-section {
+                flex-direction: column;
+
+                align-items: stretch;
+
+                padding: 18px;
+            }
+
+
+            .low-stock-button {
+                text-align: center;
+            }
+
+
             .dashboard-cards {
                 grid-template-columns: 1fr;
             }
 
-            .receipt-alerts-section {
-                padding: 18px;
-            }
-
-            .section-header {
-                align-items: flex-start;
-                gap: 10px;
-            }
-
         }
+
     </style>
 
 </head>
@@ -350,10 +401,9 @@
 
 <body>
 
-
 <header>
 
-    <h1>RUBREK ENTERPRISES</h1>
+    <h1>JUBREK ENTERPRISES</h1>
 
     <div>
 
@@ -376,29 +426,30 @@
 
 
     <!-- =========================
-         LOW STOCK ALERTS
+         LOW STOCK
     ========================== -->
 
-    <section class="receipt-alerts-section">
+    <section class="low-stock-section">
 
-        <div class="section-header">
+        <div class="low-stock-info">
 
-            <h2>Low Stock Alerts</h2>
-
-            <span id="lowStockCount">
-                0 products
-            </span>
-
-        </div>
-
-
-        <div id="lowStockAlerts">
+            <h2>
+                Low Stock
+            </h2>
 
             <p>
-                Loading stock alerts...
+                View products that are currently below their minimum stock level.
             </p>
 
         </div>
+
+
+        <a
+            href="{{ url_for('stock_routes.low_stock_page') }}"
+            class="low-stock-button"
+        >
+            View All Low Stock
+        </a>
 
     </section>
 
@@ -410,13 +461,16 @@
     <section class="dashboard-cards">
 
 
+        <!-- STOCK -->
+
         <div class="card">
 
-            <h3>Stock</h3>
+            <h3>
+                Stock
+            </h3>
 
             <p>
-                Add stock, remove stock, make adjustments,
-                and view stock history.
+                Add stock and view your own stock history.
             </p>
 
             <a href="{{ url_for('stock_routes.stock_page') }}">
@@ -426,13 +480,17 @@
         </div>
 
 
+        <!-- SALES -->
+
         <div class="card">
 
-            <h3>Sales</h3>
+            <h3>
+                Sales
+            </h3>
 
             <p>
                 Record sales, receive payments,
-                and release completed sales.
+                and view your recorded sales.
             </p>
 
             <a href="{{ url_for('sales_routes.employee_sales_page') }}">
@@ -442,9 +500,13 @@
         </div>
 
 
+        <!-- ORDERS -->
+
         <div class="card">
 
-            <h3>Orders</h3>
+            <h3>
+                Orders
+            </h3>
 
             <p>
                 View incoming customer orders,
@@ -458,9 +520,13 @@
         </div>
 
 
+        <!-- EXPENSES -->
+
         <div class="card">
 
-            <h3>Expenses</h3>
+            <h3>
+                Expenses
+            </h3>
 
             <p>
                 Record and keep track of
@@ -477,124 +543,6 @@
     </section>
 
 </main>
-
-
-<script>
-
-async function loadLowStockAlerts() {
-
-    const container =
-        document.getElementById("lowStockAlerts");
-
-    const count =
-        document.getElementById("lowStockCount");
-
-    try {
-
-        const response =
-            await fetch("/api/stock/alerts");
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            container.innerHTML =
-                `<p>${data.error || "Could not load stock alerts."}</p>`;
-
-            return;
-        }
-
-
-        const alerts =
-            data.alerts || [];
-
-
-        count.textContent =
-            `${alerts.length} product${alerts.length === 1 ? "" : "s"}`;
-
-
-        if (alerts.length === 0) {
-
-            container.innerHTML = `
-                <div class="no-alerts">
-                    <p>✓ No low stock products.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-
-        container.innerHTML =
-
-            alerts.map(product => {
-
-                return `
-                    <div class="receipt-alert">
-
-                        <div class="alert-content">
-
-                            <h3>
-                                ⚠️ Low Stock: ${product.product_name}
-                            </h3>
-
-                            <p>
-                                <strong>Current Stock:</strong>
-                                ${product.quantity}
-                            </p>
-
-                            <p>
-                                <strong>Minimum Stock:</strong>
-                                ${product.minimum_stock}
-                            </p>
-
-                            ${
-                                product.category_name
-                                ? `
-                                    <p>
-                                        <strong>Category:</strong>
-                                        ${product.category_name}
-                                    </p>
-                                  `
-                                : ""
-                            }
-
-                        </div>
-
-                    </div>
-                `;
-
-            }).join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Low stock alerts error:",
-            error
-        );
-
-        container.innerHTML =
-            "<p>Could not load stock alerts.</p>";
-    }
-}
-
-
-loadLowStockAlerts();
-
-
-/* Refresh every 10 seconds */
-
-setInterval(
-    loadLowStockAlerts,
-    10000
-);
-
-</script>
-
 
 </body>
 

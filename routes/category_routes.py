@@ -6,7 +6,22 @@ category_routes = Blueprint("category_routes", __name__)
 
 
 def admin_required():
-    return "user_id" in session and session.get("role") == "ADMIN"
+    return (
+        "user_id" in session
+        and session.get("role") == "ADMIN"
+    )
+
+
+def category_read_required():
+    return (
+        "user_id" in session
+        and session.get("role") in ["ADMIN", "EMPLOYEE"]
+    )
+
+
+# ============================================================
+# ADMIN CATEGORY MANAGEMENT PAGE
+# ============================================================
 
 @category_routes.route("/admin/categories")
 def category_management():
@@ -15,6 +30,11 @@ def category_management():
 
     return render_template("category_management.html")
 
+
+# ============================================================
+# CREATE CATEGORY
+# ADMIN ONLY
+# ============================================================
 
 @category_routes.route("/api/categories", methods=["POST"])
 def create_category():
@@ -74,20 +94,38 @@ def create_category():
         connection.close()
 
 
+# ============================================================
+# GET CATEGORIES
+# ADMIN:
+#   - Sees ACTIVE and INACTIVE categories
+#
+# EMPLOYEE:
+#   - Sees ACTIVE categories only
+# ============================================================
+
 @category_routes.route("/api/categories", methods=["GET"])
 def get_categories():
-    if not admin_required():
-        return jsonify({"error": "Admin access required."}), 403
+    if not category_read_required():
+        return jsonify({"error": "Login required."}), 403
 
     connection = get_db_connection()
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT id, category_name, status, created_at
-                FROM categories
-                ORDER BY id;
-            """)
+
+            if session.get("role") == "EMPLOYEE":
+                cursor.execute("""
+                    SELECT id, category_name, status, created_at
+                    FROM categories
+                    WHERE status = 'ACTIVE'
+                    ORDER BY id;
+                """)
+            else:
+                cursor.execute("""
+                    SELECT id, category_name, status, created_at
+                    FROM categories
+                    ORDER BY id;
+                """)
 
             categories = cursor.fetchall()
 
@@ -106,6 +144,11 @@ def get_categories():
     finally:
         connection.close()
 
+
+# ============================================================
+# DEACTIVATE CATEGORY
+# ADMIN ONLY
+# ============================================================
 
 @category_routes.route(
     "/api/categories/<int:category_id>/deactivate",
@@ -148,6 +191,11 @@ def deactivate_category(category_id):
     finally:
         connection.close()
 
+
+# ============================================================
+# REACTIVATE CATEGORY
+# ADMIN ONLY
+# ============================================================
 
 @category_routes.route(
     "/api/categories/<int:category_id>/reactivate",

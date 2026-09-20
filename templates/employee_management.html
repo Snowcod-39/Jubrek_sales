@@ -2,334 +2,644 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Employee Management - RUBREK ENTERPRISES</title>
+    <title>Employee Management - JUBREK ENTERPRISES</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
 
     <style>
+
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+
+            --tiffany-blue: #81d8d0;
+
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+
+            --white: #ffffff;
+
+            --border-light: rgba(32,36,33,0.13);
+            --border-dark: rgba(255,255,255,0.10);
+        }
+
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f8fc;
-            color: #1f2937;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: var(--charcoal);
+
+            color: var(--primary-text);
+
+            min-height: 100vh;
         }
 
-        /* ================= HEADER ================= */
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
 
         header {
-            background: #0b63ce;
-            color: white;
-            padding: 16px 28px;
+            min-height: 72px;
+
+            background: var(--charcoal-dark);
+
+            color: var(--white);
+
+            padding: 0 35px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 20px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+
+            border-bottom:
+                1px solid var(--border-dark);
         }
+
 
         header h1 {
             margin: 0;
+
             font-size: 21px;
-            letter-spacing: 0.5px;
+
+            letter-spacing: 0.7px;
         }
+
 
         header div {
             display: flex;
+
             align-items: center;
+
             gap: 18px;
+
             font-size: 14px;
         }
 
+
         header a {
-            color: white;
+            color: var(--white);
+
             text-decoration: none;
+
             font-weight: bold;
-            padding: 8px 13px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 7px;
+
+            padding: 8px 14px;
+
+            border:
+                1px solid rgba(255,255,255,0.25);
+
+            border-radius: 6px;
+
+            transition: 0.2s ease;
         }
+
 
         header a:hover {
-            background: white;
-            color: #0b63ce;
+            background: var(--tiffany-blue);
+
+            color: var(--primary-text);
+
+            border-color: var(--tiffany-blue);
         }
 
-        /* ================= MAIN ================= */
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
 
         main {
-            max-width: 1150px;
-            margin: 30px auto;
-            padding: 0 20px 40px;
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding: 32px 25px 50px;
         }
+
 
         .page-title {
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 15px;
-            margin-bottom: 20px;
+
+            margin-bottom: 25px;
         }
+
 
         .page-title h2 {
             margin: 0;
-            color: #123b68;
-            font-size: 26px;
+
+            color: var(--white);
+
+            font-size: 25px;
+
+            font-weight: 700;
         }
+
 
         .dashboard-btn {
-            display: inline-block;
+            display: inline-flex;
+
+            align-items: center;
+
             text-decoration: none;
-            background: white;
-            color: #0b63ce;
-            border: 1px solid #0b63ce;
-            padding: 9px 15px;
+
+            background: var(--action-blue);
+
+            color: var(--white);
+
+            padding: 10px 16px;
+
             border-radius: 7px;
-            font-size: 14px;
+
+            font-size: 13px;
+
             font-weight: bold;
+
+            transition: 0.2s ease;
         }
+
 
         .dashboard-btn:hover {
-            background: #0b63ce;
-            color: white;
+            background: var(--tiffany-blue);
+
+            color: var(--primary-text);
+
+            transform: translateY(-1px);
         }
 
-        /* ================= CARDS ================= */
+
+        /* =====================================================
+           SECTION CARDS
+        ===================================================== */
 
         .section-card {
-            background: white;
+            background: var(--card-grey);
+
             border-radius: 12px;
+
             padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 3px 14px rgba(31, 41, 55, 0.08);
-            border: 1px solid #e2eaf3;
+
+            margin-bottom: 22px;
+
+            border:
+                1px solid var(--border-light);
+
+            box-shadow:
+                0 8px 20px rgba(0,0,0,0.18);
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
         }
+
+
+        .section-card:hover {
+            border-color: var(--tiffany-blue);
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.22),
+                0 0 0 1px rgba(129,216,208,0.18);
+        }
+
 
         .section-card h3 {
             margin: 0 0 18px;
-            color: #123b68;
-            font-size: 19px;
+
+            color: var(--primary-text);
+
+            font-size: 18px;
         }
 
-        /* ================= FORM ================= */
+
+        /* =====================================================
+           FORM
+        ===================================================== */
 
         .employee-form {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 15px;
+
             align-items: end;
         }
 
+
         .form-group {
             display: flex;
+
             flex-direction: column;
         }
 
+
         .form-group label {
             font-size: 13px;
+
             font-weight: bold;
+
             margin-bottom: 7px;
-            color: #374151;
+
+            color: var(--secondary-text);
         }
+
 
         .form-group input {
             width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #cbd5e1;
+
+            padding: 12px 13px;
+
+            background: #eef0ef;
+
+            border:
+                1px solid rgba(32,36,33,0.18);
+
             border-radius: 7px;
+
+            color: var(--primary-text);
+
             font-size: 14px;
+
             outline: none;
+
+            transition: 0.2s ease;
         }
 
-        .form-group input:focus {
-            border-color: #0b63ce;
-            box-shadow: 0 0 0 2px rgba(11, 99, 206, 0.1);
+
+        .form-group input::placeholder {
+            color: var(--secondary-text);
         }
+
+
+        .form-group input:focus {
+            background: var(--white);
+
+            border-color: var(--action-blue);
+
+            box-shadow:
+                0 0 0 2px rgba(23,105,170,0.15);
+        }
+
 
         .add-btn {
             grid-column: 1 / -1;
+
             width: fit-content;
-            background: #0b63ce;
-            color: white;
+
+            background: var(--action-blue);
+
+            color: var(--white);
+
             border: none;
-            padding: 11px 22px;
+
+            padding: 12px 22px;
+
             border-radius: 7px;
+
             font-size: 14px;
+
             font-weight: bold;
+
             cursor: pointer;
+
+            transition: 0.2s ease;
         }
+
 
         .add-btn:hover {
-            background: #084fa6;
+            background: var(--tiffany-blue);
+
+            color: var(--primary-text);
+
+            transform: translateY(-1px);
         }
 
-        /* ================= MESSAGE ================= */
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
 
         #message {
-            margin: 16px 0 0;
-            padding: 10px 13px;
-            border-radius: 7px;
-            font-size: 14px;
+            margin: 15px 0 0;
+
+            min-height: 18px;
+
+            padding: 0;
+
+            color: var(--secondary-text);
+
+            font-size: 13px;
+
+            font-weight: bold;
+
             display: none;
         }
 
+
         #message.show {
             display: block;
-            background: #eef6ff;
-            color: #0b63ce;
-            border: 1px solid #cfe3fa;
+
+            padding: 10px 13px;
+
+            border-radius: 7px;
+
+            background:
+                rgba(23,105,170,0.10);
+
+            color: var(--action-blue);
+
+            border:
+                1px solid rgba(23,105,170,0.20);
         }
 
-        /* ================= EMPLOYEE LIST ================= */
+
+        /* =====================================================
+           EMPLOYEE GRID
+        ===================================================== */
 
         #employee-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
         }
+
 
         .employee-card {
-            border: 1px solid #e0e8f0;
-            border-radius: 10px;
-            padding: 17px;
-            background: #fbfdff;
+            background: var(--card-grey-dark);
+
+            border:
+                1px solid rgba(32,36,33,0.13);
+
+            border-radius: 9px;
+
+            padding: 18px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 15px;
+
+            transition: 0.2s ease;
         }
 
+
         .employee-card:hover {
-            border-color: #b8d4f2;
-            box-shadow: 0 3px 10px rgba(11, 99, 206, 0.08);
+            background: var(--tiffany-blue);
+
+            border-color: var(--tiffany-blue);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 18px rgba(0,0,0,0.18);
         }
+
 
         .employee-info {
             min-width: 0;
         }
 
+
         .employee-name {
             margin: 0 0 5px;
+
             font-size: 16px;
+
             font-weight: bold;
-            color: #123b68;
+
+            color: var(--primary-text);
+
+            word-break: break-word;
         }
+
 
         .employee-username {
             margin: 0 0 9px;
-            color: #64748b;
+
+            color: var(--secondary-text);
+
             font-size: 13px;
         }
 
-        /* ================= STATUS ================= */
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
 
         .status-badge {
             display: inline-block;
+
             padding: 4px 9px;
+
             border-radius: 20px;
-            font-size: 11px;
+
+            font-size: 10px;
+
             font-weight: bold;
         }
 
+
         .status-active {
-            background: #e7f7ed;
-            color: #168044;
+            background: #d8f0e1;
+
+            color: #176b3b;
         }
+
 
         .status-inactive {
-            background: #f1f3f5;
-            color: #6b7280;
+            background: #e5e7e6;
+
+            color: var(--secondary-text);
         }
 
-        /* ================= ACTION BUTTON ================= */
+
+        /* =====================================================
+           ACTION BUTTON
+        ===================================================== */
 
         .status-btn {
             border: none;
-            padding: 9px 12px;
-            border-radius: 7px;
-            font-size: 12px;
+
+            padding: 8px 11px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
             font-weight: bold;
+
             cursor: pointer;
+
             white-space: nowrap;
+
+            transition: 0.2s ease;
         }
 
+
         .deactivate-btn {
-            background: #fff0f0;
-            color: #c62828;
+            background: #f5dada;
+
+            color: #a52a2a;
         }
+
 
         .deactivate-btn:hover {
             background: #c62828;
-            color: white;
+
+            color: var(--white);
         }
+
 
         .reactivate-btn {
-            background: #e8f3ff;
-            color: #0b63ce;
+            background:
+                rgba(23,105,170,0.13);
+
+            color: var(--action-blue);
         }
+
 
         .reactivate-btn:hover {
-            background: #0b63ce;
-            color: white;
+            background: var(--action-blue);
+
+            color: var(--white);
         }
 
-        /* ================= EMPTY / LOADING ================= */
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
 
         .empty-state {
             grid-column: 1 / -1;
+
             text-align: center;
-            padding: 30px;
-            color: #64748b;
-            background: #f8fafc;
+
+            padding: 35px;
+
+            color: var(--secondary-text);
+
+            background: var(--card-grey-dark);
+
+            border:
+                1px dashed rgba(32,36,33,0.25);
+
             border-radius: 9px;
-            border: 1px dashed #cbd5e1;
+
+            font-size: 14px;
         }
 
-        /* ================= BISCUIT LOADER ================= */
+
+        /* =====================================================
+           BISCUIT LOADER
+        ===================================================== */
 
         #loading-overlay {
             position: fixed;
+
             inset: 0;
-            background: rgba(255, 255, 255, 0.82);
+
+            background:
+                rgba(23,26,24,0.92);
+
             display: none;
+
             justify-content: center;
+
             align-items: center;
+
             z-index: 9999;
         }
+
 
         .loader-box {
             text-align: center;
         }
 
+
         .biscuit {
             font-size: 42px;
-            animation: biscuitBounce 0.8s infinite alternate;
+
+            display: inline-block;
+
+            animation:
+                biscuitBounce 0.8s infinite alternate;
         }
+
 
         .loader-text {
             margin-top: 8px;
-            color: #0b63ce;
+
+            color: var(--white);
+
             font-weight: bold;
+
             font-size: 13px;
         }
 
+
         @keyframes biscuitBounce {
+
             from {
-                transform: translateY(0) rotate(-8deg);
+                transform:
+                    translateY(0)
+                    rotate(-8deg);
             }
 
             to {
-                transform: translateY(-10px) rotate(8deg);
+                transform:
+                    translateY(-10px)
+                    rotate(8deg);
             }
+
         }
 
-        /* ================= RESPONSIVE ================= */
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
 
         @media (max-width: 800px) {
 
@@ -337,93 +647,148 @@
                 grid-template-columns: 1fr;
             }
 
+
             .add-btn {
                 grid-column: auto;
+
                 width: 100%;
             }
+
 
             #employee-list {
                 grid-template-columns: 1fr;
             }
 
+
             .page-title {
                 flex-direction: column;
+
                 align-items: flex-start;
             }
+
 
             .dashboard-btn {
                 width: 100%;
-                text-align: center;
+
+                justify-content: center;
             }
+
 
             header {
                 flex-direction: column;
+
                 align-items: flex-start;
+
+                padding: 15px 18px;
             }
+
 
             header div {
                 width: 100%;
+
                 justify-content: space-between;
             }
+
         }
+
 
         @media (max-width: 500px) {
 
             main {
-                margin-top: 20px;
-                padding: 0 12px 30px;
+                padding:
+                    25px
+                    12px
+                    35px;
             }
 
+
             .section-card {
-                padding: 17px;
+                padding: 18px;
             }
+
 
             .employee-card {
                 flex-direction: column;
+
                 align-items: flex-start;
             }
+
 
             .status-btn {
                 width: 100%;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- ================= LOADING OVERLAY ================= -->
+
+    <!-- =====================================================
+         LOADING OVERLAY
+    ===================================================== -->
 
     <div id="loading-overlay">
+
         <div class="loader-box">
-            <div class="biscuit">🍪</div>
-            <div class="loader-text">Loading...</div>
+
+            <div class="biscuit">
+                🍪
+            </div>
+
+            <div class="loader-text">
+                Loading...
+            </div>
+
         </div>
+
     </div>
 
-    <!-- ================= HEADER ================= -->
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
 
     <header>
 
-        <h1>RUBREK ENTERPRISES</h1>
+        <h1>
+            JUBREK ENTERPRISES
+        </h1>
+
 
         <div>
-            <span>Welcome, {{ session["full_name"] }}</span>
+
+            <span>
+                Welcome, {{ session["full_name"] }}
+            </span>
+
 
             <a href="{{ url_for('logout') }}">
                 Logout
             </a>
+
         </div>
 
     </header>
 
-    <!-- ================= MAIN ================= -->
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
 
     <main>
 
+
         <div class="page-title">
 
-            <h2>Employee Management</h2>
+            <h2>
+                Employee Management
+            </h2>
+
 
             <a
                 href="{{ url_for('admin_dashboard') }}"
@@ -435,19 +800,29 @@
         </div>
 
 
-        <!-- ================= ADD EMPLOYEE ================= -->
+        <!-- =================================================
+             ADD EMPLOYEE
+        ================================================= -->
 
         <section class="section-card">
 
-            <h3>Add New Employee</h3>
+            <h3>
+                Add New Employee
+            </h3>
 
-            <form id="employee-form" class="employee-form">
+
+            <form
+                id="employee-form"
+                class="employee-form"
+            >
+
 
                 <div class="form-group">
 
                     <label for="full_name">
                         Full Name
                     </label>
+
 
                     <input
                         type="text"
@@ -466,6 +841,7 @@
                         Username
                     </label>
 
+
                     <input
                         type="text"
                         id="username"
@@ -482,6 +858,7 @@
                     <label for="password">
                         Password
                     </label>
+
 
                     <input
                         type="password"
@@ -501,18 +878,25 @@
                     + Add Employee
                 </button>
 
+
             </form>
+
 
             <p id="message"></p>
 
         </section>
 
 
-        <!-- ================= EMPLOYEES ================= -->
+        <!-- =================================================
+             EMPLOYEE LIST
+        ================================================= -->
 
         <section class="section-card">
 
-            <h3>Employees</h3>
+            <h3>
+                Employees
+            </h3>
+
 
             <div id="employee-list">
 
@@ -524,59 +908,95 @@
 
         </section>
 
+
     </main>
 
 
-    <!-- ================= JAVASCRIPT ================= -->
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
 
     <script>
 
         const loadingOverlay =
-            document.getElementById("loading-overlay");
+            document.getElementById(
+                "loading-overlay"
+            );
 
 
-        function showLoader(text = "Loading...") {
+        // =====================================================
+        // LOADER
+        // =====================================================
 
-            document.querySelector(".loader-text").textContent = text;
+        function showLoader(
+            text = "Loading..."
+        ) {
 
-            loadingOverlay.style.display = "flex";
+            document.querySelector(
+                ".loader-text"
+            ).textContent = text;
+
+
+            loadingOverlay.style.display =
+                "flex";
 
         }
 
 
         function hideLoader() {
 
-            loadingOverlay.style.display = "none";
+            loadingOverlay.style.display =
+                "none";
 
         }
 
+
+        // =====================================================
+        // MESSAGE
+        // =====================================================
 
         function showMessage(text) {
 
             const message =
-                document.getElementById("message");
+                document.getElementById(
+                    "message"
+                );
 
-            message.textContent = text;
 
-            message.classList.add("show");
+            message.textContent =
+                text;
+
+
+            message.classList.add(
+                "show"
+            );
 
         }
 
 
-        // ================= LOAD EMPLOYEES =================
+        // =====================================================
+        // LOAD EMPLOYEES
+        // =====================================================
 
         async function loadEmployees() {
 
             const employeeList =
-                document.getElementById("employee-list");
+                document.getElementById(
+                    "employee-list"
+                );
+
 
             try {
 
                 const response =
-                    await fetch("/api/employees");
+                    await fetch(
+                        "/api/employees"
+                    );
+
 
                 const data =
                     await response.json();
+
 
                 if (!response.ok) {
 
@@ -590,7 +1010,9 @@
                 }
 
 
-                if (data.employees.length === 0) {
+                if (
+                    data.employees.length === 0
+                ) {
 
                     employeeList.innerHTML = `
                         <div class="empty-state">
@@ -605,78 +1027,89 @@
                 employeeList.innerHTML = "";
 
 
-                data.employees.forEach(employee => {
+                data.employees.forEach(
+                    employee => {
 
-                    const employeeDiv =
-                        document.createElement("div");
-
-                    employeeDiv.className =
-                        "employee-card";
-
-
-                    const isActive =
-                        employee.status === "ACTIVE";
+                        const employeeDiv =
+                            document.createElement(
+                                "div"
+                            );
 
 
-                    const statusClass =
-                        isActive
-                            ? "status-active"
-                            : "status-inactive";
+                        employeeDiv.className =
+                            "employee-card";
 
 
-                    const actionClass =
-                        isActive
-                            ? "deactivate-btn"
-                            : "reactivate-btn";
+                        const isActive =
+                            employee.status ===
+                            "ACTIVE";
 
 
-                    const actionText =
-                        isActive
-                            ? "Deactivate"
-                            : "Reactivate";
+                        const statusClass =
+                            isActive
+                                ? "status-active"
+                                : "status-inactive";
 
 
-                    const action =
-                        isActive
-                            ? "deactivate"
-                            : "reactivate";
+                        const actionClass =
+                            isActive
+                                ? "deactivate-btn"
+                                : "reactivate-btn";
 
 
-                    employeeDiv.innerHTML = `
-
-                        <div class="employee-info">
-
-                            <p class="employee-name">
-                                ${employee.full_name}
-                            </p>
-
-                            <p class="employee-username">
-                                @${employee.username}
-                            </p>
-
-                            <span class="status-badge ${statusClass}">
-                                ${employee.status}
-                            </span>
-
-                        </div>
+                        const actionText =
+                            isActive
+                                ? "Deactivate"
+                                : "Reactivate";
 
 
-                        <button
-                            class="status-btn ${actionClass}"
-                            onclick="changeEmployeeStatus(
-                                ${employee.id},
-                                '${action}'
-                            )"
-                        >
-                            ${actionText}
-                        </button>
-
-                    `;
+                        const action =
+                            isActive
+                                ? "deactivate"
+                                : "reactivate";
 
 
-                    employeeList.appendChild(employeeDiv);
+                        employeeDiv.innerHTML = `
 
-                });
+                            <div class="employee-info">
+
+                                <p class="employee-name">
+                                    ${employee.full_name}
+                                </p>
+
+                                <p class="employee-username">
+                                    @${employee.username}
+                                </p>
+
+                                <span
+                                    class="status-badge ${statusClass}"
+                                >
+                                    ${employee.status}
+                                </span>
+
+                            </div>
+
+
+                            <button
+                                class="status-btn ${actionClass}"
+                                onclick="changeEmployeeStatus(
+                                    ${employee.id},
+                                    '${action}'
+                                )"
+                            >
+                                ${actionText}
+                            </button>
+
+                        `;
+
+
+                        employeeList.appendChild(
+                            employeeDiv
+                        );
+
+                    }
+                );
+
 
             } catch (error) {
 
@@ -691,10 +1124,14 @@
         }
 
 
-        // ================= ADD EMPLOYEE =================
+        // =====================================================
+        // ADD EMPLOYEE
+        // =====================================================
 
         document
-            .getElementById("employee-form")
+            .getElementById(
+                "employee-form"
+            )
             .addEventListener(
                 "submit",
                 async function(event) {
@@ -704,45 +1141,60 @@
 
                     const fullName =
                         document
-                            .getElementById("full_name")
+                            .getElementById(
+                                "full_name"
+                            )
                             .value
                             .trim();
 
 
                     const username =
                         document
-                            .getElementById("username")
+                            .getElementById(
+                                "username"
+                            )
                             .value
                             .trim();
 
 
                     const password =
                         document
-                            .getElementById("password")
+                            .getElementById(
+                                "password"
+                            )
                             .value;
 
 
                     try {
 
-                        showLoader("Adding employee...");
+                        showLoader(
+                            "Adding employee..."
+                        );
 
 
                         const response =
                             await fetch(
                                 "/api/employees",
                                 {
-                                    method: "POST",
+                                    method:
+                                        "POST",
 
                                     headers: {
                                         "Content-Type":
                                             "application/json"
                                     },
 
-                                    body: JSON.stringify({
-                                        full_name: fullName,
-                                        username: username,
-                                        password: password
-                                    })
+                                    body:
+                                        JSON.stringify({
+                                            full_name:
+                                                fullName,
+
+                                            username:
+                                                username,
+
+                                            password:
+                                                password
+                                        })
                                 }
                             );
 
@@ -762,15 +1214,20 @@
                         }
 
 
-                        showMessage(data.message);
+                        showMessage(
+                            data.message
+                        );
 
 
                         document
-                            .getElementById("employee-form")
+                            .getElementById(
+                                "employee-form"
+                            )
                             .reset();
 
 
                         await loadEmployees();
+
 
                     } catch (error) {
 
@@ -788,7 +1245,9 @@
             );
 
 
-        // ================= CHANGE STATUS =================
+        // =====================================================
+        // CHANGE EMPLOYEE STATUS
+        // =====================================================
 
         async function changeEmployeeStatus(
             employeeId,
@@ -828,10 +1287,13 @@
                 }
 
 
-                showMessage(data.message);
+                showMessage(
+                    data.message
+                );
 
 
                 await loadEmployees();
+
 
             } catch (error) {
 
@@ -848,11 +1310,14 @@
         }
 
 
-        // ================= INITIAL LOAD =================
+        // =====================================================
+        // INITIAL LOAD
+        // =====================================================
 
         loadEmployees();
 
     </script>
+
 
 </body>
 

@@ -2,10 +2,15 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Stock Management - RUBREK ENTERPRISES</title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Stock Management | JUBREK ENTERPRISES</title>
 
     <style>
 
@@ -13,69 +18,130 @@
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+            --charcoal-light: #292d2a;
+
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+
+            --tiffany-blue: #81d8d0;
+
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+
+            --white: #ffffff;
+
+            --border-light: rgba(32, 36, 33, 0.13);
+            --border-dark: rgba(255, 255, 255, 0.10);
         }
 
 
-        /* =========================
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: var(--charcoal);
+
+            color: var(--primary-text);
+        }
+
+
+        /* =====================================================
            LOADING OVERLAY
-        ========================= */
+        ===================================================== */
 
         #loadingOverlay {
             position: fixed;
+
             inset: 0;
-            background: rgba(255, 255, 255, 0.92);
+
+            background:
+                rgba(23, 26, 24, 0.97);
+
             display: none;
+
             align-items: center;
+
             justify-content: center;
+
             flex-direction: column;
+
             z-index: 9999;
         }
 
         .biscuit {
             font-size: 42px;
-            animation: biscuitSpin 1s infinite ease-in-out;
+
+            animation:
+                biscuitSpin
+                1s
+                infinite
+                ease-in-out;
         }
 
         .loadingText {
             margin-top: 8px;
-            color: #1769d1;
+
+            color: var(--tiffany-blue);
+
             font-size: 14px;
+
             font-weight: bold;
         }
 
         @keyframes biscuitSpin {
 
             0% {
-                transform: rotate(0deg) scale(1);
+                transform:
+                    rotate(0deg)
+                    scale(1);
             }
 
             50% {
-                transform: rotate(180deg) scale(1.12);
+                transform:
+                    rotate(180deg)
+                    scale(1.12);
             }
 
             100% {
-                transform: rotate(360deg) scale(1);
+                transform:
+                    rotate(360deg)
+                    scale(1);
             }
 
         }
 
 
-        /* =========================
+        /* =====================================================
            HEADER
-        ========================= */
+        ===================================================== */
 
         header {
-            background: #ffffff;
-            border-bottom: 1px solid #e1e7ef;
+            background: var(--charcoal-dark);
+
+            border-bottom:
+                1px solid
+                var(--border-dark);
+
             padding: 15px 30px;
 
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
 
             gap: 20px;
@@ -83,76 +149,132 @@
 
         .brand {
             display: flex;
+
             align-items: center;
+
             gap: 12px;
         }
 
         .brand-icon {
             width: 40px;
+
             height: 40px;
 
-            background: #1769d1;
-            color: white;
+            background:
+                var(--action-blue);
+
+            color:
+                var(--white);
 
             border-radius: 10px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 20px;
+
             font-weight: bold;
+
+            flex-shrink: 0;
+
+            line-height: 1;
         }
 
         .brand-name {
             margin: 0;
-            color: #123b70;
+
+            color: var(--white);
+
             font-size: 18px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
+
+            white-space: nowrap;
         }
 
         .brand-subtitle {
             margin: 3px 0 0;
-            color: #718096;
+
+            color: #aeb6b1;
+
             font-size: 12px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         .header-right {
             display: flex;
+
             align-items: center;
+
             gap: 15px;
         }
 
         .welcome {
-            color: #4b5563;
+            color: #d2d7d4;
+
             font-size: 13px;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         .logout {
             text-decoration: none;
-            color: #b00020;
-            border: 1px solid #f0c1c8;
-            background: #fff5f5;
+
+            color: var(--white);
+
+            border:
+                1px solid
+                var(--action-blue);
+
+            background:
+                var(--action-blue);
 
             padding: 8px 13px;
+
             border-radius: 6px;
 
             font-size: 13px;
+
             font-weight: bold;
+
+            transition: 0.2s;
         }
 
         .logout:hover {
-            background: #b00020;
-            color: white;
+            background:
+                var(--tiffany-blue);
+
+            border-color:
+                var(--tiffany-blue);
+
+            color:
+                var(--primary-text);
         }
 
 
-        /* =========================
+        /* =====================================================
            MAIN
-        ========================= */
+        ===================================================== */
 
         main {
             max-width: 1200px;
+
             margin: auto;
+
             padding: 28px;
         }
 
@@ -162,150 +284,533 @@
 
         .page-heading h2 {
             margin: 0 0 5px;
-            color: #123b70;
+
+            color: var(--white);
+
             font-size: 25px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         .page-heading p {
             margin: 0;
-            color: #718096;
+
+            color: #aeb6b1;
+
             font-size: 14px;
+
+            line-height: 1.4;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
 
-        /* =========================
+        /* =====================================================
+           BACK BUTTON
+        ===================================================== */
+
+        .top-actions {
+            display: flex;
+
+            justify-content: flex-start;
+
+            margin-bottom: 18px;
+        }
+
+        .back-button {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            text-decoration: none;
+
+            background: var(--charcoal-light);
+
+            color: var(--white);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            padding: 9px 14px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .back-button:hover {
+            background: var(--tiffany-blue);
+
+            color: var(--primary-text);
+
+            border-color: var(--tiffany-blue);
+        }
+
+
+        /* =====================================================
            CARDS
-        ========================= */
+        ===================================================== */
 
         .card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            background:
+                var(--card-grey);
+
+            border:
+                1px solid
+                var(--border-light);
+
+            border-radius: 12px;
 
             padding: 20px;
+
             margin-bottom: 20px;
 
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.18);
         }
 
         .card h3 {
-            margin: 0 0 17px;
-            color: #123b70;
+            margin:
+                0 0 17px;
+
+            color:
+                var(--primary-text);
+
             font-size: 17px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         .card-description {
-            margin: -8px 0 18px;
-            color: #718096;
+            margin:
+                -8px 0 18px;
+
+            color:
+                var(--secondary-text);
+
             font-size: 12px;
+
+            line-height: 1.4;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
 
-        /* =========================
-           FORMS
-        ========================= */
+        /* =====================================================
+           FORM
+        ===================================================== */
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 16px;
         }
 
         .form-group {
             display: flex;
+
             flex-direction: column;
         }
 
         label {
             margin-bottom: 7px;
+
             font-size: 13px;
+
             font-weight: bold;
-            color: #374151;
+
+            color:
+                var(--primary-text);
         }
 
         input {
             width: 100%;
+
             padding: 11px 12px;
 
-            border: 1px solid #cfd8e3;
+            border:
+                1px solid
+                rgba(32, 36, 33, 0.20);
+
             border-radius: 7px;
 
             font-size: 14px;
+
             outline: none;
+
+            background: #f0f2f1;
+
+            color:
+                var(--primary-text);
+
+            transition: 0.2s;
+
+            font-family: inherit;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         input:focus {
-            border-color: #1769d1;
-            box-shadow: 0 0 0 2px rgba(23, 105, 209, 0.1);
+            border-color:
+                var(--action-blue);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(23, 105, 170, 0.14);
         }
 
-        .reason-field {
-            grid-column: span 1;
+        input[readonly] {
+            background:
+                var(--card-grey-dark);
+
+            cursor: not-allowed;
+
+            color: #59605b;
+        }
+
+        .field-note {
+            margin-top: 5px;
+
+            color: var(--secondary-text);
+
+            font-size: 11px;
+
+            line-height: 1.3;
         }
 
 
-        /* =========================
-           BUTTONS
-        ========================= */
+        /* =====================================================
+           PRODUCT SEARCH
+        ===================================================== */
 
-        button {
-            border: none;
-            cursor: pointer;
+        .product-search-wrapper {
+            position: relative;
+        }
 
-            padding: 10px 16px;
+        .product-results {
+            position: absolute;
+
+            top: calc(100% + 3px);
+
+            left: 0;
+
+            right: 0;
+
+            background: #f0f2f1;
+
+            border:
+                1px solid
+                rgba(32, 36, 33, 0.20);
+
             border-radius: 7px;
 
+            max-height: 220px;
+
+            overflow-y: auto;
+
+            display: none;
+
+            z-index: 100;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.15);
+        }
+
+        .product-option {
+            padding: 10px 12px;
+
+            cursor: pointer;
+
+            border-bottom:
+                1px solid
+                rgba(32, 36, 33, 0.08);
+
             font-size: 13px;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
+        }
+
+        .product-option:last-child {
+            border-bottom: none;
+        }
+
+        .product-option:hover {
+            background:
+                rgba(129, 216, 208, 0.35);
+        }
+
+        .product-option-name {
             font-weight: bold;
         }
 
+        .product-option-details {
+            margin-top: 3px;
+
+            color: var(--secondary-text);
+
+            font-size: 11px;
+        }
+
+        .no-results {
+            padding: 11px 12px;
+
+            color: var(--secondary-text);
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           CATEGORY SEARCH
+        ===================================================== */
+
+        .category-search-wrapper {
+            position: relative;
+        }
+
+        .category-results {
+            position: absolute;
+
+            top: calc(100% + 3px);
+
+            left: 0;
+
+            right: 0;
+
+            background: #f0f2f1;
+
+            border:
+                1px solid
+                rgba(32, 36, 33, 0.20);
+
+            border-radius: 7px;
+
+            max-height: 180px;
+
+            overflow-y: auto;
+
+            display: none;
+
+            z-index: 90;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.15);
+        }
+
+        .category-option {
+            padding: 10px 12px;
+
+            cursor: pointer;
+
+            border-bottom:
+                1px solid
+                rgba(32, 36, 33, 0.08);
+
+            font-size: 13px;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
+        }
+
+        .category-option:last-child {
+            border-bottom: none;
+        }
+
+        .category-option:hover {
+            background:
+                rgba(129, 216, 208, 0.35);
+        }
+
+
+        /* =====================================================
+           BUTTON
+        ===================================================== */
+
         .primary-button {
-            background: #1769d1;
-            color: white;
-            margin-top: 17px;
+            background:
+                var(--action-blue);
+
+            color:
+                var(--white);
+
+            margin-top: 18px;
+
+            border: none;
+
+            cursor: pointer;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            font-family: inherit;
+
+            transition: 0.2s;
         }
 
         .primary-button:hover {
-            background: #1257ae;
+            background:
+                var(--tiffany-blue);
+
+            color:
+                var(--primary-text);
         }
 
-        .remove-button {
-            background: #b00020;
-            color: white;
+        .primary-button:disabled {
+            opacity: 0.55;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           SELECTED PRODUCT
+        ===================================================== */
+
+        .selected-product {
+            display: none;
+
             margin-top: 17px;
+
+            padding: 12px 14px;
+
+            background:
+                rgba(129, 216, 208, 0.20);
+
+            border:
+                1px solid
+                rgba(23, 105, 170, 0.16);
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
-        .remove-button:hover {
-            background: #8f001b;
+        .selected-product strong {
+            color: var(--primary-text);
         }
 
-        .adjust-button {
-            background: #4b5563;
-            color: white;
-            margin-top: 17px;
+
+        /* =====================================================
+           HISTORY
+        ===================================================== */
+
+        .history-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
         }
 
-        .adjust-button:hover {
-            background: #374151;
+        .history-header > div {
+            min-width: 0;
+        }
+
+        .history-header h3 {
+            margin: 0 0 8px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
+        }
+
+        .history-header .card-description {
+            margin: 0;
+
+            line-height: 1.4;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         .refresh-button {
-            background: #eaf2fc;
-            color: #1769d1;
-            border: 1px solid #c8dcf4;
+            background:
+                var(--action-blue);
 
-            margin-bottom: 18px;
+            color:
+                var(--white);
+
+            border:
+                1px solid
+                var(--action-blue);
+
+            padding: 8px 12px;
+
+            margin: 0;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+
+            font-family: inherit;
+
+            white-space: nowrap;
         }
 
         .refresh-button:hover {
-            background: #1769d1;
-            color: white;
+            background:
+                var(--tiffany-blue);
+
+            border-color:
+                var(--tiffany-blue);
+
+            color:
+                var(--primary-text);
         }
-
-
-        /* =========================
-           HISTORY TABLE
-        ========================= */
 
         .table-wrapper {
             overflow-x: auto;
@@ -313,29 +818,52 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 850px;
+
+            border-collapse:
+                collapse;
+
+            min-width: 720px;
         }
 
         th,
         td {
             padding: 12px 14px;
-            border-bottom: 1px solid #edf0f4;
+
+            border-bottom:
+                1px solid
+                rgba(32, 36, 33, 0.10);
+
             text-align: left;
+
             font-size: 13px;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
         }
 
         th {
-            background: #1769d1;
-            color: white;
+            background:
+                var(--action-blue);
+
+            color:
+                var(--white);
 
             font-size: 11px;
-            text-transform: uppercase;
+
+            text-transform:
+                uppercase;
+
             letter-spacing: 0.3px;
         }
 
+        tbody tr {
+            transition: 0.2s;
+        }
+
         tbody tr:hover {
-            background: #f7faff;
+            background:
+                rgba(129, 216, 208, 0.28);
         }
 
         tbody tr:last-child td {
@@ -344,49 +872,64 @@
 
         .empty {
             text-align: center;
-            color: #718096;
+
+            color:
+                var(--secondary-text);
+
             padding: 25px;
         }
 
 
-        /* =========================
+        /* =====================================================
            TRANSACTION TYPES
-        ========================= */
+        ===================================================== */
 
         .transaction-type {
             display: inline-block;
 
             padding: 5px 8px;
+
             border-radius: 15px;
 
             font-size: 10px;
+
             font-weight: bold;
         }
 
         .stock-in {
-            background: #e7f7ed;
-            color: #168344;
+            background:
+                #d8eadf;
+
+            color:
+                #216b3b;
         }
 
         .stock-out {
-            background: #fff0f0;
-            color: #b00020;
+            background:
+                #f0dada;
+
+            color:
+                #a42626;
         }
 
         .adjustment {
-            background: #fff5dc;
-            color: #9a7000;
+            background:
+                #eee1b8;
+
+            color:
+                #765e00;
         }
 
 
-        /* =========================
+        /* =====================================================
            RESPONSIVE
-        ========================= */
+        ===================================================== */
 
         @media (max-width: 800px) {
 
             header {
-                padding: 14px 18px;
+                padding:
+                    14px 18px;
             }
 
             main {
@@ -394,12 +937,17 @@
             }
 
             .form-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    1fr;
             }
 
             .header-right {
-                flex-direction: column;
-                align-items: flex-end;
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-end;
+
                 gap: 6px;
             }
 
@@ -409,15 +957,28 @@
         @media (max-width: 550px) {
 
             header {
-                flex-direction: column;
-                align-items: flex-start;
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
             }
 
             .header-right {
                 width: 100%;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
+
+                flex-direction:
+                    row;
+
+                justify-content:
+                    space-between;
+
+                align-items:
+                    center;
+            }
+
+            .brand-name {
+                white-space: normal;
             }
 
             main {
@@ -428,16 +989,16 @@
                 font-size: 21px;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .reason-field {
-                grid-column: span 1;
-            }
-
             .card {
                 padding: 16px;
+            }
+
+            .history-header {
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
             }
 
         }
@@ -450,9 +1011,9 @@
 <body>
 
 
-<!-- =========================
+<!-- =====================================================
      LOADING
-========================= -->
+===================================================== -->
 
 <div id="loadingOverlay">
 
@@ -461,29 +1022,28 @@
     </div>
 
     <div class="loadingText">
-        Loading...
+        Updating stock...
     </div>
 
 </div>
 
 
-
-<!-- =========================
+<!-- =====================================================
      HEADER
-========================= -->
+===================================================== -->
 
 <header>
 
     <div class="brand">
 
         <div class="brand-icon">
-            R
+            J
         </div>
 
         <div>
 
             <h1 class="brand-name">
-                RUBREK ENTERPRISES
+                JUBREK ENTERPRISES
             </h1>
 
             <p class="brand-subtitle">
@@ -513,10 +1073,9 @@
 </header>
 
 
-
-<!-- =========================
+<!-- =====================================================
      MAIN
-========================= -->
+===================================================== -->
 
 <main>
 
@@ -528,16 +1087,31 @@
         </h2>
 
         <p>
-            Add, remove, adjust and monitor stock movements.
+            Add incoming stock and view your stock activity.
         </p>
 
     </div>
 
 
+    <!-- =================================================
+         BACK TO DASHBOARD
+    ================================================= -->
 
-    <!-- =========================
+    <div class="top-actions">
+
+        <a
+            href="{{ url_for('employee_dashboard') }}"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
          ADD STOCK
-    ========================= -->
+    ================================================= -->
 
     <section class="card">
 
@@ -546,13 +1120,49 @@
         </h3>
 
         <p class="card-description">
-            Increase the available quantity of an existing product.
+            Select an existing active product and enter
+            the quantity being added.
         </p>
 
 
         <form id="addStockForm">
 
             <div class="form-grid">
+
+
+                <!-- PRODUCT NAME -->
+
+                <div class="form-group">
+
+                    <label for="addProductName">
+                        Product Name
+                    </label>
+
+                    <div class="product-search-wrapper">
+
+                        <input
+                            type="text"
+                            id="addProductName"
+                            placeholder="Type product name..."
+                            autocomplete="off"
+                            required
+                        >
+
+                        <div
+                            id="productResults"
+                            class="product-results"
+                        ></div>
+
+                    </div>
+
+                    <div class="field-note">
+                        Type to search and select a product.
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUCT ID -->
 
                 <div class="form-group">
 
@@ -561,14 +1171,21 @@
                     </label>
 
                     <input
-                        type="number"
+                        type="text"
                         id="addProductId"
-                        min="1"
-                        required
+                        readonly
+                        placeholder="Automatically generated"
                     >
+
+                    <div class="field-note">
+                        Automatically filled after selecting
+                        the product.
+                    </div>
 
                 </div>
 
+
+                <!-- QUANTITY -->
 
                 <div class="form-group">
 
@@ -579,18 +1196,65 @@
                     <input
                         type="number"
                         id="addQuantity"
-                        min="1"
-                        step="1"
+                        min="0.001"
+                        step="0.001"
+                        placeholder="Enter quantity"
                         required
                     >
+
+                    <div class="field-note">
+                        Enter the quantity being added.
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="form-group">
+
+                    <label for="addCategory">
+                        Category
+                    </label>
+
+                    <div class="category-search-wrapper">
+
+                        <input
+                            type="text"
+                            id="addCategory"
+                            placeholder="Type or select category..."
+                            autocomplete="off"
+                            required
+                        >
+
+                        <div
+                            id="categoryResults"
+                            class="category-results"
+                        ></div>
+
+                    </div>
+
+                    <div class="field-note">
+                        Type to search or select an available
+                        category.
+                    </div>
 
                 </div>
 
             </div>
 
 
+            <!-- SELECTED PRODUCT INFORMATION -->
+
+            <div
+                id="selectedProduct"
+                class="selected-product"
+            ></div>
+
+
             <button
                 type="submit"
+                id="addStockButton"
                 class="primary-button"
             >
                 + Add Stock
@@ -601,200 +1265,45 @@
     </section>
 
 
-
-    <!-- =========================
-         REMOVE STOCK
-    ========================= -->
-
-    <section class="card">
-
-        <h3>
-            Remove Stock
-        </h3>
-
-        <p class="card-description">
-            Remove stock and record the reason for the movement.
-        </p>
-
-
-        <form id="removeStockForm">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label for="removeProductId">
-                        Product ID
-                    </label>
-
-                    <input
-                        type="number"
-                        id="removeProductId"
-                        min="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="removeQuantity">
-                        Quantity
-                    </label>
-
-                    <input
-                        type="number"
-                        id="removeQuantity"
-                        min="1"
-                        step="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="removeReason">
-                        Reason
-                    </label>
-
-                    <input
-                        type="text"
-                        id="removeReason"
-                        placeholder="e.g. Damaged goods"
-                        required
-                    >
-
-                </div>
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="remove-button"
-            >
-                Remove Stock
-            </button>
-
-        </form>
-
-    </section>
-
-
-
-    <!-- =========================
-         ADJUST STOCK
-    ========================= -->
-
-    <section class="card">
-
-        <h3>
-            Adjust Stock
-        </h3>
-
-        <p class="card-description">
-            Set the product's stock to an exact quantity and record why.
-        </p>
-
-
-        <form id="adjustStockForm">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label for="adjustProductId">
-                        Product ID
-                    </label>
-
-                    <input
-                        type="number"
-                        id="adjustProductId"
-                        min="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="adjustQuantity">
-                        New Quantity
-                    </label>
-
-                    <input
-                        type="number"
-                        id="adjustQuantity"
-                        min="0"
-                        step="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="adjustReason">
-                        Reason
-                    </label>
-
-                    <input
-                        type="text"
-                        id="adjustReason"
-                        placeholder="Reason for adjustment"
-                        required
-                    >
-
-                </div>
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="adjust-button"
-            >
-                Adjust Stock
-            </button>
-
-        </form>
-
-    </section>
-
-
-
-    <!-- =========================
+    <!-- =================================================
          STOCK HISTORY
-    ========================= -->
+    ================================================= -->
 
     <section class="card">
 
-        <h3>
-            Stock History
-        </h3>
+        <div class="history-header">
 
-        <p class="card-description">
-            View all stock movements and the employee responsible.
-        </p>
+            <div>
+
+                <h3>
+                    My Stock History
+                </h3>
+
+                <p class="card-description">
+                    Only stock movements recorded by your
+                    account are shown here.
+                </p>
+
+            </div>
 
 
-        <button
-            onclick="loadStockHistory()"
-            class="refresh-button"
-        >
-            ↻ Refresh Stock History
-        </button>
+            <button
+                type="button"
+                onclick="loadStockHistory()"
+                class="refresh-button"
+            >
+                ↻ Refresh
+            </button>
+
+        </div>
 
 
-        <div
-            id="stockHistory"
-        >
-            Loading...
+        <div id="stockHistory">
+
+            <div class="empty">
+                Loading stock history...
+            </div>
+
         </div>
 
     </section>
@@ -803,15 +1312,29 @@
 </main>
 
 
-
 <script>
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let products = [];
+
+let categories = [];
+
+let selectedProduct = null;
+
+let selectedCategory = null;
 
 
 /* =========================================================
    LOADING
 ========================================================= */
 
-function showLoading(text = "Processing...") {
+function showLoading(
+    text = "Updating stock..."
+) {
 
     document
         .querySelector(".loadingText")
@@ -833,71 +1356,605 @@ function hideLoading() {
 }
 
 
-
 /* =========================================================
-   GENERIC POST REQUEST
+   LOAD PRODUCTS
 ========================================================= */
 
-async function sendRequest(url, data) {
+async function loadProducts() {
 
     try {
 
-        showLoading("Updating stock...");
-
-
         const response =
-            await fetch(url, {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(data)
-
-            });
-
+            await fetch("/api/products");
 
         const result =
             await response.json();
-
 
         if (!response.ok) {
 
             throw new Error(
                 result.error ||
-                "Request failed."
+                "Could not load products."
             );
 
         }
 
-
-        alert(
-            result.message ||
-            "Operation successful."
-        );
-
-
-        await loadStockHistory();
-
+        products =
+            result.products || [];
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "PRODUCT LOAD ERROR:",
+            error
+        );
 
-        alert(error.message);
-
-    } finally {
-
-        hideLoading();
+        alert(
+            "Could not load products."
+        );
 
     }
 
 }
 
+
+/* =========================================================
+   LOAD CATEGORIES
+========================================================= */
+
+async function loadCategories() {
+
+    try {
+
+        const response =
+            await fetch("/api/categories");
+
+        const result =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Could not load categories."
+            );
+
+        }
+
+        categories =
+            (result.categories || [])
+                .filter(category => {
+
+                    return (
+                        category.status === "ACTIVE" ||
+                        !category.status
+                    );
+
+                });
+
+    } catch (error) {
+
+        console.error(
+            "CATEGORY LOAD ERROR:",
+            error
+        );
+
+        alert(
+            "Could not load categories."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PRODUCT SEARCH
+========================================================= */
+
+const productInput =
+    document.getElementById(
+        "addProductName"
+    );
+
+const productResults =
+    document.getElementById(
+        "productResults"
+    );
+
+
+productInput.addEventListener(
+    "input",
+    function() {
+
+        const search =
+            this.value
+                .trim()
+                .toLowerCase();
+
+
+        selectedProduct = null;
+
+        document
+            .getElementById("addProductId")
+            .value = "";
+
+
+        document
+            .getElementById("selectedProduct")
+            .style.display = "none";
+
+
+        if (!search) {
+
+            productResults.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        const matches =
+            products.filter(product => {
+
+                const productName =
+                    String(
+                        product.product_name || ""
+                    )
+                    .toLowerCase();
+
+                const productId =
+                    String(
+                        product.id || ""
+                    )
+                    .toLowerCase();
+
+                return (
+                    productName.includes(search) ||
+                    productId.includes(search)
+                );
+
+            });
+
+
+        renderProductResults(matches);
+
+    }
+);
+
+
+/* =========================================================
+   PRODUCT RESULTS
+========================================================= */
+
+function renderProductResults(matches) {
+
+    if (!matches.length) {
+
+        productResults.innerHTML = `
+
+            <div class="no-results">
+                No matching products found.
+            </div>
+
+        `;
+
+        productResults.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    productResults.innerHTML =
+        matches
+            .map(product => {
+
+                return `
+
+                    <div
+                        class="product-option"
+                        data-product-id="${product.id}"
+                    >
+
+                        <div class="product-option-name">
+
+                            ${escapeHtml(
+                                product.product_name
+                            )}
+
+                        </div>
+
+                        <div class="product-option-details">
+
+                            ID:
+                            ${product.id}
+
+                            &nbsp; • &nbsp;
+
+                            Category:
+                            ${escapeHtml(
+                                product.category_name ||
+                                "No category"
+                            )}
+
+                            &nbsp; • &nbsp;
+
+                            Stock:
+                            ${escapeHtml(
+                                product.quantity
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    productResults.style.display =
+        "block";
+
+
+    document
+        .querySelectorAll(
+            "#productResults .product-option"
+        )
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                function() {
+
+                    const productId =
+                        Number(
+                            this.dataset.productId
+                        );
+
+                    selectProduct(productId);
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   SELECT PRODUCT
+========================================================= */
+
+function selectProduct(productId) {
+
+    const product =
+        products.find(
+            item =>
+                Number(item.id) ===
+                Number(productId)
+        );
+
+
+    if (!product) {
+        return;
+    }
+
+
+    selectedProduct =
+        product;
+
+
+    productInput.value =
+        product.product_name;
+
+
+    /*
+     * Product ID is automatically filled.
+     */
+
+    document
+        .getElementById("addProductId")
+        .value =
+        product.id;
+
+
+    /*
+     * Automatically show the existing
+     * product category.
+     */
+
+    const categoryInput =
+        document.getElementById(
+            "addCategory"
+        );
+
+
+    categoryInput.value =
+        product.category_name || "";
+
+
+    selectedCategory =
+        categories.find(
+            category =>
+
+                String(
+                    category.category_name
+                ).toLowerCase() ===
+
+                String(
+                    product.category_name || ""
+                ).toLowerCase()
+
+        ) || null;
+
+
+    /*
+     * Show selected product information.
+     */
+
+    const selectedProductBox =
+        document.getElementById(
+            "selectedProduct"
+        );
+
+
+    selectedProductBox.innerHTML = `
+
+        <strong>
+            ${escapeHtml(
+                product.product_name
+            )}
+        </strong>
+
+        &nbsp; | &nbsp;
+
+        Product ID:
+        <strong>
+            ${product.id}
+        </strong>
+
+        &nbsp; | &nbsp;
+
+        Current Quantity:
+        <strong>
+            ${escapeHtml(
+                product.quantity
+            )}
+        </strong>
+
+        &nbsp; | &nbsp;
+
+        Category:
+        <strong>
+            ${escapeHtml(
+                product.category_name ||
+                "No category"
+            )}
+        </strong>
+
+    `;
+
+
+    selectedProductBox.style.display =
+        "block";
+
+
+    productResults.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   CATEGORY SEARCH
+========================================================= */
+
+const categoryInput =
+    document.getElementById(
+        "addCategory"
+    );
+
+const categoryResults =
+    document.getElementById(
+        "categoryResults"
+    );
+
+
+categoryInput.addEventListener(
+    "focus",
+    function() {
+
+        renderCategoryResults(
+            this.value
+                .trim()
+                .toLowerCase()
+        );
+
+    }
+);
+
+
+categoryInput.addEventListener(
+    "input",
+    function() {
+
+        selectedCategory = null;
+
+        renderCategoryResults(
+            this.value
+                .trim()
+                .toLowerCase()
+        );
+
+    }
+);
+
+
+/* =========================================================
+   CATEGORY RESULTS
+========================================================= */
+
+function renderCategoryResults(
+    search = ""
+) {
+
+    const matches =
+        categories.filter(category => {
+
+            return String(
+                category.category_name || ""
+            )
+            .toLowerCase()
+            .includes(search);
+
+        });
+
+
+    if (!matches.length) {
+
+        categoryResults.innerHTML = `
+
+            <div class="no-results">
+                No matching categories found.
+            </div>
+
+        `;
+
+        categoryResults.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    categoryResults.innerHTML =
+        matches
+            .map(category => {
+
+                return `
+
+                    <div
+                        class="category-option"
+                        data-category-id="${category.id}"
+                    >
+
+                        ${escapeHtml(
+                            category.category_name
+                        )}
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    categoryResults.style.display =
+        "block";
+
+
+    document
+        .querySelectorAll(
+            "#categoryResults .category-option"
+        )
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                function() {
+
+                    const categoryId =
+                        Number(
+                            this.dataset.categoryId
+                        );
+
+                    selectCategory(
+                        categoryId
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   SELECT CATEGORY
+========================================================= */
+
+function selectCategory(
+    categoryId
+) {
+
+    const category =
+        categories.find(
+            item =>
+                Number(item.id) ===
+                Number(categoryId)
+        );
+
+
+    if (!category) {
+        return;
+    }
+
+
+    selectedCategory =
+        category;
+
+
+    categoryInput.value =
+        category.category_name;
+
+
+    categoryResults.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   CLICK OUTSIDE DROPDOWNS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".product-search-wrapper"
+            )
+        ) {
+
+            productResults.style.display =
+                "none";
+
+        }
+
+
+        if (
+            !event.target.closest(
+                ".category-search-wrapper"
+            )
+        ) {
+
+            categoryResults.style.display =
+                "none";
+
+        }
+
+    }
+);
 
 
 /* =========================================================
@@ -908,144 +1965,230 @@ document
     .getElementById("addStockForm")
     .addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
 
-            sendRequest(
-                "/api/stock/in",
-                {
+            if (!selectedProduct) {
 
-                    product_id:
-                        Number(
-                            document
-                                .getElementById(
-                                    "addProductId"
-                                )
-                                .value
-                        ),
+                alert(
+                    "Please search for and select a product."
+                );
 
-                    quantity:
-                        Number(
-                            document
-                                .getElementById(
-                                    "addQuantity"
-                                )
-                                .value
+                return;
+
+            }
+
+
+            const productId =
+                Number(
+                    document
+                        .getElementById(
+                            "addProductId"
                         )
+                        .value
+                );
+
+
+            const quantity =
+                Number(
+                    document
+                        .getElementById(
+                            "addQuantity"
+                        )
+                        .value
+                );
+
+
+            const category =
+                document
+                    .getElementById(
+                        "addCategory"
+                    )
+                    .value
+                    .trim();
+
+
+            if (!productId) {
+
+                alert(
+                    "Please select a valid product."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !Number.isFinite(quantity) ||
+                quantity <= 0
+            ) {
+
+                alert(
+                    "Quantity must be greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            if (!category) {
+
+                alert(
+                    "Please select a category."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Make sure the employee selected
+             * an actual product.
+             */
+
+            if (
+                productInput.value.trim()
+                !==
+                selectedProduct.product_name
+            ) {
+
+                alert(
+                    "Please select the product from the search results."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                showLoading(
+                    "Adding stock..."
+                );
+
+
+                const response =
+                    await fetch(
+                        "/api/stock/in",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    product_id:
+                                        productId,
+
+                                    quantity:
+                                        quantity
+
+                                })
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.error ||
+                        "Could not add stock."
+                    );
 
                 }
-            );
+
+
+                alert(
+                    result.message ||
+                    "Stock added successfully."
+                );
+
+
+                /*
+                 * Reset form.
+                 */
+
+                document
+                    .getElementById(
+                        "addStockForm"
+                    )
+                    .reset();
+
+
+                document
+                    .getElementById(
+                        "addProductId"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "selectedProduct"
+                    )
+                    .style.display =
+                    "none";
+
+
+                productResults.style.display =
+                    "none";
+
+                categoryResults.style.display =
+                    "none";
+
+
+                selectedProduct =
+                    null;
+
+                selectedCategory =
+                    null;
+
+
+                /*
+                 * Refresh product quantities
+                 * and stock history.
+                 */
+
+                await loadProducts();
+
+                await loadStockHistory();
+
+
+            } catch (error) {
+
+                console.error(
+                    "ADD STOCK ERROR:",
+                    error
+                );
+
+                alert(
+                    error.message
+                );
+
+            } finally {
+
+                hideLoading();
+
+            }
 
         }
     );
-
-
-
-/* =========================================================
-   REMOVE STOCK
-========================================================= */
-
-document
-    .getElementById("removeStockForm")
-    .addEventListener(
-        "submit",
-        function(event) {
-
-            event.preventDefault();
-
-
-            sendRequest(
-                "/api/stock/removal",
-                {
-
-                    product_id:
-                        Number(
-                            document
-                                .getElementById(
-                                    "removeProductId"
-                                )
-                                .value
-                        ),
-
-                    quantity:
-                        Number(
-                            document
-                                .getElementById(
-                                    "removeQuantity"
-                                )
-                                .value
-                        ),
-
-                    reason:
-                        document
-                            .getElementById(
-                                "removeReason"
-                            )
-                            .value
-
-                }
-            );
-
-        }
-    );
-
-
-
-/* =========================================================
-   ADJUST STOCK
-========================================================= */
-
-document
-    .getElementById("adjustStockForm")
-    .addEventListener(
-        "submit",
-        function(event) {
-
-            event.preventDefault();
-
-
-            sendRequest(
-                "/api/stock/adjustment",
-                {
-
-                    product_id:
-                        Number(
-                            document
-                                .getElementById(
-                                    "adjustProductId"
-                                )
-                                .value
-                        ),
-
-                    /*
-                     * Backend expects:
-                     * new_quantity
-                     */
-
-                    new_quantity:
-                        Number(
-                            document
-                                .getElementById(
-                                    "adjustQuantity"
-                                )
-                                .value
-                        ),
-
-                    reason:
-                        document
-                            .getElementById(
-                                "adjustReason"
-                            )
-                            .value
-
-                }
-            );
-
-        }
-    );
-
 
 
 /* =========================================================
@@ -1091,14 +2234,16 @@ async function loadStockHistory() {
         }
 
 
-        /* =========================
-           NO TRANSACTIONS
-        ========================= */
+        const transactions =
+            result.transactions || [];
 
-        if (
-            !result.transactions ||
-            result.transactions.length === 0
-        ) {
+
+        /*
+         * The backend already filters this
+         * endpoint to the logged-in employee.
+         */
+
+        if (!transactions.length) {
 
             container.innerHTML = `
 
@@ -1112,10 +2257,6 @@ async function loadStockHistory() {
 
         }
 
-
-        /* =========================
-           CREATE TABLE
-        ========================= */
 
         let html = `
 
@@ -1148,10 +2289,6 @@ async function loadStockHistory() {
                             </th>
 
                             <th>
-                                Employee
-                            </th>
-
-                            <th>
                                 Reason
                             </th>
 
@@ -1168,14 +2305,12 @@ async function loadStockHistory() {
         `;
 
 
-        /* =========================
-           TRANSACTIONS
-        ========================= */
-
-        result.transactions.forEach(
+        transactions.forEach(
             transaction => {
 
-                let typeClass = "";
+                let typeClass =
+                    "";
+
 
                 const type =
                     transaction.transaction_type;
@@ -1186,21 +2321,29 @@ async function loadStockHistory() {
                     type === "IN"
                 ) {
 
-                    typeClass = "stock-in";
+                    typeClass =
+                        "stock-in";
 
-                } else if (
+                }
+
+                else if (
                     type === "STOCK_OUT" ||
                     type === "OUT" ||
                     type === "SALE_OUT"
                 ) {
 
-                    typeClass = "stock-out";
+                    typeClass =
+                        "stock-out";
 
-                } else if (
+                }
+
+                else if (
+                    type === "STOCK_ADJUSTMENT" ||
                     type === "ADJUSTMENT"
                 ) {
 
-                    typeClass = "adjustment";
+                    typeClass =
+                        "adjustment";
 
                 }
 
@@ -1213,8 +2356,10 @@ async function loadStockHistory() {
 
                             <strong>
                                 ${
-                                    transaction.product_name ||
-                                    transaction.product_id
+                                    escapeHtml(
+                                        transaction.product_name ||
+                                        transaction.product_id
+                                    )
                                 }
                             </strong>
 
@@ -1226,47 +2371,53 @@ async function loadStockHistory() {
                             <span
                                 class="transaction-type ${typeClass}"
                             >
-                                ${type}
+                                ${escapeHtml(type)}
                             </span>
 
                         </td>
 
 
                         <td>
-                            ${transaction.quantity}
+                            ${escapeHtml(
+                                transaction.quantity
+                            )}
                         </td>
 
 
                         <td>
-                            ${transaction.previous_quantity}
+                            ${escapeHtml(
+                                transaction.previous_quantity
+                            )}
                         </td>
 
 
                         <td>
-                            ${transaction.new_quantity}
+                            ${escapeHtml(
+                                transaction.new_quantity
+                            )}
                         </td>
 
 
                         <td>
                             ${
-                                transaction.employee_name ||
-                                "Unknown"
+                                transaction.reason
+                                    ? escapeHtml(
+                                        transaction.reason
+                                    )
+                                    : "-"
                             }
                         </td>
 
 
                         <td>
                             ${
-                                transaction.reason ||
-                                "-"
-                            }
-                        </td>
-
-
-                        <td>
-                            ${
-                                transaction.transaction_date ||
-                                "-"
+                                transaction.transaction_date
+                                    ? escapeHtml(
+                                        formatDate(
+                                            transaction.transaction_date
+                                        )
+                                    )
+                                    : "-"
                             }
                         </td>
 
@@ -1289,12 +2440,16 @@ async function loadStockHistory() {
         `;
 
 
-        container.innerHTML = html;
+        container.innerHTML =
+            html;
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "STOCK HISTORY ERROR:",
+            error
+        );
 
 
         container.innerHTML = `
@@ -1302,7 +2457,9 @@ async function loadStockHistory() {
             <div class="empty">
 
                 Error loading stock history:
-                ${error.message}
+                ${escapeHtml(
+                    error.message
+                )}
 
             </div>
 
@@ -1313,15 +2470,87 @@ async function loadStockHistory() {
 }
 
 
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(value) {
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
 
 /* =========================================================
    INITIAL LOAD
 ========================================================= */
 
-loadStockHistory();
+async function initializePage() {
+
+    await Promise.all([
+        loadProducts(),
+        loadCategories()
+    ]);
+
+    await loadStockHistory();
+
+}
+
+
+initializePage();
 
 </script>
-
 
 </body>
 

@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify, session, render_template
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from db import get_db_connection
 
 stock_routes = Blueprint("stock_routes", __name__)
 
 
-# ---------------------------------------------------------
-# EMPLOYEE ACCESS CHECK
-# ---------------------------------------------------------
+# =========================================================
+# ACCESS CHECKS
+# =========================================================
 
 def employee_required():
     return (
@@ -16,9 +16,12 @@ def employee_required():
     )
 
 
-# ---------------------------------------------------------
-# STOCK ACCESS CHECK
-# ---------------------------------------------------------
+def admin_required():
+    return (
+        "user_id" in session
+        and session.get("role") == "ADMIN"
+    )
+
 
 def stock_access_required():
     return (
@@ -27,9 +30,9 @@ def stock_access_required():
     )
 
 
-# ---------------------------------------------------------
+# =========================================================
 # EMPLOYEE STOCK PAGE
-# ---------------------------------------------------------
+# =========================================================
 
 @stock_routes.route("/stock")
 def stock_page():
@@ -42,9 +45,25 @@ def stock_page():
     return render_template("employee_stock.html")
 
 
-# ---------------------------------------------------------
+# =========================================================
+# EMPLOYEE LOW STOCK PAGE
+# =========================================================
+
+@stock_routes.route("/stock/low-stock")
+def low_stock_page():
+
+    if not employee_required():
+        return jsonify({
+            "error": "Employee access required."
+        }), 403
+
+    return render_template("employee_low_stock.html")
+
+
+# =========================================================
 # LOW STOCK ALERTS
-# ---------------------------------------------------------
+# ADMIN + EMPLOYEE
+# =========================================================
 
 @stock_routes.route("/api/stock/alerts", methods=["GET"])
 def get_stock_alerts():
@@ -75,7 +94,9 @@ def get_stock_alerts():
                 WHERE p.status = 'ACTIVE'
                 AND p.quantity <= p.minimum_stock
 
-                ORDER BY p.quantity ASC, p.product_name;
+                ORDER BY
+                    p.quantity ASC,
+                    p.product_name ASC;
             """)
 
             alerts = cursor.fetchall()
@@ -109,17 +130,25 @@ def get_stock_alerts():
         connection.close()
 
 
-# ---------------------------------------------------------
+# =========================================================
 # ADD STOCK
-# ---------------------------------------------------------
+#
+# ADMIN:
+#     admin_id is recorded
+#
+# EMPLOYEE:
+#     employee_id is recorded
+#
+# BOTH CAN ADD STOCK
+# =========================================================
 
 @stock_routes.route("/api/stock/in", methods=["POST"])
 def add_stock():
 
-    if not employee_required():
+    if not stock_access_required():
         return jsonify({
-            "error": "Employee access required."
-        }), 403
+            "error": "Login required."
+        }), 401
 
     data = request.get_json()
 
@@ -130,7 +159,12 @@ def add_stock():
 
     product_id = data.get("product_id")
     quantity = data.get("quantity")
-    reason = data.get("reason", "").strip()
+    reason = data.get("reason", "")
+
+    if reason is None:
+        reason = ""
+
+    reason = str(reason).strip()
 
     if product_id is None or quantity is None:
         return jsonify({
@@ -138,10 +172,16 @@ def add_stock():
         }), 400
 
     try:
+
         product_id = int(product_id)
         quantity = Decimal(str(quantity))
 
-    except (ValueError, TypeError):
+    except (
+        ValueError,
+        TypeError,
+        InvalidOperation
+    ):
+
         return jsonify({
             "error": "Invalid product ID or quantity."
         }), 400
@@ -156,6 +196,10 @@ def add_stock():
     try:
 
         with connection.cursor() as cursor:
+
+            # -------------------------------------------------
+            # GET PRODUCT
+            # -------------------------------------------------
 
             cursor.execute("""
                 SELECT
@@ -186,7 +230,13 @@ def add_stock():
                 minimum_stock
             ) = product
 
-            new_quantity = previous_quantity + quantity
+            new_quantity = (
+                previous_quantity + quantity
+            )
+
+            # -------------------------------------------------
+            # UPDATE PRODUCT STOCK
+            # -------------------------------------------------
 
             cursor.execute("""
                 UPDATE products
@@ -199,51 +249,107 @@ def add_stock():
                 product_id_db
             ))
 
-            cursor.execute("""
-                INSERT INTO stock_transactions
-                (
-                    product_id,
-                    employee_id,
-                    transaction_type,
+            # -------------------------------------------------
+            # RECORD ACTOR
+            # -------------------------------------------------
+
+            if session.get("role") == "EMPLOYEE":
+
+                cursor.execute("""
+                    INSERT INTO stock_transactions
+                    (
+                        product_id,
+                        employee_id,
+                        admin_id,
+                        transaction_type,
+                        quantity,
+                        previous_quantity,
+                        new_quantity,
+                        reason,
+                        transaction_date,
+                        created_at
+                    )
+                    VALUES
+                    (
+                        %s,
+                        %s,
+                        NULL,
+                        'STOCK_IN',
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP
+                    );
+                """, (
+                    product_id_db,
+                    session["user_id"],
                     quantity,
                     previous_quantity,
                     new_quantity,
-                    reason,
-                    transaction_date,
-                    created_at
-                )
-                VALUES
-                (
-                    %s,
-                    %s,
-                    'STOCK_IN',
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    CURRENT_TIMESTAMP,
-                    CURRENT_TIMESTAMP
-                );
-            """, (
-                product_id_db,
-                session["user_id"],
-                quantity,
-                previous_quantity,
-                new_quantity,
-                reason if reason else None
-            ))
+                    reason if reason else None
+                ))
+
+            else:
+
+                cursor.execute("""
+                    INSERT INTO stock_transactions
+                    (
+                        product_id,
+                        employee_id,
+                        admin_id,
+                        transaction_type,
+                        quantity,
+                        previous_quantity,
+                        new_quantity,
+                        reason,
+                        transaction_date,
+                        created_at
+                    )
+                    VALUES
+                    (
+                        %s,
+                        NULL,
+                        %s,
+                        'STOCK_IN',
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP
+                    );
+                """, (
+                    product_id_db,
+                    session["user_id"],
+                    quantity,
+                    previous_quantity,
+                    new_quantity,
+                    reason if reason else None
+                ))
 
         connection.commit()
 
-        low_stock = new_quantity <= minimum_stock
+        low_stock = (
+            new_quantity <= minimum_stock
+        )
 
         return jsonify({
             "message": "Stock added successfully.",
             "product": product_name,
-            "previous_quantity": str(previous_quantity),
-            "quantity_added": str(quantity),
-            "new_quantity": str(new_quantity),
-            "minimum_stock": str(minimum_stock),
+            "previous_quantity": str(
+                previous_quantity
+            ),
+            "quantity_added": str(
+                quantity
+            ),
+            "new_quantity": str(
+                new_quantity
+            ),
+            "minimum_stock": str(
+                minimum_stock
+            ),
             "low_stock": low_stock
         }), 201
 
@@ -265,16 +371,20 @@ def add_stock():
         connection.close()
 
 
-# ---------------------------------------------------------
+# =========================================================
 # REMOVE STOCK
-# ---------------------------------------------------------
+#
+# ADMIN ONLY
+#
+# Employees cannot remove stock.
+# =========================================================
 
 @stock_routes.route("/api/stock/removal", methods=["POST"])
 def remove_stock():
 
-    if not employee_required():
+    if not admin_required():
         return jsonify({
-            "error": "Employee access required."
+            "error": "Admin access required."
         }), 403
 
     data = request.get_json()
@@ -286,7 +396,12 @@ def remove_stock():
 
     product_id = data.get("product_id")
     quantity = data.get("quantity")
-    reason = data.get("reason", "").strip()
+    reason = data.get("reason", "")
+
+    if reason is None:
+        reason = ""
+
+    reason = str(reason).strip()
 
     if product_id is None or quantity is None:
         return jsonify({
@@ -295,14 +410,21 @@ def remove_stock():
 
     if not reason:
         return jsonify({
-            "error": "A reason is required when removing stock."
+            "error":
+                "A reason is required when removing stock."
         }), 400
 
     try:
+
         product_id = int(product_id)
         quantity = Decimal(str(quantity))
 
-    except (ValueError, TypeError):
+    except (
+        ValueError,
+        TypeError,
+        InvalidOperation
+    ):
+
         return jsonify({
             "error": "Invalid product ID or quantity."
         }), 400
@@ -337,7 +459,8 @@ def remove_stock():
                 connection.rollback()
 
                 return jsonify({
-                    "error": "Product not found or inactive."
+                    "error":
+                        "Product not found or inactive."
                 }), 404
 
             (
@@ -357,7 +480,9 @@ def remove_stock():
                         "currently available."
                 }), 400
 
-            new_quantity = previous_quantity - quantity
+            new_quantity = (
+                previous_quantity - quantity
+            )
 
             cursor.execute("""
                 UPDATE products
@@ -375,6 +500,7 @@ def remove_stock():
                 (
                     product_id,
                     employee_id,
+                    admin_id,
                     transaction_type,
                     quantity,
                     previous_quantity,
@@ -386,6 +512,7 @@ def remove_stock():
                 VALUES
                 (
                     %s,
+                    NULL,
                     %s,
                     'STOCK_REMOVAL',
                     %s,
@@ -406,15 +533,25 @@ def remove_stock():
 
         connection.commit()
 
-        low_stock = new_quantity <= minimum_stock
+        low_stock = (
+            new_quantity <= minimum_stock
+        )
 
         return jsonify({
             "message": "Stock removed successfully.",
             "product": product_name,
-            "previous_quantity": str(previous_quantity),
-            "quantity_removed": str(quantity),
-            "new_quantity": str(new_quantity),
-            "minimum_stock": str(minimum_stock),
+            "previous_quantity": str(
+                previous_quantity
+            ),
+            "quantity_removed": str(
+                quantity
+            ),
+            "new_quantity": str(
+                new_quantity
+            ),
+            "minimum_stock": str(
+                minimum_stock
+            ),
             "low_stock": low_stock
         }), 201
 
@@ -436,16 +573,20 @@ def remove_stock():
         connection.close()
 
 
-# ---------------------------------------------------------
+# =========================================================
 # STOCK ADJUSTMENT
-# ---------------------------------------------------------
+#
+# ADMIN ONLY
+#
+# Employees cannot adjust stock.
+# =========================================================
 
 @stock_routes.route("/api/stock/adjustment", methods=["POST"])
 def adjust_stock():
 
-    if not employee_required():
+    if not admin_required():
         return jsonify({
-            "error": "Employee access required."
+            "error": "Admin access required."
         }), 403
 
     data = request.get_json()
@@ -457,30 +598,46 @@ def adjust_stock():
 
     product_id = data.get("product_id")
     new_quantity = data.get("new_quantity")
-    reason = data.get("reason", "").strip()
+    reason = data.get("reason", "")
+
+    if reason is None:
+        reason = ""
+
+    reason = str(reason).strip()
 
     if product_id is None or new_quantity is None:
         return jsonify({
-            "error": "Product and new quantity are required."
+            "error":
+                "Product and new quantity are required."
         }), 400
 
     if not reason:
         return jsonify({
-            "error": "A reason is required for stock adjustment."
+            "error":
+                "A reason is required for stock adjustment."
         }), 400
 
     try:
-        product_id = int(product_id)
-        new_quantity = Decimal(str(new_quantity))
 
-    except (ValueError, TypeError):
+        product_id = int(product_id)
+        new_quantity = Decimal(
+            str(new_quantity)
+        )
+
+    except (
+        ValueError,
+        TypeError,
+        InvalidOperation
+    ):
+
         return jsonify({
             "error": "Invalid product ID or quantity."
         }), 400
 
     if new_quantity < 0:
         return jsonify({
-            "error": "Stock quantity cannot be negative."
+            "error":
+                "Stock quantity cannot be negative."
         }), 400
 
     connection = get_db_connection()
@@ -508,7 +665,8 @@ def adjust_stock():
                 connection.rollback()
 
                 return jsonify({
-                    "error": "Product not found or inactive."
+                    "error":
+                        "Product not found or inactive."
                 }), 404
 
             (
@@ -528,7 +686,8 @@ def adjust_stock():
                 }), 400
 
             difference = abs(
-                new_quantity - previous_quantity
+                new_quantity -
+                previous_quantity
             )
 
             cursor.execute("""
@@ -547,6 +706,7 @@ def adjust_stock():
                 (
                     product_id,
                     employee_id,
+                    admin_id,
                     transaction_type,
                     quantity,
                     previous_quantity,
@@ -558,6 +718,7 @@ def adjust_stock():
                 VALUES
                 (
                     %s,
+                    NULL,
                     %s,
                     'STOCK_ADJUSTMENT',
                     %s,
@@ -578,15 +739,25 @@ def adjust_stock():
 
         connection.commit()
 
-        low_stock = new_quantity <= minimum_stock
+        low_stock = (
+            new_quantity <= minimum_stock
+        )
 
         return jsonify({
             "message": "Stock adjusted successfully.",
             "product": product_name,
-            "previous_quantity": str(previous_quantity),
-            "new_quantity": str(new_quantity),
-            "difference": str(difference),
-            "minimum_stock": str(minimum_stock),
+            "previous_quantity": str(
+                previous_quantity
+            ),
+            "new_quantity": str(
+                new_quantity
+            ),
+            "difference": str(
+                difference
+            ),
+            "minimum_stock": str(
+                minimum_stock
+            ),
             "low_stock": low_stock
         }), 201
 
@@ -595,7 +766,7 @@ def adjust_stock():
         connection.rollback()
 
         print(
-            "STOCK ERROR:",
+            "STOCK ADJUSTMENT ERROR:",
             type(e).__name__,
             str(e)
         )
@@ -608,17 +779,23 @@ def adjust_stock():
         connection.close()
 
 
-# ---------------------------------------------------------
+# =========================================================
 # STOCK HISTORY
-# ---------------------------------------------------------
+#
+# EMPLOYEE:
+#     Own stock transactions only
+#
+# ADMIN:
+#     All stock transactions
+# =========================================================
 
 @stock_routes.route("/api/stock", methods=["GET"])
 def get_stock_transactions():
 
-    if not employee_required():
+    if not stock_access_required():
         return jsonify({
-            "error": "Employee access required."
-        }), 403
+            "error": "Login required."
+        }), 401
 
     connection = get_db_connection()
 
@@ -626,53 +803,138 @@ def get_stock_transactions():
 
         with connection.cursor() as cursor:
 
-            cursor.execute("""
-                SELECT
-                    st.id,
-                    st.product_id,
-                    p.product_name,
-                    st.employee_id,
-                    e.full_name,
-                    st.transaction_type,
-                    st.quantity,
-                    st.previous_quantity,
-                    st.new_quantity,
-                    st.reason,
-                    st.transaction_date
+            if session.get("role") == "EMPLOYEE":
 
-                FROM stock_transactions st
+                cursor.execute("""
+                    SELECT
+                        st.id,
+                        st.product_id,
+                        p.product_name,
+                        st.employee_id,
+                        e.full_name,
+                        st.admin_id,
+                        a.full_name,
+                        st.transaction_type,
+                        st.quantity,
+                        st.previous_quantity,
+                        st.new_quantity,
+                        st.reason,
+                        st.transaction_date
 
-                JOIN products p
-                    ON st.product_id = p.id
+                    FROM stock_transactions st
 
-                JOIN employees e
-                    ON st.employee_id = e.id
+                    JOIN products p
+                        ON st.product_id = p.id
 
-                ORDER BY st.transaction_date DESC;
-            """)
+                    LEFT JOIN employees e
+                        ON st.employee_id = e.id
+
+                    LEFT JOIN admins a
+                        ON st.admin_id = a.id
+
+                    WHERE st.employee_id = %s
+
+                    ORDER BY
+                        st.transaction_date DESC,
+                        st.id DESC;
+                """, (
+                    session["user_id"],
+                ))
+
+            else:
+
+                cursor.execute("""
+                    SELECT
+                        st.id,
+                        st.product_id,
+                        p.product_name,
+                        st.employee_id,
+                        e.full_name,
+                        st.admin_id,
+                        a.full_name,
+                        st.transaction_type,
+                        st.quantity,
+                        st.previous_quantity,
+                        st.new_quantity,
+                        st.reason,
+                        st.transaction_date
+
+                    FROM stock_transactions st
+
+                    JOIN products p
+                        ON st.product_id = p.id
+
+                    LEFT JOIN employees e
+                        ON st.employee_id = e.id
+
+                    LEFT JOIN admins a
+                        ON st.admin_id = a.id
+
+                    ORDER BY
+                        st.transaction_date DESC,
+                        st.id DESC;
+                """)
 
             transactions = cursor.fetchall()
 
         return jsonify({
             "transactions": [
+
                 {
                     "id": transaction[0],
-                    "product_id": transaction[1],
-                    "product_name": transaction[2],
-                    "employee_id": transaction[3],
-                    "employee_name": transaction[4],
-                    "transaction_type": transaction[5],
-                    "quantity": str(transaction[6]),
-                    "previous_quantity": str(transaction[7]),
-                    "new_quantity": str(transaction[8]),
-                    "reason": transaction[9],
+
+                    "product_id":
+                        transaction[1],
+
+                    "product_name":
+                        transaction[2],
+
+                    "employee_id":
+                        transaction[3],
+
+                    "employee_name":
+                        transaction[4],
+
+                    "admin_id":
+                        transaction[5],
+
+                    "admin_name":
+                        transaction[6],
+
+                    "transaction_type":
+                        transaction[7],
+
+                    "quantity":
+                        str(transaction[8]),
+
+                    "previous_quantity":
+                        str(transaction[9]),
+
+                    "new_quantity":
+                        str(transaction[10]),
+
+                    "reason":
+                        transaction[11],
+
                     "transaction_date":
-                        transaction[10].isoformat()
+                        transaction[12].isoformat()
                 }
 
                 for transaction in transactions
             ]
         })
+
+    except Exception as e:
+
+        print(
+            "STOCK HISTORY ERROR:",
+            type(e).__name__,
+            str(e)
+        )
+
+        return jsonify({
+            "error": "Could not load stock history."
+        }), 500
 
     finally:
         connection.close()

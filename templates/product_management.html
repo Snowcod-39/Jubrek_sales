@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Product Management - RUBREK ENTERPRISES</title>
+    <title>Product Management - JUBREK ENTERPRISES</title>
 
     <style>
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+            --charcoal-light: #292d2a;
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+            --tiffany-blue: #81d8d0;
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+            --white: #ffffff;
+            --border-light: rgba(32, 36, 33, 0.13);
+            --border-dark: rgba(255, 255, 255, 0.10);
+        }
 
         * {
             box-sizing: border-box;
@@ -15,20 +29,787 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--charcoal);
+            color: var(--primary-text);
+            min-height: 100vh;
         }
 
+        /* =====================================================
+           ADMIN SIDEBAR
+        ===================================================== */
 
-        /* =========================
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            padding: 22px 14px 18px;
+            background: var(--charcoal-dark);
+            color: var(--white);
+            border-right: 1px solid var(--border-dark);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px 22px;
+        }
+
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            background: var(--action-blue);
+            color: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar-brand-name {
+            color: var(--white);
+            font-size: 17px;
+            font-weight: bold;
+            line-height: 1.1;
+        }
+
+        .sidebar-brand-subtitle {
+            margin-top: 3px;
+            color: var(--secondary-text);
+            font-size: 11px;
+        }
+
+        .sidebar-section-title {
+            padding: 0 10px;
+            margin: 5px 0 10px;
+            color: var(--secondary-text);
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border-radius: 7px;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
+        .sidebar-link.active {
+            background: var(--action-blue);
+            color: var(--white);
+        }
+
+        .sidebar-link.active:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
+        /* STOCK MANAGEMENT SIDEBAR */
+
+        .sidebar-stock-title {
+            padding: 0 10px;
+            margin: 24px 0 10px;
+            color: var(--secondary-text);
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+        }
+
+        .stock-sidebar-link {
+            border: none;
+            width: 100%;
+            background: transparent;
+            text-align: left;
+        }
+
+        .stock-sidebar-link.selected-action {
+            background: var(--action-blue);
+            color: var(--white);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            box-sizing: border-box;
+            background: var(--charcoal-dark);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--action-blue);
+            color: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .brand-name {
+            margin: 0;
+            color: var(--white);
+            font-size: 18px;
+        }
+
+        .brand-subtitle {
+            margin: 3px 0 0;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome {
+            color: var(--white);
+            font-size: 13px;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: var(--white);
+            background: var(--action-blue);
+            border: 1px solid var(--action-blue);
+            padding: 8px 13px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .logout:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+            border-color: var(--tiffany-blue);
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+       main {
+    width: calc(100% - 250px);
+    max-width: none;
+    margin-left: 250px;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            margin: 0 0 6px;
+            color: var(--white);
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: var(--secondary-text);
+            font-size: 14px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin-top: 14px;
+            text-decoration: none;
+            background: var(--action-blue);
+            color: var(--white);
+            padding: 9px 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .dashboard-link:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        #message {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #message.success {
+            display: block;
+            background: #d8f0e1;
+            color: #176b3b;
+            border: 1px solid #b9dfc7;
+        }
+
+        #message.error {
+            display: block;
+            background: #f5dada;
+            color: #a52a2a;
+            border: 1px solid #e5b8b8;
+        }
+
+        /* =====================================================
+           LARGE SECTION CARDS
+        ===================================================== */
+
+        section {
+            background: var(--card-grey);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        section h3 {
+            margin: 0 0 6px;
+            color: var(--primary-text);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .section-description {
+            margin: 0 0 20px;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           ADD PRODUCT FORM
+        ===================================================== */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 7px;
+            color: var(--secondary-text);
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid rgba(32, 36, 33, 0.18);
+            border-radius: 7px;
+            background: #eef0ef;
+            color: var(--primary-text);
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: var(--white);
+            border-color: var(--action-blue);
+            box-shadow: 0 0 0 2px rgba(23, 105, 170, 0.15);
+        }
+
+        .add-button {
+            margin-top: 20px;
+            background: var(--action-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 7px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .add-button:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           PRODUCT TOOLBAR
+        ===================================================== */
+
+        .products-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            border: 1px solid rgba(32, 36, 33, 0.18);
+            border-radius: 8px;
+            background: #eef0ef;
+            color: var(--primary-text);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-wrapper input:focus {
+            background: var(--white);
+            border-color: var(--action-blue);
+            box-shadow: 0 0 0 2px rgba(23, 105, 170, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text);
+            font-size: 15px;
+        }
+
+        .product-count {
+            color: var(--secondary-text);
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           PRODUCT GRID
+        ===================================================== */
+
+        #productList {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+        /* =====================================================
+           PRODUCT CARD
+        ===================================================== */
+
+        .product-card {
+            border: 1px solid rgba(32, 36, 33, 0.13);
+            border-radius: 10px;
+            padding: 17px;
+            background: var(--card-grey-dark);
+            color: var(--primary-text);
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            background: var(--tiffany-blue);
+            border-color: var(--tiffany-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        .product-card.stock-selectable {
+            cursor: pointer;
+        }
+
+        .product-card.stock-selectable:hover {
+            box-shadow:
+                0 7px 18px rgba(0, 0, 0, 0.18),
+                0 0 0 2px rgba(23, 105, 170, 0.25);
+        }
+
+        .product-card.low-stock {
+            border: 2px solid #c58b20;
+        }
+
+        .product-card.inactive {
+            opacity: 0.82;
+        }
+
+        .product-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            margin: 0;
+            color: var(--primary-text);
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .product-category {
+            margin: 4px 0 0;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .product-id {
+            margin-top: 4px;
+            color: var(--secondary-text);
+            font-size: 10px;
+        }
+
+        /* =====================================================
+           BADGES
+        ===================================================== */
+
+        .badges {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .status {
+            padding: 5px 8px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #d8f0e1;
+            color: #176b3b;
+        }
+
+        .status-inactive {
+            background: #e5e7e6;
+            color: var(--secondary-text);
+        }
+
+        .low-stock-badge {
+            background: #f4dfad;
+            color: #7a570d;
+            padding: 5px 8px;
+            border-radius: 15px;
+            font-size: 9px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           PRODUCT DETAILS
+        ===================================================== */
+
+        .product-details {
+            border-top: 1px solid rgba(32, 36, 33, 0.13);
+            padding-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .detail-label {
+            display: block;
+            color: var(--secondary-text);
+            font-size: 10px;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            color: var(--primary-text);
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .quantity-low {
+            color: #9a6200;
+        }
+
+        /* =====================================================
+           PRODUCT CONTROLS
+        ===================================================== */
+
+        .product-controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+        }
+
+        .control-button {
+            height: 36px;
+            border-radius: 7px;
+            border: 1px solid rgba(23, 105, 170, 0.25);
+            background: rgba(23, 105, 170, 0.13);
+            color: var(--action-blue);
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s ease;
+        }
+
+        .control-button:hover {
+            background: var(--action-blue);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        .control-button.danger {
+            background: rgba(165, 42, 42, 0.10);
+            color: #a52a2a;
+            border-color: rgba(165, 42, 42, 0.20);
+        }
+
+        .control-button.danger:hover {
+            background: #c62828;
+            color: var(--white);
+        }
+
+        .control-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-button:disabled:hover {
+            background: rgba(23, 105, 170, 0.13);
+            color: var(--action-blue);
+        }
+
+        /* =====================================================
+           STOCK ACTION PANEL
+        ===================================================== */
+
+        #stockActionPanel {
+            display: none;
+            background: #eef0ef;
+            border: 1px solid rgba(23, 105, 170, 0.25);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        #stockActionPanel.visible {
+            display: block;
+        }
+
+        .stock-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .stock-panel-header h4 {
+            margin: 0 0 4px;
+            color: var(--primary-text);
+            font-size: 16px;
+        }
+
+        .stock-panel-header p {
+            margin: 0;
+            color: var(--secondary-text);
+            font-size: 12px;
+        }
+
+        .close-panel {
+            border: none;
+            background: transparent;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 1;
+            padding: 2px 5px;
+        }
+
+        .close-panel:hover {
+            color: #a52a2a;
+        }
+
+        .selected-product-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .selected-info-box {
+            background: var(--card-grey);
+            border-radius: 7px;
+            padding: 10px 12px;
+        }
+
+        .selected-info-box span {
+            display: block;
+            font-size: 10px;
+            color: var(--secondary-text);
+            margin-bottom: 3px;
+        }
+
+        .selected-info-box strong {
+            color: var(--primary-text);
+            font-size: 13px;
+        }
+
+        .stock-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .stock-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stock-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .stock-form-group label {
+            margin-bottom: 6px;
+            color: var(--secondary-text);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stock-form-group input,
+        .stock-form-group textarea {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid rgba(32, 36, 33, 0.18);
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--primary-text);
+            font-size: 13px;
+            outline: none;
+            resize: vertical;
+        }
+
+        .stock-form-group input:focus,
+        .stock-form-group textarea:focus {
+            border-color: var(--action-blue);
+            box-shadow: 0 0 0 2px rgba(23, 105, 170, 0.12);
+        }
+
+        .stock-action-submit {
+            margin-top: 14px;
+            background: var(--action-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 7px;
+            padding: 10px 17px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .stock-action-submit:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--secondary-text);
+            padding: 30px;
+            background: var(--card-grey-dark);
+            border-radius: 9px;
+        }
+
+        /* =====================================================
            LOADING OVERLAY
-        ========================= */
+        ===================================================== */
 
         #loadingOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(23, 26, 24, 0.94);
             display: none;
             align-items: center;
             justify-content: center;
@@ -43,13 +824,12 @@
 
         .loadingText {
             margin-top: 8px;
-            color: #1769d1;
+            color: var(--white);
             font-size: 14px;
             font-weight: bold;
         }
 
         @keyframes biscuitSpin {
-
             0% {
                 transform: rotate(0deg) scale(1);
             }
@@ -61,553 +841,287 @@
             100% {
                 transform: rotate(360deg) scale(1);
             }
-
         }
 
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            background: #ffffff;
-            border-bottom: 1px solid #e1e7ef;
-
-            padding: 15px 30px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            gap: 20px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-
-            background: #1769d1;
-            color: white;
-
-            border-radius: 10px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .brand-name {
-            margin: 0;
-            color: #123b70;
-            font-size: 18px;
-        }
-
-        .brand-subtitle {
-            margin: 3px 0 0;
-            color: #718096;
-            font-size: 12px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .welcome {
-            color: #4b5563;
-            font-size: 13px;
-        }
-
-        .logout {
-            text-decoration: none;
-
-            color: #b00020;
-            background: #fff5f5;
-
-            border: 1px solid #f0c1c8;
-
-            padding: 8px 13px;
-            border-radius: 6px;
-
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .logout:hover {
-            background: #b00020;
-            color: white;
-        }
-
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        main {
-            max-width: 1200px;
-            margin: auto;
-            padding: 28px;
-        }
-
-        .page-heading {
-            margin-bottom: 22px;
-        }
-
-        .page-heading h2 {
-            margin: 0 0 5px;
-
-            color: #123b70;
-            font-size: 25px;
-        }
-
-        .page-heading p {
-            margin: 0;
-
-            color: #718096;
-            font-size: 14px;
-        }
-
-        .dashboard-link {
-            display: inline-block;
-
-            margin-top: 12px;
-
-            text-decoration: none;
-
-            color: #1769d1;
-            background: #eaf2fc;
-
-            border: 1px solid #c8dcf4;
-
-            padding: 8px 13px;
-            border-radius: 6px;
-
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .dashboard-link:hover {
-            background: #1769d1;
-            color: white;
-        }
-
-
-        /* =========================
-           MESSAGE
-        ========================= */
-
-        #message {
-            display: none;
-
-            padding: 12px 15px;
-
-            border-radius: 7px;
-
-            margin-bottom: 18px;
-
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        #message.success {
-            display: block;
-
-            background: #e8f7ee;
-            color: #18733d;
-
-            border: 1px solid #b9e6c9;
-        }
-
-        #message.error {
-            display: block;
-
-            background: #fff0f0;
-            color: #b00020;
-
-            border: 1px solid #f0b8c0;
-        }
-
-
-        /* =========================
-           CARDS
-        ========================= */
-
-        section {
-            background: white;
-
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-
-            padding: 20px;
-            margin-bottom: 22px;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        section h3 {
-            margin: 0 0 6px;
-
-            color: #123b70;
-            font-size: 17px;
-        }
-
-        .section-description {
-            margin: 0 0 20px;
-
-            color: #718096;
-            font-size: 12px;
-        }
-
-
-        /* =========================
-           PRODUCT FORM
-        ========================= */
-
-        .form-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 7px;
-
-            color: #374151;
-
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-
-            padding: 11px 12px;
-
-            border: 1px solid #cfd8e3;
-            border-radius: 7px;
-
-            background: white;
-
-            font-size: 14px;
-            outline: none;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #1769d1;
-
-            box-shadow:
-                0 0 0 2px
-                rgba(23, 105, 209, 0.1);
-        }
-
-
-        /* =========================
-           ADD BUTTON
-        ========================= */
-
-        .add-button {
-            margin-top: 20px;
-
-            background: #1769d1;
-            color: white;
-
-            border: none;
-            border-radius: 7px;
-
-            padding: 11px 18px;
-
-            cursor: pointer;
-
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .add-button:hover {
-            background: #1257ae;
-        }
-
-
-        /* =========================
-           PRODUCT GRID
-        ========================= */
-
-        #productList {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 16px;
-        }
-
-        .product-card {
-            border: 1px solid #e2e8f0;
-
-            border-radius: 9px;
-
-            padding: 17px;
-
-            background: #ffffff;
-
-            transition: 0.2s;
-        }
-
-        .product-card:hover {
-            border-color: #b8d0ed;
-
-            box-shadow:
-                0 4px 12px
-                rgba(0, 0, 0, 0.06);
-        }
-
-        .product-top {
-            display: flex;
-
-            justify-content: space-between;
-            align-items: flex-start;
-
-            gap: 10px;
-
-            margin-bottom: 12px;
-        }
-
-        .product-name {
-            margin: 0;
-
-            color: #123b70;
-
-            font-size: 16px;
-        }
-
-        .product-category {
-            margin: 4px 0 0;
-
-            color: #718096;
-
-            font-size: 12px;
-        }
-
-
-        /* =========================
-           STATUS BADGES
-        ========================= */
-
-        .status {
-            padding: 5px 8px;
-
-            border-radius: 15px;
-
-            font-size: 10px;
-            font-weight: bold;
-
-            white-space: nowrap;
-        }
-
-        .status-active {
-            background: #e7f7ed;
-            color: #168344;
-        }
-
-        .status-inactive {
-            background: #fff0f0;
-            color: #b00020;
-        }
-
-
-        /* =========================
-           PRODUCT DETAILS
-        ========================= */
-
-        .product-details {
-            border-top: 1px solid #edf0f4;
-
-            padding-top: 12px;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 10px;
-        }
-
-        .detail-label {
-            display: block;
-
-            color: #718096;
-
-            font-size: 10px;
-
-            margin-bottom: 3px;
-        }
-
-        .detail-value {
-            color: #1f2937;
-
-            font-size: 13px;
-
-            font-weight: bold;
-        }
-
-
-        /* =========================
-           PRODUCT ACTION
-        ========================= */
-
-        .product-action {
-            margin-top: 15px;
-        }
-
-        .deactivate-button,
-        .reactivate-button {
-
-            width: 100%;
-
-            padding: 9px;
-
-            border-radius: 6px;
-
-            cursor: pointer;
-
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .deactivate-button {
-            background: #fff0f0;
-
-            color: #b00020;
-
-            border: 1px solid #f0c1c8;
-        }
-
-        .deactivate-button:hover {
-            background: #b00020;
-            color: white;
-        }
-
-        .reactivate-button {
-            background: #eaf2fc;
-
-            color: #1769d1;
-
-            border: 1px solid #c8dcf4;
-        }
-
-        .reactivate-button:hover {
-            background: #1769d1;
-            color: white;
-        }
-
-
-        /* =========================
-           EMPTY
-        ========================= */
-
-        .empty {
-            grid-column: 1 / -1;
-
-            text-align: center;
-
-            color: #718096;
-
-            padding: 30px;
-        }
-
-
-        /* =========================
+        /* =====================================================
            RESPONSIVE
-        ========================= */
+        ===================================================== */
 
-        @media (max-width: 900px) {
+        /* =====================================================
+   RESPONSIVE
+===================================================== */
 
-            #productList {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
+@media (max-width: 1200px) {
 
-        }
+    #productList {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-
-        @media (max-width: 700px) {
-
-            header {
-                padding: 14px 18px;
-            }
-
-            main {
-                padding: 20px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            #productList {
-                grid-template-columns: 1fr;
-            }
-
-        }
+}
 
 
-        @media (max-width: 550px) {
+@media (max-width: 900px) {
 
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+    .sidebar {
+        width: 220px;
+    }
 
-            .header-right {
-                width: 100%;
+    header {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+    }
 
-                justify-content: space-between;
-            }
+    main {
+        width: calc(100% - 220px);
+        margin-left: 220px;
+        padding: 25px;
+    }
 
-            main {
-                padding: 15px;
-            }
+}
 
-            section {
-                padding: 16px;
-            }
 
-            .page-heading h2 {
-                font-size: 21px;
-            }
+@media (max-width: 750px) {
 
-        }
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        padding: 15px;
+    }
 
+    .sidebar-brand {
+        padding-bottom: 15px;
+    }
+
+    .sidebar-nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    header {
+        margin-left: 0;
+        width: 100%;
+        padding: 14px 18px;
+    }
+
+    main {
+        width: 100%;
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stock-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stock-form-group.full {
+        grid-column: auto;
+    }
+
+    .selected-product-info {
+        grid-template-columns: 1fr;
+    }
+
+    .products-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-wrapper {
+        max-width: none;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    #productList {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-nav {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    main {
+        width: 100%;
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    section {
+        padding: 18px;
+    }
+
+    .page-heading h2 {
+        font-size: 21px;
+    }
+
+}
     </style>
-
 </head>
-
 
 <body>
 
+<!-- =====================================================
+     ADMIN SIDEBAR
+===================================================== -->
 
-<!-- =========================
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+
+        <div class="sidebar-brand-icon">
+            J
+        </div>
+
+        <div>
+            <div class="sidebar-brand-name">
+                JUBREK
+            </div>
+
+            <div class="sidebar-brand-subtitle">
+                ENTERPRISES
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sidebar-section-title">
+        MAIN MENU
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="sidebar-link"
+        >
+            🏠 Dashboard
+        </a>
+
+        <a
+            href="{{ url_for('employee_routes.employee_management') }}"
+            class="sidebar-link"
+        >
+            👥 Employees
+        </a>
+
+        <a
+            href="{{ url_for('category_routes.category_management') }}"
+            class="sidebar-link"
+        >
+            📂 Categories
+        </a>
+
+        <a
+            href="{{ url_for('product_routes.product_management') }}"
+            class="sidebar-link active"
+        >
+            📦 Products
+        </a>
+
+        <a
+            href="{{ url_for('sales_routes.sales_page') }}"
+            class="sidebar-link"
+        >
+            🛒 Sales
+        </a>
+
+        <a
+            href="{{ url_for('expenses_routes.expenses_page') }}"
+            class="sidebar-link"
+        >
+            💰 Expenses
+        </a>
+
+        <a
+            href="{{ url_for('reports_routes.reports_page') }}"
+            class="sidebar-link"
+        >
+            📊 Reports
+        </a>
+
+        <a
+            href="{{ url_for('receipt_books_routes.receipt_books_page') }}"
+            class="sidebar-link"
+        >
+            🧾 Receipt Books
+        </a>
+
+    </nav>
+
+    <!-- =================================================
+         STOCK MANAGEMENT
+    ================================================= -->
+
+    <div class="sidebar-stock-title">
+        STOCK MANAGEMENT
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <button
+            type="button"
+            class="sidebar-link stock-sidebar-link"
+            id="sidebarAddStock"
+            onclick="selectSidebarStockAction('add')"
+        >
+            ＋ Add Stock
+        </button>
+
+        <button
+            type="button"
+            class="sidebar-link stock-sidebar-link"
+            id="sidebarRemoveStock"
+            onclick="selectSidebarStockAction('remove')"
+        >
+            − Remove Stock
+        </button>
+
+        <button
+            type="button"
+            class="sidebar-link stock-sidebar-link"
+            id="sidebarAdjustStock"
+            onclick="selectSidebarStockAction('adjust')"
+        >
+            ⚙ Adjust Stock
+        </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="sidebar-link"
+        >
+            🚪 Logout
+        </a>
+
+    </div>
+
+</aside>
+
+<!-- =====================================================
      LOADING OVERLAY
-========================= -->
+===================================================== -->
 
 <div id="loadingOverlay">
 
@@ -616,29 +1130,27 @@
     </div>
 
     <div class="loadingText">
-        Loading...
+        Processing...
     </div>
 
 </div>
 
-
-
-<!-- =========================
+<!-- =====================================================
      HEADER
-========================= -->
+===================================================== -->
 
 <header>
 
     <div class="brand">
 
         <div class="brand-icon">
-            R
+            J
         </div>
 
         <div>
 
             <h1 class="brand-name">
-                RUBREK ENTERPRISES
+                JUBREK ENTERPRISES
             </h1>
 
             <p class="brand-subtitle">
@@ -648,7 +1160,6 @@
         </div>
 
     </div>
-
 
     <div class="header-right">
 
@@ -667,16 +1178,11 @@
 
 </header>
 
-
-
-<!-- =========================
+<!-- =====================================================
      MAIN
-========================= -->
+===================================================== -->
 
 <main>
-
-
-    <!-- PAGE HEADING -->
 
     <div class="page-heading">
 
@@ -685,7 +1191,7 @@
         </h2>
 
         <p>
-            Add products, manage stock limits and control product availability.
+            Add products, manage stock and control product availability.
         </p>
 
         <a
@@ -697,17 +1203,11 @@
 
     </div>
 
-
-
-    <!-- MESSAGE -->
-
     <p id="message"></p>
 
-
-
-    <!-- =========================
+    <!-- =================================================
          ADD PRODUCT
-    ========================= -->
+    ================================================= -->
 
     <section>
 
@@ -719,11 +1219,9 @@
             Create a product and set its pricing and stock levels.
         </p>
 
-
         <form id="productForm">
 
             <div class="form-grid">
-
 
                 <div class="form-group">
 
@@ -738,7 +1236,6 @@
                     >
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -759,7 +1256,6 @@
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label for="buyingPrice">
@@ -775,7 +1271,6 @@
                     >
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -793,7 +1288,6 @@
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label for="quantity">
@@ -810,7 +1304,6 @@
                     >
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -831,7 +1324,6 @@
 
             </div>
 
-
             <button
                 type="submit"
                 class="add-button"
@@ -843,22 +1335,183 @@
 
     </section>
 
+    <!-- =================================================
+         PRODUCTS
+    ================================================= -->
 
-
-    <!-- =========================
-         PRODUCT LIST
-    ========================= -->
-
-    <section>
+    <section id="productsSection">
 
         <h3>
             Products
         </h3>
 
         <p class="section-description">
-            View product details and manage their active status.
+            Low-stock products appear first. Select a product after choosing a stock action from the sidebar.
         </p>
 
+        <div class="products-toolbar">
+
+            <div class="search-wrapper">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="productSearch"
+                    placeholder="Search products..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <div
+                class="product-count"
+                id="productCount"
+            >
+                0 products
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             STOCK ACTION PANEL
+        ================================================= -->
+
+        <div id="stockActionPanel">
+
+            <div class="stock-panel-header">
+
+                <div>
+
+                    <h4 id="stockPanelTitle">
+                        Stock Management
+                    </h4>
+
+                    <p id="stockPanelDescription">
+                        Select a stock action.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="close-panel"
+                    onclick="closeStockPanel()"
+                    title="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div class="selected-product-info">
+
+                <div class="selected-info-box">
+
+                    <span>
+                        Product
+                    </span>
+
+                    <strong id="selectedProductName">
+                        -
+                    </strong>
+
+                </div>
+
+                <div class="selected-info-box">
+
+                    <span>
+                        Product ID
+                    </span>
+
+                    <strong id="selectedProductId">
+                        -
+                    </strong>
+
+                </div>
+
+                <div class="selected-info-box">
+
+                    <span>
+                        Current Stock
+                    </span>
+
+                    <strong id="selectedProductQuantity">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <form id="stockActionForm" novalidate>
+
+                <div class="stock-form-grid">
+
+                    <div class="stock-form-group">
+
+                        <label id="stockQuantityLabel">
+                            Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            id="stockQuantity"
+                            min="0.001"
+                            step="0.001"
+                            required
+                        >
+
+                    </div>
+
+                    <div
+                        class="stock-form-group"
+                        id="newQuantityGroup"
+                        style="display: none;"
+                    >
+
+                        <label for="newQuantity">
+                            New Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            id="newQuantity"
+                            min="0"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <div class="stock-form-group full">
+
+                        <label for="stockReason">
+                            Reason
+                        </label>
+
+                        <textarea
+                            id="stockReason"
+                            rows="2"
+                            placeholder="Enter reason..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="stock-action-submit"
+                    id="stockActionSubmit"
+                >
+                    Save
+                </button>
+
+            </form>
+
+        </div>
 
         <div id="productList">
 
@@ -870,12 +1523,18 @@
 
     </section>
 
-
 </main>
 
-
-
 <script>
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let allProducts = [];
+let selectedProduct = null;
+let selectedStockAction = null;
+let pendingSidebarStockAction = null;
 
 
 /* =========================================================
@@ -891,7 +1550,6 @@ function showLoading(text = "Processing...") {
     document
         .getElementById("loadingOverlay")
         .style.display = "flex";
-
 }
 
 
@@ -900,9 +1558,7 @@ function hideLoading() {
     document
         .getElementById("loadingOverlay")
         .style.display = "none";
-
 }
-
 
 
 /* =========================================================
@@ -915,11 +1571,127 @@ function showMessage(message, type) {
         document.getElementById("message");
 
     element.textContent = message;
-
     element.className = type;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================================================
+   SIDEBAR STOCK ACTION
+========================================================= */
+
+function selectSidebarStockAction(action) {
+
+    pendingSidebarStockAction = action;
+
+    document
+        .querySelectorAll(".stock-sidebar-link")
+        .forEach(button => {
+            button.classList.remove(
+                "selected-action"
+            );
+        });
+
+    const selectedButton =
+        document.getElementById(
+            action === "add"
+                ? "sidebarAddStock"
+                : action === "remove"
+                    ? "sidebarRemoveStock"
+                    : "sidebarAdjustStock"
+        );
+
+    if (selectedButton) {
+
+        selectedButton.classList.add(
+            "selected-action"
+        );
+    }
+
+    const actionName =
+        action === "add"
+            ? "Add Stock"
+            : action === "remove"
+                ? "Remove Stock"
+                : "Adjust Stock";
+
+    showMessage(
+        `${actionName} selected. Click an active product below.`,
+        "success"
+    );
+
+    document
+        .getElementById("productsSection")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(card => {
+
+            const productId =
+                Number(
+                    card.dataset.productId
+                );
+
+            const product =
+                allProducts.find(
+                    item =>
+                        Number(item.id) ===
+                        productId
+                );
+
+            if (
+                product &&
+                product.status === "ACTIVE"
+            ) {
+
+                card.classList.add(
+                    "stock-selectable"
+                );
+
+            } else {
+
+                card.classList.remove(
+                    "stock-selectable"
+                );
+            }
+
+        });
 
 }
 
+
+/* =========================================================
+   CLEAR SIDEBAR ACTION
+========================================================= */
+
+function clearSidebarStockAction() {
+
+    pendingSidebarStockAction = null;
+
+    document
+        .querySelectorAll(".stock-sidebar-link")
+        .forEach(button => {
+            button.classList.remove(
+                "selected-action"
+            );
+        });
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(card => {
+            card.classList.remove(
+                "stock-selectable"
+            );
+        });
+}
 
 
 /* =========================================================
@@ -931,14 +1703,10 @@ async function loadCategories() {
     try {
 
         const response =
-            await fetch(
-                "/api/categories"
-            );
-
+            await fetch("/api/categories");
 
         const data =
             await response.json();
-
 
         if (!response.ok) {
 
@@ -951,63 +1719,39 @@ async function loadCategories() {
             return;
         }
 
-
         const categorySelect =
-            document.getElementById(
-                "category"
-            );
-
+            document.getElementById("category");
 
         categorySelect.innerHTML =
             '<option value="">Select Category</option>';
 
+        data.categories.forEach(category => {
 
-        data.categories.forEach(
-            category => {
+            if (category.status === "ACTIVE") {
 
-                if (
-                    category.status ===
-                    "ACTIVE"
-                ) {
+                const option =
+                    document.createElement("option");
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
+                option.value =
+                    category.id;
 
+                option.textContent =
+                    category.category_name;
 
-                    option.value =
-                        category.id;
-
-                    option.textContent =
-                        category.category_name;
-
-
-                    categorySelect
-                        .appendChild(
-                            option
-                        );
-
-                }
-
+                categorySelect.appendChild(option);
             }
-        );
-
+        });
 
     } catch (error) {
 
         console.error(error);
 
-
         showMessage(
             "Could not connect to the server.",
             "error"
         );
-
     }
-
 }
-
 
 
 /* =========================================================
@@ -1017,31 +1761,21 @@ async function loadCategories() {
 async function loadProducts() {
 
     const productList =
-        document.getElementById(
-            "productList"
-        );
-
+        document.getElementById("productList");
 
     productList.innerHTML = `
-
         <div class="empty">
             Loading products...
         </div>
-
     `;
-
 
     try {
 
         const response =
-            await fetch(
-                "/api/products"
-            );
-
+            await fetch("/api/products");
 
         const data =
             await response.json();
-
 
         if (!response.ok) {
 
@@ -1051,217 +1785,995 @@ async function loadProducts() {
                 "error"
             );
 
-            return;
-        }
-
-
-        productList.innerHTML = "";
-
-
-        if (
-            !data.products ||
-            data.products.length === 0
-        ) {
-
             productList.innerHTML = `
-
                 <div class="empty">
-                    No products found.
+                    Could not load products.
                 </div>
-
             `;
 
             return;
-
         }
 
+        allProducts =
+            data.products || [];
 
-        data.products.forEach(
-            product => {
+        sortProducts();
 
-                const productDiv =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                productDiv.className =
-                    "product-card";
-
-
-                let actionButton = "";
-
-
-                if (
-                    product.status ===
-                    "ACTIVE"
-                ) {
-
-                    actionButton = `
-
-                        <button
-                            class="deactivate-button"
-                            onclick="
-                                changeProductStatus(
-                                    ${product.id},
-                                    'deactivate'
-                                )
-                            "
-                        >
-                            Deactivate Product
-                        </button>
-
-                    `;
-
-                } else {
-
-                    actionButton = `
-
-                        <button
-                            class="reactivate-button"
-                            onclick="
-                                changeProductStatus(
-                                    ${product.id},
-                                    'reactivate'
-                                )
-                            "
-                        >
-                            Reactivate Product
-                        </button>
-
-                    `;
-
-                }
-
-
-                const statusClass =
-                    product.status ===
-                    "ACTIVE"
-                        ? "status-active"
-                        : "status-inactive";
-
-
-                productDiv.innerHTML = `
-
-                    <div class="product-top">
-
-                        <div>
-
-                            <h4 class="product-name">
-                                ${product.product_name}
-                            </h4>
-
-                            <p class="product-category">
-                                ${
-                                    product.category_name ||
-                                    "No category"
-                                }
-                            </p>
-
-                        </div>
-
-
-                        <span
-                            class="status ${statusClass}"
-                        >
-                            ${product.status}
-                        </span>
-
-                    </div>
-
-
-                    <div class="product-details">
-
-
-                        <div>
-
-                            <span class="detail-label">
-                                Buying Price
-                            </span>
-
-                            <span class="detail-value">
-                                ${product.buying_price}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="detail-label">
-                                Selling Price
-                            </span>
-
-                            <span class="detail-value">
-                                ${product.selling_price}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="detail-label">
-                                Quantity
-                            </span>
-
-                            <span class="detail-value">
-                                ${product.quantity}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="detail-label">
-                                Minimum Stock
-                            </span>
-
-                            <span class="detail-value">
-                                ${product.minimum_stock}
-                            </span>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <div class="product-action">
-
-                        ${actionButton}
-
-                    </div>
-
-                `;
-
-
-                productList.appendChild(
-                    productDiv
-                );
-
-            }
-        );
-
+        renderProducts();
 
     } catch (error) {
 
         console.error(error);
 
-
         productList.innerHTML = `
-
             <div class="empty">
                 Could not connect to the server.
             </div>
-
         `;
-
     }
-
 }
 
+
+/* =========================================================
+   SORT PRODUCTS
+========================================================= */
+
+function sortProducts() {
+
+    allProducts.sort((a, b) => {
+
+        const aLow =
+            a.status === "ACTIVE" &&
+            Number(a.quantity) <=
+            Number(a.minimum_stock);
+
+        const bLow =
+            b.status === "ACTIVE" &&
+            Number(b.quantity) <=
+            Number(b.minimum_stock);
+
+        if (aLow && !bLow) {
+            return -1;
+        }
+
+        if (!aLow && bLow) {
+            return 1;
+        }
+
+        return a.product_name
+            .localeCompare(
+                b.product_name
+            );
+    });
+}
+
+
+/* =========================================================
+   RENDER PRODUCTS
+========================================================= */
+
+function renderProducts() {
+
+    const productList =
+        document.getElementById("productList");
+
+    const searchValue =
+        document
+            .getElementById("productSearch")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const filteredProducts =
+        allProducts.filter(product => {
+
+            const name =
+                String(
+                    product.product_name || ""
+                ).toLowerCase();
+
+            const id =
+                String(
+                    product.id || ""
+                ).toLowerCase();
+
+            const category =
+                String(
+                    product.category_name || ""
+                ).toLowerCase();
+
+            return (
+                name.includes(searchValue) ||
+                id.includes(searchValue) ||
+                category.includes(searchValue)
+            );
+        });
+
+    document
+        .getElementById("productCount")
+        .textContent =
+            `${filteredProducts.length} ${
+                filteredProducts.length === 1
+                    ? "product"
+                    : "products"
+            }`;
+
+    productList.innerHTML = "";
+
+    if (filteredProducts.length === 0) {
+
+        productList.innerHTML = `
+            <div class="empty">
+                No products found.
+            </div>
+        `;
+
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+
+        const productDiv =
+            document.createElement("div");
+
+        const isActive =
+            product.status === "ACTIVE";
+
+        const isLowStock =
+            isActive &&
+            Number(product.quantity) <=
+            Number(product.minimum_stock);
+
+        productDiv.className =
+            "product-card" +
+            (isLowStock
+                ? " low-stock"
+                : "") +
+            (!isActive
+                ? " inactive"
+                : "");
+
+        productDiv.dataset.productId =
+            product.id;
+
+        if (
+            pendingSidebarStockAction &&
+            isActive
+        ) {
+
+            productDiv.classList.add(
+                "stock-selectable"
+            );
+        }
+
+        /* Product card selection for sidebar action */
+
+        productDiv.addEventListener(
+            "click",
+            function() {
+
+                if (
+                    pendingSidebarStockAction &&
+                    isActive
+                ) {
+
+                    openStockPanel(
+                        product.id,
+                        pendingSidebarStockAction
+                    );
+                }
+
+            }
+        );
+
+        const statusClass =
+            isActive
+                ? "status-active"
+                : "status-inactive";
+
+        const quantityClass =
+            isLowStock
+                ? "quantity-low"
+                : "";
+
+        const deactivateOrReactivate =
+            isActive
+                ? `
+                    <button
+                        type="button"
+                        class="control-button danger"
+                        onclick="
+                            event.stopPropagation();
+
+                            changeProductStatus(
+                                ${product.id},
+                                'deactivate'
+                            )
+                        "
+                        title="Deactivate Product"
+                    >
+                        Deactivate
+                    </button>
+                `
+                : `
+                    <button
+                        type="button"
+                        class="control-button"
+                        onclick="
+                            event.stopPropagation();
+
+                            changeProductStatus(
+                                ${product.id},
+                                'reactivate'
+                            )
+                        "
+                        title="Activate Product"
+                    >
+                        Activate
+                    </button>
+                `;
+
+        productDiv.innerHTML = `
+
+            <div class="product-top">
+
+                <div>
+
+                    <h4 class="product-name">
+                        ${escapeHtml(
+                            product.product_name
+                        )}
+                    </h4>
+
+                    <p class="product-category">
+                        ${
+                            escapeHtml(
+                                product.category_name ||
+                                "No category"
+                            )
+                        }
+                    </p>
+
+                    <p class="product-id">
+                        Product ID: ${product.id}
+                    </p>
+
+                </div>
+
+                <div class="badges">
+
+                    <span
+                        class="status ${statusClass}"
+                    >
+                        ${product.status}
+                    </span>
+
+                    ${
+                        isLowStock
+                            ? `
+                                <span
+                                    class="low-stock-badge"
+                                >
+                                    LOW STOCK
+                                </span>
+                            `
+                            : ""
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="product-details">
+
+                <div>
+
+                    <span class="detail-label">
+                        Buying Price
+                    </span>
+
+                    <span class="detail-value">
+                        ${escapeHtml(
+                            product.buying_price
+                        )}
+                    </span>
+
+                </div>
+
+                <div>
+
+                    <span class="detail-label">
+                        Selling Price
+                    </span>
+
+                    <span class="detail-value">
+                        ${escapeHtml(
+                            product.selling_price
+                        )}
+                    </span>
+
+                </div>
+
+                <div>
+
+                    <span class="detail-label">
+                        Current Stock
+                    </span>
+
+                    <span
+                        class="
+                            detail-value
+                            ${quantityClass}
+                        "
+                    >
+                        ${escapeHtml(
+                            product.quantity
+                        )}
+                    </span>
+
+                </div>
+
+                <div>
+
+                    <span class="detail-label">
+                        Minimum Stock
+                    </span>
+
+                    <span class="detail-value">
+                        ${escapeHtml(
+                            product.minimum_stock
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="product-controls">
+
+                ${deactivateOrReactivate}
+
+                <button
+                    type="button"
+                    class="control-button"
+                    onclick="
+                        event.stopPropagation();
+
+                        openStockPanel(
+                            ${product.id},
+                            'add'
+                        )
+                    "
+                    title="Add Stock"
+                    ${!isActive ? "disabled" : ""}
+                >
+                    +
+                </button>
+
+                <button
+                    type="button"
+                    class="control-button"
+                    onclick="
+                        event.stopPropagation();
+
+                        openStockPanel(
+                            ${product.id},
+                            'remove'
+                        )
+                    "
+                    title="Remove Stock"
+                    ${!isActive ? "disabled" : ""}
+                >
+                    −
+                </button>
+
+                <button
+                    type="button"
+                    class="control-button"
+                    onclick="
+                        event.stopPropagation();
+
+                        openStockPanel(
+                            ${product.id},
+                            'adjust'
+                        )
+                    "
+                    title="Adjust Stock"
+                    ${!isActive ? "disabled" : ""}
+                >
+                    ⚙
+                </button>
+
+            </div>
+        `;
+
+        productList.appendChild(
+            productDiv
+        );
+
+    });
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   PRODUCT SEARCH
+========================================================= */
+
+document
+    .getElementById("productSearch")
+    .addEventListener(
+        "input",
+        renderProducts
+    );
+
+
+/* =========================================================
+   OPEN STOCK PANEL
+========================================================= */
+
+function openStockPanel(
+    productId,
+    action
+) {
+
+    const product =
+        allProducts.find(
+            item =>
+                Number(item.id) ===
+                Number(productId)
+        );
+
+    if (!product) {
+
+        showMessage(
+            "Product could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (product.status !== "ACTIVE") {
+
+        showMessage(
+            "Inactive products cannot have their stock changed.",
+            "error"
+        );
+
+        return;
+    }
+
+    selectedProduct =
+        product;
+
+    selectedStockAction =
+        action;
+
+    clearSidebarStockAction();
+
+    const panel =
+        document.getElementById(
+            "stockActionPanel"
+        );
+
+    const title =
+        document.getElementById(
+            "stockPanelTitle"
+        );
+
+    const description =
+        document.getElementById(
+            "stockPanelDescription"
+        );
+
+    const quantityInput =
+        document.getElementById(
+            "stockQuantity"
+        );
+
+    const newQuantityGroup =
+        document.getElementById(
+            "newQuantityGroup"
+        );
+
+    const newQuantityInput =
+        document.getElementById(
+            "newQuantity"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "stockReason"
+        );
+
+    // Only the quantity field relevant to the selected action is required.
+    quantityInput.required = true;
+    newQuantityInput.required = false;
+
+    const submitButton =
+        document.getElementById(
+            "stockActionSubmit"
+        );
+
+    document.getElementById(
+        "selectedProductName"
+    ).textContent =
+        product.product_name;
+
+    document.getElementById(
+        "selectedProductId"
+    ).textContent =
+        product.id;
+
+    document.getElementById(
+        "selectedProductQuantity"
+    ).textContent =
+        product.quantity;
+
+    quantityInput.value = "";
+
+    newQuantityInput.value =
+        product.quantity;
+
+    reasonInput.value = "";
+
+    newQuantityGroup.style.display =
+        "none";
+
+    quantityInput.style.display =
+        "block";
+
+    if (action === "add") {
+
+        quantityInput.required = true;
+        newQuantityInput.required = false;
+
+        title.textContent =
+            "Add Stock";
+
+        description.textContent =
+            "Add incoming stock to this product.";
+
+        document.getElementById(
+            "stockQuantityLabel"
+        ).textContent =
+            "Quantity to Add";
+
+        quantityInput.placeholder =
+            "Enter quantity";
+
+        reasonInput.placeholder =
+            "Optional: e.g. New delivery";
+
+        submitButton.textContent =
+            "Add Stock";
+    }
+
+    else if (action === "remove") {
+
+        quantityInput.required = true;
+        newQuantityInput.required = false;
+
+        title.textContent =
+            "Remove Stock";
+
+        description.textContent =
+            "Remove stock from the current quantity.";
+
+        document.getElementById(
+            "stockQuantityLabel"
+        ).textContent =
+            "Quantity to Remove";
+
+        quantityInput.placeholder =
+            "Enter quantity";
+
+        reasonInput.placeholder =
+            "Required: e.g. Damaged goods, expired stock";
+
+        submitButton.textContent =
+            "Remove Stock";
+    }
+
+    else if (action === "adjust") {
+
+        quantityInput.required = false;
+        newQuantityInput.required = true;
+
+        title.textContent =
+            "Adjust Stock";
+
+        description.textContent =
+            "Set the product's stock to the correct quantity.";
+
+        quantityInput.style.display =
+            "none";
+
+        newQuantityGroup.style.display =
+            "flex";
+
+        reasonInput.placeholder =
+            "Required: explain why the stock is being adjusted";
+
+        submitButton.textContent =
+            "Adjust Stock";
+    }
+
+    panel.classList.add(
+        "visible"
+    );
+
+    panel.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+
+/* =========================================================
+   CLOSE STOCK PANEL
+========================================================= */
+
+function closeStockPanel() {
+
+    selectedProduct =
+        null;
+
+    selectedStockAction =
+        null;
+
+    clearSidebarStockAction();
+
+    document
+        .getElementById(
+            "stockActionPanel"
+        )
+        .classList.remove(
+            "visible"
+        );
+
+    const stockForm =
+        document.getElementById(
+            "stockActionForm"
+        );
+
+    stockForm.reset();
+
+    // Restore the default state for the next stock action.
+    document.getElementById(
+        "stockQuantity"
+    ).required = true;
+
+    document.getElementById(
+        "newQuantity"
+    ).required = false;
+}
+
+
+/* =========================================================
+   STOCK ACTION SUBMIT
+========================================================= */
+
+document
+    .getElementById("stockActionForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            if (
+                !selectedProduct ||
+                !selectedStockAction
+            ) {
+
+                showMessage(
+                    "Select a stock action first.",
+                    "error"
+                );
+
+                return;
+            }
+
+            const quantity =
+                document
+                    .getElementById(
+                        "stockQuantity"
+                    )
+                    .value;
+
+            const newQuantity =
+                document
+                    .getElementById(
+                        "newQuantity"
+                    )
+                    .value;
+
+            const reason =
+                document
+                    .getElementById(
+                        "stockReason"
+                    )
+                    .value
+                    .trim();
+
+            if (
+                selectedStockAction === "remove" &&
+                !reason
+            ) {
+
+                showMessage(
+                    "A reason is required when removing stock.",
+                    "error"
+                );
+
+                return;
+            }
+
+            if (
+                selectedStockAction === "adjust" &&
+                !reason
+            ) {
+
+                showMessage(
+                    "A reason is required for stock adjustment.",
+                    "error"
+                );
+
+                return;
+            }
+
+            let endpoint;
+            let body;
+
+            if (
+                selectedStockAction === "add"
+            ) {
+
+                if (
+                    !quantity ||
+                    Number(quantity) <= 0
+                ) {
+
+                    showMessage(
+                        "Enter a quantity greater than zero.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                endpoint =
+                    "/api/stock/in";
+
+                body = {
+                    product_id:
+                        selectedProduct.id,
+
+                    quantity:
+                        quantity,
+
+                    reason:
+                        reason
+                };
+            }
+
+            else if (
+                selectedStockAction === "remove"
+            ) {
+
+                if (
+                    !quantity ||
+                    Number(quantity) <= 0
+                ) {
+
+                    showMessage(
+                        "Enter a quantity greater than zero.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (
+                    Number(quantity) >
+                    Number(
+                        selectedProduct.quantity
+                    )
+                ) {
+
+                    showMessage(
+                        "You cannot remove more stock than is currently available.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                endpoint =
+                    "/api/stock/removal";
+
+                body = {
+                    product_id:
+                        selectedProduct.id,
+
+                    quantity:
+                        quantity,
+
+                    reason:
+                        reason
+                };
+            }
+
+            else if (
+                selectedStockAction === "adjust"
+            ) {
+
+                if (
+                    newQuantity === "" ||
+                    Number(newQuantity) < 0
+                ) {
+
+                    showMessage(
+                        "Enter a valid new quantity.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (
+                    Number(newQuantity) ===
+                    Number(
+                        selectedProduct.quantity
+                    )
+                ) {
+
+                    showMessage(
+                        "The new quantity is the same as the current stock.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                endpoint =
+                    "/api/stock/adjustment";
+
+                body = {
+                    product_id:
+                        selectedProduct.id,
+
+                    new_quantity:
+                        newQuantity,
+
+                    reason:
+                        reason
+                };
+            }
+
+            try {
+
+                let loadingText =
+                    "Saving stock change...";
+
+                if (
+                    selectedStockAction === "add"
+                ) {
+
+                    loadingText =
+                        "Adding stock...";
+                }
+
+                else if (
+                    selectedStockAction === "remove"
+                ) {
+
+                    loadingText =
+                        "Removing stock...";
+                }
+
+                else if (
+                    selectedStockAction === "adjust"
+                ) {
+
+                    loadingText =
+                        "Adjusting stock...";
+                }
+
+                showLoading(
+                    loadingText
+                );
+
+                const response =
+                    await fetch(
+                        endpoint,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    body
+                                )
+                        }
+                    );
+
+                let data = {};
+
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    console.error(
+                        "Could not parse server response:",
+                        jsonError
+                    );
+                }
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        "Could not update stock.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                showMessage(
+                    data.message ||
+                    "Stock updated successfully.",
+                    "success"
+                );
+
+                closeStockPanel();
+
+                await loadProducts();
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Could not connect to the server.",
+                    "error"
+                );
+
+            } finally {
+
+                hideLoading();
+
+            }
+
+        }
+    );
 
 
 /* =========================================================
@@ -1281,7 +2793,6 @@ async function changeProductStatus(
                 : "Reactivating product..."
         );
 
-
         const response =
             await fetch(
                 `/api/products/${productId}/${action}`,
@@ -1290,10 +2801,8 @@ async function changeProductStatus(
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if (!response.ok) {
 
@@ -1303,26 +2812,21 @@ async function changeProductStatus(
                 "error"
             );
 
-            hideLoading();
-
             return;
-
         }
-
 
         showMessage(
             data.message,
             "success"
         );
 
+        closeStockPanel();
 
         await loadProducts();
-
 
     } catch (error) {
 
         console.error(error);
-
 
         showMessage(
             "Could not connect to the server.",
@@ -1334,9 +2838,7 @@ async function changeProductStatus(
         hideLoading();
 
     }
-
 }
-
 
 
 /* =========================================================
@@ -1351,7 +2853,6 @@ document
 
             event.preventDefault();
 
-
             const productName =
                 document
                     .getElementById(
@@ -1360,14 +2861,12 @@ document
                     .value
                     .trim();
 
-
             const categoryId =
                 document
                     .getElementById(
                         "category"
                     )
                     .value;
-
 
             const buyingPrice =
                 document
@@ -1376,14 +2875,12 @@ document
                     )
                     .value;
 
-
             const sellingPrice =
                 document
                     .getElementById(
                         "sellingPrice"
                     )
                     .value;
-
 
             const quantity =
                 document
@@ -1392,7 +2889,6 @@ document
                     )
                     .value;
 
-
             const minimumStock =
                 document
                     .getElementById(
@@ -1400,19 +2896,16 @@ document
                     )
                     .value;
 
-
             try {
 
                 showLoading(
                     "Adding product..."
                 );
 
-
                 const response =
                     await fetch(
                         "/api/products",
                         {
-
                             method: "POST",
 
                             headers: {
@@ -1422,7 +2915,6 @@ document
 
                             body:
                                 JSON.stringify({
-
                                     product_name:
                                         productName,
 
@@ -1440,16 +2932,12 @@ document
 
                                     minimum_stock:
                                         minimumStock
-
                                 })
-
                         }
                     );
 
-
                 const data =
                     await response.json();
-
 
                 if (!response.ok) {
 
@@ -1459,18 +2947,13 @@ document
                         "error"
                     );
 
-                    hideLoading();
-
                     return;
-
                 }
-
 
                 showMessage(
                     data.message,
                     "success"
                 );
-
 
                 document
                     .getElementById(
@@ -1478,13 +2961,11 @@ document
                     )
                     .reset();
 
-
                 document
                     .getElementById(
                         "quantity"
                     )
                     .value = 0;
-
 
                 document
                     .getElementById(
@@ -1492,14 +2973,11 @@ document
                     )
                     .value = 0;
 
-
                 await loadProducts();
-
 
             } catch (error) {
 
                 console.error(error);
-
 
                 showMessage(
                     "Could not connect to the server.",
@@ -1516,7 +2994,6 @@ document
     );
 
 
-
 /* =========================================================
    INITIAL LOAD
 ========================================================= */
@@ -1526,7 +3003,5 @@ loadProducts();
 
 </script>
 
-
 </body>
-
 </html>

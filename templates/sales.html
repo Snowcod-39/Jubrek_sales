@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sales Management - RUBREK ENTERPRISES</title>
+    <title>Sales Management - JUBREK ENTERPRISES</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
@@ -15,96 +15,265 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --charcoal: #202421;
+            --charcoal-dark: #171a18;
+            --charcoal-light: #292d2a;
+            --card-grey: #d9dcda;
+            --card-grey-dark: #c7ccca;
+            --tiffany-blue: #81d8d0;
+            --action-blue: #1769aa;
+            --action-blue-dark: #125582;
+            --primary-text: #202421;
+            --secondary-text: #737A75;
+            --white: #ffffff;
+            --border-light: rgba(32, 36, 33, 0.13);
+            --border-dark: rgba(255, 255, 255, 0.10);
+        }
+
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+            background: var(--charcoal);
+            color: var(--primary-text);
         }
 
-        /* ================= HEADER ================= */
+        /* =========================================================
+           ADMIN LAYOUT
+        ========================================================= */
 
-        header {
-            background: #0b63ce;
-            color: white;
-            padding: 18px 35px;
+        .admin-layout {
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 22px 14px 18px;
+
+            background: var(--charcoal-dark);
+            color: var(--white);
+
+            border-right: 1px solid var(--border-dark);
+
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 8px 24px;
+        }
+
+        .sidebar-brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--action-blue);
+            color: var(--white);
+
+            border-radius: 10px;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar-brand-name {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-brand-subtitle {
+            margin-top: 2px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--tiffany-blue);
+        }
+
+        .sidebar-section-title {
+            padding: 0 10px 10px;
+
+            color: #8f9792;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+
+            min-height: 42px;
+            padding: 10px 12px;
+
+            color: #dfe4e1;
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
+        }
+
+        .sidebar-link.active {
+            background: var(--action-blue);
+            color: var(--white);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .logout-link {
+            border-top: 1px solid var(--border-dark);
+            border-radius: 0;
+            padding-top: 16px;
+        }
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 30px;
+            background: var(--charcoal);
+        }
+
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+            margin-bottom: 28px;
         }
 
-        header h1 {
+        .top-bar-left h1 {
             margin: 0;
-            font-size: 21px;
-            letter-spacing: 0.5px;
+            color: var(--white);
+            font-size: 25px;
         }
 
-        header div {
+        .top-bar-left p {
+            margin: 6px 0 0;
+            color: #aeb6b1;
+            font-size: 13px;
+        }
+
+        .welcome-area {
             display: flex;
             align-items: center;
-            gap: 20px;
-            font-size: 14px;
+            gap: 15px;
         }
 
-        header a {
-            color: white;
+        .welcome-text {
+            color: #dfe4e1;
+            font-size: 13px;
+        }
+
+        .logout-top {
             text-decoration: none;
+            color: var(--white);
+            background: var(--action-blue);
+
+            padding: 9px 14px;
+            border-radius: 7px;
+
+            font-size: 12px;
             font-weight: bold;
-            padding: 8px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 6px;
         }
 
-        header a:hover {
-            background: white;
-            color: #0b63ce;
+        .logout-top:hover {
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
         }
 
-        /* ================= MAIN ================= */
-
-        main {
-            max-width: 1250px;
-            margin: 35px auto;
-            padding: 0 25px;
-        }
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
 
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+
+            margin-bottom: 20px;
         }
 
         .page-header h2 {
             margin: 0;
-            font-size: 25px;
-            color: #172033;
+            color: var(--white);
+            font-size: 22px;
         }
 
         .dashboard-btn {
             text-decoration: none;
-            background: white;
-            color: #0b63ce;
-            border: 1px solid #d5deeb;
+
+            background: var(--action-blue);
+            color: var(--white);
+
+            border: none;
+
             padding: 9px 15px;
             border-radius: 7px;
-            font-size: 14px;
+
+            font-size: 13px;
             font-weight: bold;
         }
 
         .dashboard-btn:hover {
-            background: #eef5ff;
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
         }
 
-        /* ================= MESSAGES ================= */
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
 
         .message {
             display: none;
+
             padding: 12px 15px;
             border-radius: 7px;
+
             margin-bottom: 18px;
-            font-size: 14px;
+
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -120,34 +289,44 @@
             border: 1px solid #bfe3cc;
         }
 
-        /* ================= SALES CARD ================= */
+        /* =========================================================
+           SALES CARD
+        ========================================================= */
 
         .sales-card {
-            background: white;
-            border: 1px solid #e1e7ef;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            background: var(--card-grey);
+
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
+
             overflow: hidden;
         }
 
         .card-heading {
             padding: 20px 22px;
-            border-bottom: 1px solid #e5eaf0;
+
+            border-bottom: 1px solid rgba(32, 36, 33, 0.12);
         }
 
         .card-heading h3 {
             margin: 0;
+
             font-size: 18px;
-            color: #172033;
+            color: var(--primary-text);
         }
 
         .card-heading p {
             margin: 6px 0 0;
-            color: #6b7280;
+
+            color: var(--secondary-text);
             font-size: 13px;
         }
 
-        /* ================= TABLE ================= */
+        /* =========================================================
+           TABLE
+        ========================================================= */
 
         .table-wrapper {
             width: 100%;
@@ -157,56 +336,75 @@
         .sales-table {
             width: 100%;
             min-width: 900px;
+
             border-collapse: collapse;
         }
 
         .sales-table th {
-            background: #f1f5fa;
-            color: #344054;
+            background: var(--card-grey-dark);
+
+            color: var(--primary-text);
+
             padding: 13px 14px;
+
             text-align: left;
-            font-size: 12px;
+
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
+
             white-space: nowrap;
-            border-bottom: 1px solid #dfe6ee;
+
+            border-bottom: 1px solid var(--border-light);
         }
 
         .sales-table td {
             padding: 14px;
-            border-bottom: 1px solid #edf0f4;
+
+            border-bottom: 1px solid rgba(32, 36, 33, 0.10);
+
             font-size: 13px;
             vertical-align: middle;
         }
 
+        .sales-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
         .sales-table tbody tr:hover {
-            background: #f8fbff;
+            background: rgba(129, 216, 208, 0.16);
         }
 
         .receipt-number {
             font-weight: bold;
-            color: #0b63ce;
+            color: var(--action-blue);
         }
 
         .employee-name {
             font-weight: 600;
-            color: #374151;
+            color: var(--primary-text);
         }
 
         .total-amount {
             font-weight: bold;
-            color: #172033;
+            color: var(--primary-text);
             white-space: nowrap;
         }
 
-        /* ================= BADGES ================= */
+        /* =========================================================
+           BADGES
+        ========================================================= */
 
         .status-badge {
             display: inline-block;
+
             padding: 5px 9px;
+
             border-radius: 20px;
-            font-size: 11px;
+
+            font-size: 10px;
             font-weight: bold;
+
             white-space: nowrap;
         }
 
@@ -221,48 +419,57 @@
         }
 
         .type-badge {
-            background: #eef5ff;
-            color: #0b63ce;
+            background: rgba(23, 105, 170, 0.12);
+            color: var(--action-blue);
         }
 
         .payment-badge {
-            background: #f1f3f5;
+            background: rgba(32, 36, 33, 0.09);
             color: #495057;
         }
 
         .manual-label {
-            color: #6b7280;
+            color: var(--secondary-text);
             font-size: 12px;
             font-style: italic;
         }
 
-        /* ================= BUTTONS ================= */
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
 
         .receipt-button,
         .release-button {
             border: none;
+
             cursor: pointer;
+
             padding: 7px 11px;
+
             border-radius: 6px;
-            font-size: 12px;
+
+            font-size: 11px;
             font-weight: bold;
+
             margin-right: 5px;
             margin-bottom: 4px;
+
             white-space: nowrap;
         }
 
         .receipt-button {
-            background: #0b63ce;
-            color: white;
+            background: var(--action-blue);
+            color: var(--white);
         }
 
         .receipt-button:hover {
-            background: #084f9f;
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
         }
 
         .release-button {
             background: #167442;
-            color: white;
+            color: var(--white);
         }
 
         .release-button:hover {
@@ -274,41 +481,58 @@
             cursor: not-allowed;
         }
 
-        /* ================= EMPTY ================= */
+        /* =========================================================
+           EMPTY
+        ========================================================= */
 
         .empty {
             padding: 40px 20px;
+
             text-align: center;
-            color: #6b7280;
+
+            color: var(--secondary-text);
+
             font-size: 14px;
         }
 
-        /* ================= LOADING ================= */
+        /* =========================================================
+           LOADING
+        ========================================================= */
 
         #loadingOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(255, 255, 255, 0.92);
+
+            background: rgba(23, 26, 24, 0.92);
+
             display: none;
+
             justify-content: center;
             align-items: center;
+
             z-index: 9999;
         }
 
         .loader-content {
             text-align: center;
-            color: #0b63ce;
+
+            color: var(--tiffany-blue);
+
             font-weight: bold;
         }
 
         .biscuit {
             font-size: 42px;
+
             display: inline-block;
+
             animation: biscuitSpin 1s linear infinite;
+
             margin-bottom: 8px;
         }
 
         @keyframes biscuitSpin {
+
             0% {
                 transform: rotate(0deg);
             }
@@ -316,33 +540,73 @@
             100% {
                 transform: rotate(360deg);
             }
+
         }
 
-        /* ================= MOBILE ================= */
+        /* =========================================================
+           MOBILE
+        ========================================================= */
 
-        @media (max-width: 700px) {
+        @media (max-width: 800px) {
 
-            header {
-                padding: 15px 18px;
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+                padding: 22px;
+            }
+
+            .welcome-text {
+                display: none;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+                height: auto;
+
+                min-height: auto;
+
+                border-right: none;
+                border-bottom: 1px solid var(--border-dark);
+            }
+
+            .sidebar-footer {
+                margin-top: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+
+            .top-bar {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 15px;
             }
 
-            header div {
+            .welcome-area {
                 width: 100%;
                 justify-content: space-between;
-            }
-
-            main {
-                margin: 25px auto;
-                padding: 0 15px;
             }
 
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 15px;
+                gap: 14px;
+            }
+
+            .dashboard-btn {
+                width: 100%;
+                text-align: center;
             }
 
         }
@@ -350,51 +614,170 @@
     </style>
 </head>
 
+
 <body>
 
-    <!-- ================= LOADING ================= -->
+<div class="admin-layout">
 
-    <div id="loadingOverlay">
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
 
-        <div class="loader-content">
+    <aside class="sidebar">
 
-            <div class="biscuit">🍪</div>
+        <div class="sidebar-brand">
 
-            <div>Loading...</div>
+            <div class="sidebar-brand-icon">
+                J
+            </div>
+
+            <div>
+
+                <div class="sidebar-brand-name">
+                    JUBREK
+                </div>
+
+                <div class="sidebar-brand-subtitle">
+                    ENTERPRISES
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
+
+        <div class="sidebar-section-title">
+            MAIN MENU
+        </div>
 
 
-    <!-- ================= HEADER ================= -->
+        <nav class="sidebar-nav">
 
-    <header>
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="sidebar-link"
+            >
+                🏠 Dashboard
+            </a>
 
-        <h1>RUBREK ENTERPRISES</h1>
+            <a
+                href="{{ url_for('employee_routes.employee_management') }}"
+                class="sidebar-link"
+            >
+                👥 Employees
+            </a>
 
-        <div>
+            <a
+                href="{{ url_for('category_routes.category_management') }}"
+                class="sidebar-link"
+            >
+                📂 Categories
+            </a>
 
-            <span>
-                Welcome, {{ session["full_name"] }}
-            </span>
+            <a
+                href="{{ url_for('product_routes.product_management') }}"
+                class="sidebar-link"
+            >
+                📦 Products
+            </a>
 
-            <a href="{{ url_for('logout') }}">
-                Logout
+            <a
+                href="{{ url_for('sales_routes.sales_page') }}"
+                class="sidebar-link active"
+            >
+                🛒 Sales
+            </a>
+
+            <a
+                href="{{ url_for('expenses_routes.expenses_page') }}"
+                class="sidebar-link"
+            >
+                💰 Expenses
+            </a>
+
+            <a
+                href="{{ url_for('reports_routes.reports_page') }}"
+                class="sidebar-link"
+            >
+                📊 Reports
+            </a>
+
+            <a
+                href="{{ url_for('receipt_books_routes.receipt_books_page') }}"
+                class="sidebar-link"
+            >
+                🧾 Receipt Books
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="sidebar-link logout-link"
+            >
+                🚪 Logout
             </a>
 
         </div>
 
-    </header>
+    </aside>
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
 
-    <main>
+    <main class="main-content">
+
+        <!-- =====================================================
+             TOP BAR
+        ====================================================== -->
+
+        <div class="top-bar">
+
+            <div class="top-bar-left">
+
+                <h1>
+                    Sales Management
+                </h1>
+
+                <p>
+                    View and manage recorded sales.
+                </p>
+
+            </div>
+
+
+            <div class="welcome-area">
+
+                <span class="welcome-text">
+                    Welcome, {{ session["full_name"] }}
+                </span>
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="logout-top"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
 
         <div class="page-header">
 
-            <h2>Sales Management</h2>
+            <h2>
+                Sales History
+            </h2>
 
             <a
                 href="{{ url_for('admin_dashboard') }}"
@@ -406,7 +789,9 @@
         </div>
 
 
-        <!-- ================= MESSAGES ================= -->
+        <!-- =====================================================
+             MESSAGES
+        ====================================================== -->
 
         <div
             id="errorMessage"
@@ -419,13 +804,17 @@
         ></div>
 
 
-        <!-- ================= SALES ================= -->
+        <!-- =====================================================
+             SALES
+        ====================================================== -->
 
         <section class="sales-card">
 
             <div class="card-heading">
 
-                <h3>Sales History</h3>
+                <h3>
+                    Recorded Sales
+                </h3>
 
                 <p>
                     View recorded sales, receipts and release status.
@@ -441,17 +830,43 @@
                     <thead>
 
                         <tr>
-                            <th>Receipt</th>
-                            <th>Employee</th>
-                            <th>Total</th>
-                            <th>Payment</th>
-                            <th>Type</th>
-                            <th>Delivery</th>
-                            <th>Date</th>
-                            <th>Action</th>
+
+                            <th>
+                                Receipt
+                            </th>
+
+                            <th>
+                                Employee
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Delivery
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
                         </tr>
 
                     </thead>
+
 
                     <tbody id="salesBody"></tbody>
 
@@ -472,372 +887,418 @@
 
     </main>
 
+</div>
 
-    <script>
 
-        // =========================================================
-        // MESSAGE HELPERS
-        // =========================================================
+<!-- =============================================================
+     LOADING
+============================================================== -->
 
-        function showError(message) {
+<div id="loadingOverlay">
 
-            const element =
-                document.getElementById("errorMessage");
+    <div class="loader-content">
 
-            element.textContent = message;
-            element.style.display = "block";
+        <div class="biscuit">
+            🍪
+        </div>
 
+        <div>
+            Loading...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MESSAGE HELPERS
+========================================================= */
+
+function showError(message) {
+
+    const element =
+        document.getElementById("errorMessage");
+
+    element.textContent = message;
+    element.style.display = "block";
+
+}
+
+
+function showSuccess(message) {
+
+    const element =
+        document.getElementById("successMessage");
+
+    element.textContent = message;
+    element.style.display = "block";
+
+}
+
+
+function clearMessages() {
+
+    document.getElementById("errorMessage").textContent = "";
+    document.getElementById("successMessage").textContent = "";
+
+    document.getElementById("errorMessage").style.display = "none";
+    document.getElementById("successMessage").style.display = "none";
+
+}
+
+
+/* =========================================================
+   LOAD SALES
+========================================================= */
+
+async function loadSales() {
+
+    try {
+
+        const response =
+            await fetch("/api/sales");
+
+        const data =
+            await response.json();
+
+        console.log("Sales data:", data);
+
+
+        if (!response.ok) {
+
+            showError(
+                data.error ||
+                "Could not load sales."
+            );
+
+            return;
         }
 
 
-        function showSuccess(message) {
+        const salesBody =
+            document.getElementById("salesBody");
 
-            const element =
-                document.getElementById("successMessage");
+        salesBody.innerHTML = "";
 
-            element.textContent = message;
-            element.style.display = "block";
 
+        if (
+            !data.sales ||
+            data.sales.length === 0
+        ) {
+
+            document.getElementById(
+                "emptyMessage"
+            ).style.display = "block";
+
+            return;
         }
 
 
-        function clearMessages() {
-
-            document.getElementById("errorMessage").textContent = "";
-            document.getElementById("successMessage").textContent = "";
-
-            document.getElementById("errorMessage").style.display = "none";
-            document.getElementById("successMessage").style.display = "none";
-
-        }
+        document.getElementById(
+            "emptyMessage"
+        ).style.display = "none";
 
 
-        // =========================================================
-        // LOAD SALES
-        // =========================================================
+        data.sales.forEach(sale => {
 
-        async function loadSales() {
-
-            try {
-
-                const response =
-                    await fetch("/api/sales");
-
-                const data =
-                    await response.json();
-
-                console.log("Sales data:", data);
-
-                if (!response.ok) {
-
-                    showError(
-                        data.error ||
-                        "Could not load sales."
-                    );
-
-                    return;
-                }
+            const row =
+                document.createElement("tr");
 
 
-                const salesBody =
-                    document.getElementById("salesBody");
+            /* =================================================
+               DATE
+            ================================================= */
 
-                salesBody.innerHTML = "";
-
-
-                if (!data.sales || data.sales.length === 0) {
-
-                    document.getElementById(
-                        "emptyMessage"
-                    ).style.display = "block";
-
-                    return;
-                }
-
-
-                document.getElementById(
-                    "emptyMessage"
-                ).style.display = "none";
-
-
-                data.sales.forEach(sale => {
-
-                    const row =
-                        document.createElement("tr");
-
-
-                    // =================================================
-                    // DATE
-                    // =================================================
-
-                    const date =
+            const date =
+                sale.sale_date
+                    ? new Date(
                         sale.sale_date
-                            ? new Date(
-                                sale.sale_date
-                            ).toLocaleString()
-                            : "-";
+                    ).toLocaleString()
+                    : "-";
 
 
-                    // =================================================
-                    // DELIVERY STATUS
-                    // =================================================
+            /* =================================================
+               DELIVERY STATUS
+            ================================================= */
 
-                    const deliveryStatus =
-                        String(
-                            sale.delivery_status || ""
-                        )
-                        .trim()
-                        .toUpperCase();
-
-
-                    let deliveryHTML;
+            const deliveryStatus =
+                String(
+                    sale.delivery_status || ""
+                )
+                .trim()
+                .toUpperCase();
 
 
-                    if (
-                        deliveryStatus === "RELEASED"
-                    ) {
-
-                        deliveryHTML = `
-                            <span class="status-badge released-label">
-                                RELEASED
-                            </span>
-                        `;
-
-                    } else {
-
-                        deliveryHTML = `
-                            <span class="status-badge not-released-label">
-                                NOT RELEASED
-                            </span>
-                        `;
-
-                    }
+            let deliveryHTML;
 
 
-                    // =================================================
-                    // ACTIONS
-                    // =================================================
+            if (
+                deliveryStatus === "RELEASED"
+            ) {
 
-                    let action = "";
+                deliveryHTML = `
+                    <span class="status-badge released-label">
+                        RELEASED
+                    </span>
+                `;
 
+            } else {
 
-                    // -----------------------------------------------
-                    // RECEIPT
-                    // -----------------------------------------------
-
-                    if (
-                        sale.receipt_type === "SYSTEM"
-                    ) {
-
-                        action += `
-                            <button
-                                class="receipt-button"
-                                onclick="viewReceipt(${sale.id})"
-                            >
-                                View Receipt
-                            </button>
-                        `;
-
-                    } else {
-
-                        action += `
-                            <span class="manual-label">
-                                Manual Receipt
-                            </span>
-                        `;
-
-                    }
-
-
-                    // -----------------------------------------------
-                    // RELEASE
-                    // -----------------------------------------------
-
-                    if (
-                        deliveryStatus !== "RELEASED"
-                    ) {
-
-                        action += `
-                            <button
-                                class="release-button"
-                                onclick="releaseSale(${sale.id})"
-                            >
-                                Release Sale
-                            </button>
-                        `;
-
-                    }
-
-
-                    // =================================================
-                    // TABLE ROW
-                    // =================================================
-
-                    row.innerHTML = `
-
-                        <td>
-                            <span class="receipt-number">
-                                #${sale.receipt_number}
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="employee-name">
-                                ${sale.employee_name || "-"}
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="total-amount">
-                                KSh ${Number(
-                                    sale.total_amount || 0
-                                ).toFixed(2)}
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status-badge payment-badge">
-                                ${sale.payment_method || "-"}
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status-badge type-badge">
-                                ${sale.receipt_type || "-"}
-                            </span>
-                        </td>
-
-                        <td>
-                            ${deliveryHTML}
-                        </td>
-
-                        <td>
-                            ${date}
-                        </td>
-
-                        <td>
-                            ${action}
-                        </td>
-
-                    `;
-
-
-                    salesBody.appendChild(row);
-
-                });
-
-
-            } catch (error) {
-
-                console.error(
-                    "SALES LOAD ERROR:",
-                    error
-                );
-
-                showError(
-                    "Could not load sales."
-                );
+                deliveryHTML = `
+                    <span class="status-badge not-released-label">
+                        NOT RELEASED
+                    </span>
+                `;
 
             }
 
-        }
+
+            /* =================================================
+               ACTIONS
+            ================================================= */
+
+            let action = "";
 
 
-        // =========================================================
-        // RELEASE SALE
-        // =========================================================
+            /* -------------------------------------------------
+               RECEIPT
+            ------------------------------------------------- */
 
-        async function releaseSale(saleId) {
+            if (
+                sale.receipt_type === "SYSTEM"
+            ) {
 
-            const confirmed =
-                confirm(
-                    "Are you sure you want to release this sale?\n\n" +
-                    "Stock will be deducted after the sale is released."
-                );
+                action += `
+                    <button
+                        type="button"
+                        class="receipt-button"
+                        onclick="viewReceipt(${sale.id})"
+                    >
+                        View Receipt
+                    </button>
+                `;
 
+            } else {
 
-            if (!confirmed) {
-                return;
+                action += `
+                    <span class="manual-label">
+                        Manual Receipt
+                    </span>
+                `;
+
             }
 
 
-            clearMessages();
+            /* -------------------------------------------------
+               RELEASE
+            ------------------------------------------------- */
+
+            if (
+                deliveryStatus !== "RELEASED"
+            ) {
+
+                action += `
+                    <button
+                        type="button"
+                        class="release-button"
+                        onclick="releaseSale(${sale.id})"
+                    >
+                        Release Sale
+                    </button>
+                `;
+
+            }
 
 
-            try {
+            /* =================================================
+               TABLE ROW
+            ================================================= */
 
-                const response =
-                    await fetch(
-                        `/api/sales/${saleId}/release`,
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            }
-                        }
-                    );
+            row.innerHTML = `
 
+                <td>
 
-                const data =
-                    await response.json();
+                    <span class="receipt-number">
+                        #${sale.receipt_number}
+                    </span>
+
+                </td>
 
 
-                if (!response.ok) {
+                <td>
 
-                    showError(
-                        data.error ||
-                        "Could not release sale."
-                    );
+                    <span class="employee-name">
+                        ${sale.employee_name || "-"}
+                    </span>
 
-                    return;
+                </td>
+
+
+                <td>
+
+                    <span class="total-amount">
+                        KSh ${Number(
+                            sale.total_amount || 0
+                        ).toFixed(2)}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <span class="status-badge payment-badge">
+                        ${sale.payment_method || "-"}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <span class="status-badge type-badge">
+                        ${sale.receipt_type || "-"}
+                    </span>
+
+                </td>
+
+
+                <td>
+                    ${deliveryHTML}
+                </td>
+
+
+                <td>
+                    ${date}
+                </td>
+
+
+                <td>
+                    ${action}
+                </td>
+
+            `;
+
+
+            salesBody.appendChild(row);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "SALES LOAD ERROR:",
+            error
+        );
+
+        showError(
+            "Could not load sales."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RELEASE SALE
+========================================================= */
+
+async function releaseSale(saleId) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to release this sale?\n\n" +
+            "Stock will be deducted after the sale is released."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    clearMessages();
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/sales/${saleId}/release`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
                 }
+            );
 
 
-                showSuccess(
-                    data.message ||
-                    "Sale released successfully."
-                );
+        const data =
+            await response.json();
 
 
-                await loadSales();
+        if (!response.ok) {
 
+            showError(
+                data.error ||
+                "Could not release sale."
+            );
 
-            } catch (error) {
-
-                console.error(
-                    "RELEASE SALE ERROR:",
-                    error
-                );
-
-                showError(
-                    "Could not release sale."
-                );
-
-            }
-
+            return;
         }
 
 
-        // =========================================================
-        // VIEW RECEIPT
-        // =========================================================
-
-        function viewReceipt(saleId) {
-
-            window.location.href =
-                `/sales/receipt?sale_id=${saleId}`;
-
-        }
+        showSuccess(
+            data.message ||
+            "Sale released successfully."
+        );
 
 
-        // =========================================================
-        // INITIAL LOAD
-        // =========================================================
+        await loadSales();
 
-        loadSales();
 
-    </script>
+    } catch (error) {
+
+        console.error(
+            "RELEASE SALE ERROR:",
+            error
+        );
+
+        showError(
+            "Could not release sale."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   VIEW RECEIPT
+========================================================= */
+
+function viewReceipt(saleId) {
+
+    window.location.href =
+        `/sales/receipt?sale_id=${saleId}`;
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadSales();
+
+</script>
 
 </body>
 

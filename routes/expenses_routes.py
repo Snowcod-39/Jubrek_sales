@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
-from decimal import Decimal
+from flask import Blueprint, request, jsonify, session, render_template
+from decimal import Decimal, InvalidOperation
 from datetime import date
-
 
 from db import get_db_connection
 
@@ -20,23 +19,27 @@ def add_expense():
     if "user_id" not in session:
         return jsonify({"error": "Login required."}), 401
 
+    # Only ADMIN and EMPLOYEE can add expenses
+    if session.get("role") not in ["ADMIN", "EMPLOYEE"]:
+        return jsonify({"error": "Invalid user role."}), 403
+
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "No data provided."}), 400
 
-
     description = data.get("description")
     amount = data.get("amount")
     expense_date = data.get("expense_date")
-
 
     # -----------------------------------------------------
     # Validation
     # -----------------------------------------------------
 
-    if not description:
+    if not description or not str(description).strip():
         return jsonify({"error": "Description is required."}), 400
+
+    description = str(description).strip()
 
     if amount is None:
         return jsonify({"error": "Amount is required."}), 400
@@ -44,96 +47,81 @@ def add_expense():
     if not expense_date:
         return jsonify({"error": "Expense date is required."}), 400
 
-
     try:
         amount = Decimal(str(amount))
 
-    except Exception:
+    except (ValueError, TypeError, InvalidOperation):
         return jsonify({"error": "Invalid amount."}), 400
 
-
     if amount <= 0:
-        return jsonify({"error": "Amount must be greater than zero."}), 400
-
+        return jsonify({
+            "error": "Amount must be greater than zero."
+        }), 400
 
     try:
-        expense_date = date.fromisoformat(expense_date)
+        expense_date = date.fromisoformat(str(expense_date))
 
-    except ValueError:
+    except (ValueError, TypeError):
         return jsonify({
             "error": "Invalid expense date. Use YYYY-MM-DD."
         }), 400
-
 
     connection = None
 
     try:
 
         connection = get_db_connection()
-        cursor = connection.cursor()
 
+        with connection.cursor() as cursor:
 
-        # -------------------------------------------------
-        # Determine who created the expense
-        # -------------------------------------------------
+            # -------------------------------------------------
+            # Determine who created the expense
+            # -------------------------------------------------
 
-        created_by_admin_id = None
-        created_by_employee_id = None
+            created_by_admin_id = None
+            created_by_employee_id = None
 
+            if session.get("role") == "ADMIN":
 
-        if session.get("role") == "ADMIN":
+                created_by_admin_id = session["user_id"]
 
-            created_by_admin_id = session["user_id"]
+            elif session.get("role") == "EMPLOYEE":
 
+                created_by_employee_id = session["user_id"]
 
-        elif session.get("role") == "EMPLOYEE":
+            # -------------------------------------------------
+            # Insert expense
+            # -------------------------------------------------
 
-            created_by_employee_id = session["user_id"]
-
-
-        else:
-
-            return jsonify({
-                "error": "Invalid user role."
-            }), 403
-
-
-        # -------------------------------------------------
-        # Insert expense
-        # -------------------------------------------------
-
-        cursor.execute("""
-            INSERT INTO expenses
-            (
+            cursor.execute("""
+                INSERT INTO expenses
+                (
+                    description,
+                    amount,
+                    expense_date,
+                    created_by_admin_id,
+                    created_by_employee_id
+                )
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+                RETURNING id;
+            """, (
                 description,
                 amount,
                 expense_date,
                 created_by_admin_id,
                 created_by_employee_id
-            )
-            VALUES
-            (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            )
-            RETURNING id;
-        """, (
-            description,
-            amount,
-            expense_date,
-            created_by_admin_id,
-            created_by_employee_id
-        ))
+            ))
 
-
-        expense_id = cursor.fetchone()[0]
-
+            expense_id = cursor.fetchone()[0]
 
         connection.commit()
-
 
         return jsonify({
             "message": "Expense added successfully.",
@@ -142,7 +130,6 @@ def add_expense():
             "amount": str(amount),
             "expense_date": expense_date.isoformat()
         }), 201
-
 
     except Exception as e:
 
@@ -159,12 +146,10 @@ def add_expense():
             "error": "Could not add expense."
         }), 500
 
-
     finally:
 
         if connection:
             connection.close()
-
 
 
 # =========================================================
@@ -174,63 +159,129 @@ def add_expense():
 @expenses_routes.route("/api/expenses", methods=["GET"])
 def get_expenses():
 
+    # User must be logged in
     if "user_id" not in session:
         return jsonify({"error": "Login required."}), 401
 
+    role = session.get("role")
+
+    if role not in ["ADMIN", "EMPLOYEE"]:
+        return jsonify({"error": "Invalid user role."}), 403
 
     connection = None
 
     try:
 
         connection = get_db_connection()
-        cursor = connection.cursor()
 
+        with connection.cursor() as cursor:
 
-        cursor.execute("""
-            SELECT
-                e.id,
-                e.description,
-                e.amount,
-                e.expense_date,
-                e.created_at,
+            # =================================================
+            # EMPLOYEE
+            # Only show expenses created by the logged-in
+            # employee.
+            # =================================================
 
-                CASE
-                    WHEN e.created_by_employee_id IS NOT NULL
-                    THEN emp.full_name
+            if role == "EMPLOYEE":
 
-                    WHEN e.created_by_admin_id IS NOT NULL
-                    THEN adm.full_name
+                cursor.execute("""
+                    SELECT
+                        e.id,
+                        e.description,
+                        e.amount,
+                        e.expense_date,
+                        e.created_at,
 
-                    ELSE 'Unknown'
-                END AS created_by,
+                        CASE
+                            WHEN e.created_by_employee_id IS NOT NULL
+                            THEN emp.full_name
 
-                CASE
-                    WHEN e.created_by_employee_id IS NOT NULL
-                    THEN 'EMPLOYEE'
+                            WHEN e.created_by_admin_id IS NOT NULL
+                            THEN adm.full_name
 
-                    WHEN e.created_by_admin_id IS NOT NULL
-                    THEN 'ADMIN'
+                            ELSE 'Unknown'
+                        END AS created_by,
 
-                    ELSE 'UNKNOWN'
-                END AS created_by_role
+                        CASE
+                            WHEN e.created_by_employee_id IS NOT NULL
+                            THEN 'EMPLOYEE'
 
-            FROM expenses e
+                            WHEN e.created_by_admin_id IS NOT NULL
+                            THEN 'ADMIN'
 
-            LEFT JOIN employees emp
-                ON e.created_by_employee_id = emp.id
+                            ELSE 'UNKNOWN'
+                        END AS created_by_role
 
-            LEFT JOIN admins adm
-                ON e.created_by_admin_id = adm.id
+                    FROM expenses e
 
-            ORDER BY e.expense_date DESC, e.id DESC;
-        """)
+                    LEFT JOIN employees emp
+                        ON e.created_by_employee_id = emp.id
 
+                    LEFT JOIN admins adm
+                        ON e.created_by_admin_id = adm.id
 
-        rows = cursor.fetchall()
+                    WHERE e.created_by_employee_id = %s
 
+                    ORDER BY
+                        e.expense_date DESC,
+                        e.id DESC;
+                """, (session["user_id"],))
+
+            # =================================================
+            # ADMIN
+            # Admin can see ALL expenses.
+            # =================================================
+
+            else:
+
+                cursor.execute("""
+                    SELECT
+                        e.id,
+                        e.description,
+                        e.amount,
+                        e.expense_date,
+                        e.created_at,
+
+                        CASE
+                            WHEN e.created_by_employee_id IS NOT NULL
+                            THEN emp.full_name
+
+                            WHEN e.created_by_admin_id IS NOT NULL
+                            THEN adm.full_name
+
+                            ELSE 'Unknown'
+                        END AS created_by,
+
+                        CASE
+                            WHEN e.created_by_employee_id IS NOT NULL
+                            THEN 'EMPLOYEE'
+
+                            WHEN e.created_by_admin_id IS NOT NULL
+                            THEN 'ADMIN'
+
+                            ELSE 'UNKNOWN'
+                        END AS created_by_role
+
+                    FROM expenses e
+
+                    LEFT JOIN employees emp
+                        ON e.created_by_employee_id = emp.id
+
+                    LEFT JOIN admins adm
+                        ON e.created_by_admin_id = adm.id
+
+                    ORDER BY
+                        e.expense_date DESC,
+                        e.id DESC;
+                """)
+
+            rows = cursor.fetchall()
+
+        # -----------------------------------------------------
+        # Format response
+        # -----------------------------------------------------
 
         expenses = []
-
 
         for row in rows:
 
@@ -244,11 +295,9 @@ def get_expenses():
                 "created_by_role": row[6]
             })
 
-
         return jsonify({
             "expenses": expenses
         })
-
 
     except Exception as e:
 
@@ -262,11 +311,15 @@ def get_expenses():
             "error": "Could not load expenses."
         }), 500
 
-
     finally:
 
         if connection:
             connection.close()
+
+
+# =========================================================
+# EXPENSE PAGE
+# =========================================================
 
 @expenses_routes.route("/expenses")
 def expenses_page():

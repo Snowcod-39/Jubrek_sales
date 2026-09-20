@@ -1,8 +1,20 @@
 from flask import Blueprint, jsonify, session, render_template, request
+
 from db import get_db_connection
 
 
 reports_routes = Blueprint("reports_routes", __name__)
+
+
+# =========================================================
+# ADMIN CHECK
+# =========================================================
+
+def admin_required():
+    return (
+        "user_id" in session
+        and session.get("role") == "ADMIN"
+    )
 
 
 # =========================================================
@@ -12,16 +24,19 @@ reports_routes = Blueprint("reports_routes", __name__)
 @reports_routes.route("/api/reports/summary", methods=["GET"])
 def report_summary():
 
-    if "user_id" not in session:
-        return jsonify({"error": "Login required."}), 401
-
+    if not admin_required():
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
 
     # -----------------------------------------------------
     # Get requested report period
     # -----------------------------------------------------
 
-    period = request.args.get("period", "daily").lower()
-
+    period = request.args.get(
+        "period",
+        "daily"
+    ).lower()
 
     allowed_periods = [
         "daily",
@@ -30,22 +45,16 @@ def report_summary():
         "annually"
     ]
 
-
     if period not in allowed_periods:
-
         return jsonify({
             "error": "Invalid report period."
         }), 400
 
-
     connection = None
 
-
     try:
-
         connection = get_db_connection()
         cursor = connection.cursor()
-
 
         # -------------------------------------------------
         # Determine date filter
@@ -61,51 +70,77 @@ def report_summary():
                 e.expense_date = CURRENT_DATE
             """
 
-
         elif period == "weekly":
 
             date_condition = """
-                s.sale_date >= DATE_TRUNC('week', CURRENT_DATE)
-                AND s.sale_date < DATE_TRUNC('week', CURRENT_DATE)
-                    + INTERVAL '1 week'
+                s.sale_date >= DATE_TRUNC(
+                    'week',
+                    CURRENT_DATE
+                )
+                AND s.sale_date < DATE_TRUNC(
+                    'week',
+                    CURRENT_DATE
+                ) + INTERVAL '1 week'
             """
 
             expense_date_condition = """
-                e.expense_date >= DATE_TRUNC('week', CURRENT_DATE)
-                AND e.expense_date < DATE_TRUNC('week', CURRENT_DATE)
-                    + INTERVAL '1 week'
+                e.expense_date >= DATE_TRUNC(
+                    'week',
+                    CURRENT_DATE
+                )
+                AND e.expense_date < DATE_TRUNC(
+                    'week',
+                    CURRENT_DATE
+                ) + INTERVAL '1 week'
             """
-
 
         elif period == "monthly":
 
             date_condition = """
-                s.sale_date >= DATE_TRUNC('month', CURRENT_DATE)
-                AND s.sale_date < DATE_TRUNC('month', CURRENT_DATE)
-                    + INTERVAL '1 month'
+                s.sale_date >= DATE_TRUNC(
+                    'month',
+                    CURRENT_DATE
+                )
+                AND s.sale_date < DATE_TRUNC(
+                    'month',
+                    CURRENT_DATE
+                ) + INTERVAL '1 month'
             """
 
             expense_date_condition = """
-                e.expense_date >= DATE_TRUNC('month', CURRENT_DATE)
-                AND e.expense_date < DATE_TRUNC('month', CURRENT_DATE)
-                    + INTERVAL '1 month'
+                e.expense_date >= DATE_TRUNC(
+                    'month',
+                    CURRENT_DATE
+                )
+                AND e.expense_date < DATE_TRUNC(
+                    'month',
+                    CURRENT_DATE
+                ) + INTERVAL '1 month'
             """
-
 
         else:
 
             date_condition = """
-                s.sale_date >= DATE_TRUNC('year', CURRENT_DATE)
-                AND s.sale_date < DATE_TRUNC('year', CURRENT_DATE)
-                    + INTERVAL '1 year'
+                s.sale_date >= DATE_TRUNC(
+                    'year',
+                    CURRENT_DATE
+                )
+                AND s.sale_date < DATE_TRUNC(
+                    'year',
+                    CURRENT_DATE
+                ) + INTERVAL '1 year'
             """
 
             expense_date_condition = """
-                e.expense_date >= DATE_TRUNC('year', CURRENT_DATE)
-                AND e.expense_date < DATE_TRUNC('year', CURRENT_DATE)
-                    + INTERVAL '1 year'
+                e.expense_date >= DATE_TRUNC(
+                    'year',
+                    CURRENT_DATE
+                )
+                AND e.expense_date < DATE_TRUNC(
+                    'year',
+                    CURRENT_DATE
+                ) + INTERVAL '1 year'
             """
-
 
         # =================================================
         # SALES + PROFIT SUMMARY
@@ -132,17 +167,17 @@ def report_summary():
             LEFT JOIN sale_items si
                 ON s.id = si.sale_id
 
-            WHERE {date_condition};
+            WHERE
+                {date_condition}
+
+                AND s.delivery_status = 'RELEASED';
         """)
 
-
         sales_data = cursor.fetchone()
-
 
         total_sales = sales_data[0]
         sales_revenue = sales_data[1]
         cost_of_goods_sold = sales_data[2]
-
 
         # =================================================
         # EXPENSE SUMMARY
@@ -162,13 +197,10 @@ def report_summary():
             WHERE {expense_date_condition};
         """)
 
-
         expense_data = cursor.fetchone()
-
 
         total_expenses = expense_data[0]
         total_expenses_amount = expense_data[1]
-
 
         # =================================================
         # PROFIT CALCULATIONS
@@ -179,12 +211,10 @@ def report_summary():
             - cost_of_goods_sold
         )
 
-
         net_profit = (
             gross_profit
             - total_expenses_amount
         )
-
 
         # =================================================
         # SALES BY EMPLOYEE
@@ -208,6 +238,7 @@ def report_summary():
             LEFT JOIN sales s
                 ON emp.id = s.employee_id
                 AND {date_condition}
+                AND s.delivery_status = 'RELEASED'
 
             LEFT JOIN sale_items si
                 ON s.id = si.sale_id
@@ -220,27 +251,18 @@ def report_summary():
                 total_sales_amount DESC;
         """)
 
-
         employee_rows = cursor.fetchall()
 
-
         sales_by_employee = []
-
 
         for row in employee_rows:
 
             sales_by_employee.append({
-
                 "employee_id": row[0],
-
                 "employee_name": row[1],
-
                 "number_of_sales": row[2],
-
-                "total_sales_amount":
-                    str(row[3])
+                "total_sales_amount": str(row[3])
             })
-
 
         # =================================================
         # EXPENSES BY EMPLOYEE
@@ -273,27 +295,18 @@ def report_summary():
                 total_expense_amount DESC;
         """)
 
-
         expense_employee_rows = cursor.fetchall()
 
-
         expenses_by_employee = []
-
 
         for row in expense_employee_rows:
 
             expenses_by_employee.append({
-
                 "employee_id": row[0],
-
                 "employee_name": row[1],
-
                 "number_of_expenses": row[2],
-
-                "total_expense_amount":
-                    str(row[3])
+                "total_expense_amount": str(row[3])
             })
-
 
         # =================================================
         # RESPONSE
@@ -332,9 +345,7 @@ def report_summary():
 
             "expenses_by_employee":
                 expenses_by_employee
-
         })
-
 
     except Exception as e:
 
@@ -347,7 +358,6 @@ def report_summary():
         return jsonify({
             "error": "Could not generate report."
         }), 500
-
 
     finally:
 
@@ -362,7 +372,7 @@ def report_summary():
 @reports_routes.route("/reports")
 def reports_page():
 
-    if "user_id" not in session:
-        return "Login required.", 401
+    if not admin_required():
+        return "Admin access required.", 403
 
     return render_template("reports.html")

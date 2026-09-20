@@ -5,386 +5,486 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Category Management - RUBREK ENTERPRISES</title>
+    <title>Category Management - JUBREK ENTERPRISES</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <style>
+<style>
+    :root {
+        --charcoal: #202421;
+        --charcoal-dark: #171a18;
+        --card-grey: #d9dcda;
+        --card-grey-dark: #c7ccca;
+        --tiffany-blue: #81d8d0;
+        --action-blue: #1769aa;
+        --primary-text: #202421;
+        --secondary-text: #737A75;
+        --white: #ffffff;
+    }
 
-        * {
-            box-sizing: border-box;
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #202421 !important;
+        color: #202421;
+        min-height: 100vh;
+    }
+
+    /* ================= HEADER ================= */
+
+    header {
+        min-height: 72px;
+        background: #171a18 !important;
+        color: #ffffff !important;
+        padding: 0 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: 0.7px;
+        color: #ffffff !important;
+    }
+
+    header div {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 14px;
+        color: #ffffff !important;
+    }
+
+    header a {
+        color: #ffffff !important;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 8px 14px;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        transition: 0.2s ease;
+    }
+
+    header a:hover {
+        background: #81d8d0 !important;
+        color: #202421 !important;
+        border-color: #81d8d0 !important;
+    }
+
+    /* ================= MAIN ================= */
+
+    main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px 25px 50px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        margin: 0;
+        color: #ffffff !important;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    /* ================= BLUE BUTTONS ================= */
+
+    .dashboard-btn,
+    .add-btn {
+        background: #1769aa !important;
+        color: #ffffff !important;
+        border: none !important;
+        transition: background 0.2s ease,
+                    color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .dashboard-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .add-btn {
+        padding: 12px 20px;
+        border-radius: 7px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .dashboard-btn:hover,
+    .add-btn:hover {
+        background: #81d8d0 !important;
+        color: #202421 !important;
+        transform: translateY(-1px);
+    }
+
+    /* ================= LARGE SECTION CARDS ================= */
+
+    .card {
+        background: #d9dcda !important;
+        color: #202421 !important;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 22px;
+        border: 1px solid rgba(32,36,33,0.13);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    /* IMPORTANT:
+       LARGE CARDS NEVER TURN TIFFANY */
+
+    .card:hover {
+        background: #d9dcda !important;
+        color: #202421 !important;
+    }
+
+    .card h3 {
+        margin: 0 0 18px;
+        color: #202421 !important;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    /* ================= FORM ================= */
+
+    #category-form {
+        display: flex;
+        gap: 14px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #737A75 !important;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 13px;
+        background: #eef0ef !important;
+        border: 1px solid rgba(32,36,33,0.18);
+        border-radius: 7px;
+        color: #202421 !important;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-group input::placeholder {
+        color: #737A75 !important;
+    }
+
+    .form-group input:focus {
+        background: #ffffff !important;
+        border-color: #1769aa;
+        box-shadow: 0 0 0 2px rgba(23,105,170,0.15);
+    }
+
+    /* ================= CATEGORY GRID ================= */
+
+    #category-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 14px;
+    }
+
+    /* ================= SMALL CATEGORY CARDS ================= */
+
+    .category-card {
+        background: #c7ccca !important;
+        color: #202421 !important;
+        border: 1px solid rgba(32,36,33,0.13);
+        border-radius: 9px;
+        padding: 17px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    /* ONLY THESE LITTLE CARDS TURN TIFFANY */
+
+    .category-card:hover {
+        background: #81d8d0 !important;
+        color: #202421 !important;
+        border-color: #81d8d0 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px rgba(0,0,0,0.18);
+    }
+
+    .category-info {
+        min-width: 0;
+    }
+
+    .category-name {
+        margin: 0 0 8px;
+        color: #202421 !important;
+        font-size: 15px;
+        font-weight: bold;
+        word-break: break-word;
+    }
+
+    /* ================= STATUS ================= */
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .status-active {
+        background: #d8f0e1 !important;
+        color: #176b3b !important;
+    }
+
+    .status-inactive {
+        background: #e5e7e6 !important;
+        color: #737A75 !important;
+    }
+
+    /* ================= STATUS BUTTONS ================= */
+
+    .status-btn {
+        padding: 8px 11px;
+        border: none;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: bold;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .deactivate-btn {
+        background: #f5dada !important;
+        color: #a52a2a !important;
+    }
+
+    .deactivate-btn:hover {
+        background: #c62828 !important;
+        color: #ffffff !important;
+    }
+
+    .reactivate-btn {
+        background: rgba(23,105,170,0.13) !important;
+        color: #1769aa !important;
+    }
+
+    .reactivate-btn:hover {
+        background: #1769aa !important;
+        color: #ffffff !important;
+    }
+
+    /* ================= EMPTY STATE ================= */
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 35px;
+        color: #737A75 !important;
+        background: #c7ccca !important;
+        border: 1px dashed rgba(32,36,33,0.25);
+        border-radius: 9px;
+        font-size: 14px;
+    }
+
+    /* ================= MESSAGE ================= */
+
+    #message {
+        margin: 15px 0 0;
+        min-height: 18px;
+        color: #737A75 !important;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    /* ================= LOADING ================= */
+
+    #loadingOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(23,26,24,0.92) !important;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loader-content {
+        text-align: center;
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    .biscuit {
+        font-size: 42px;
+        display: inline-block;
+        animation: biscuitSpin 1s linear infinite;
+        margin-bottom: 8px;
+    }
+
+    @keyframes biscuitSpin {
+        0% {
+            transform: rotate(0deg);
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+        100% {
+            transform: rotate(360deg);
         }
+    }
 
-        /* ================= HEADER ================= */
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 700px) {
 
         header {
-            background: #0b63ce;
-            color: white;
-            padding: 18px 35px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 21px;
-            letter-spacing: 0.5px;
+            padding: 15px 18px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         header div {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 14px;
+            width: 100%;
+            justify-content: space-between;
         }
-
-        header a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 6px;
-        }
-
-        header a:hover {
-            background: white;
-            color: #0b63ce;
-        }
-
-        /* ================= MAIN ================= */
 
         main {
-            max-width: 1100px;
-            margin: 35px auto;
-            padding: 0 25px;
+            padding: 25px 15px 35px;
         }
 
         .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .page-header h2 {
-            margin: 0;
-            font-size: 25px;
-            color: #172033;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
         }
 
         .dashboard-btn {
-            text-decoration: none;
-            background: white;
-            color: #0b63ce;
-            border: 1px solid #d5deeb;
-            padding: 9px 15px;
-            border-radius: 7px;
-            font-size: 14px;
-            font-weight: bold;
+            width: 100%;
         }
-
-        .dashboard-btn:hover {
-            background: #eef5ff;
-        }
-
-        /* ================= CARDS ================= */
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 25px;
-            border: 1px solid #e1e7ef;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h3 {
-            margin: 0 0 18px;
-            font-size: 18px;
-            color: #172033;
-        }
-
-        /* ================= FORM ================= */
 
         #category-form {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            flex-wrap: wrap;
+            display: block;
         }
 
         .form-group {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 7px;
-            color: #4b5563;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #ccd5e1;
-            border-radius: 7px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: #0b63ce;
-            box-shadow: 0 0 0 2px rgba(11, 99, 206, 0.1);
-        }
-
-        button {
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
+            margin-bottom: 12px;
         }
 
         .add-btn {
-            background: #0b63ce;
-            color: white;
-            padding: 11px 20px;
-            border-radius: 7px;
-            font-weight: bold;
-            font-size: 14px;
+            width: 100%;
         }
-
-        .add-btn:hover {
-            background: #084f9f;
-        }
-
-        /* ================= MESSAGE ================= */
-
-        #message {
-            margin: 15px 0 0;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* ================= CATEGORY GRID ================= */
 
         #category-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        .card {
+            padding: 18px;
         }
 
         .category-card {
-            border: 1px solid #e0e6ef;
-            border-radius: 9px;
-            padding: 17px;
-            background: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            transition: 0.2s ease;
-        }
-
-        .category-card:hover {
-            border-color: #b8cde7;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .category-info {
-            min-width: 0;
-        }
-
-        .category-name {
-            margin: 0 0 7px;
-            font-size: 15px;
-            font-weight: bold;
-            color: #172033;
-            word-break: break-word;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 9px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .status-active {
-            background: #e7f7ee;
-            color: #167442;
-        }
-
-        .status-inactive {
-            background: #f1f3f5;
-            color: #6b7280;
+            align-items: flex-start;
+            flex-direction: column;
         }
 
         .status-btn {
-            padding: 7px 11px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            white-space: nowrap;
+            width: 100%;
         }
-
-        .deactivate-btn {
-            background: #fff1f1;
-            color: #c62828;
-        }
-
-        .deactivate-btn:hover {
-            background: #ffe1e1;
-        }
-
-        .reactivate-btn {
-            background: #eaf3ff;
-            color: #0b63ce;
-        }
-
-        .reactivate-btn:hover {
-            background: #dbeaff;
-        }
-
-        /* ================= EMPTY / LOADING ================= */
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 35px;
-            color: #6b7280;
-            background: white;
-            border: 1px dashed #cfd8e3;
-            border-radius: 9px;
-        }
-
-        /* ================= LOADING OVERLAY ================= */
-
-        #loadingOverlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.92);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .loader-content {
-            text-align: center;
-            color: #0b63ce;
-            font-weight: bold;
-        }
-
-        .biscuit {
-            font-size: 42px;
-            display: inline-block;
-            animation: biscuitSpin 1s linear infinite;
-            margin-bottom: 8px;
-        }
-
-        @keyframes biscuitSpin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* ================= MOBILE ================= */
-
-        @media (max-width: 700px) {
-
-            header {
-                padding: 15px 18px;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            header div {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            main {
-                margin: 25px auto;
-                padding: 0 15px;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            #category-form {
-                display: block;
-            }
-
-            .form-group {
-                margin-bottom: 12px;
-            }
-
-            .add-btn {
-                width: 100%;
-            }
-
-            #category-list {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
+    }
+</style>
 </head>
+
 
 <body>
 
-    <!-- ================= LOADING ================= -->
+
+    <!-- =====================================================
+         LOADING
+    ===================================================== -->
 
     <div id="loadingOverlay">
+
         <div class="loader-content">
+
             <div class="biscuit">🍪</div>
+
             <div>Loading...</div>
+
         </div>
+
     </div>
 
 
-    <!-- ================= HEADER ================= -->
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
 
     <header>
 
-        <h1>RUBREK ENTERPRISES</h1>
+        <h1>JUBREK ENTERPRISES</h1>
 
         <div>
-            <span>Welcome, {{ session["full_name"] }}</span>
+
+            <span>
+                Welcome, {{ session["full_name"] }}
+            </span>
 
             <a href="{{ url_for('logout') }}">
                 Logout
             </a>
+
         </div>
 
     </header>
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
 
     <main>
+
 
         <div class="page-header">
 
@@ -400,11 +500,14 @@
         </div>
 
 
-        <!-- ================= ADD CATEGORY ================= -->
+        <!-- =================================================
+             ADD CATEGORY
+        ================================================= -->
 
         <section class="card">
 
             <h3>Add New Category</h3>
+
 
             <form id="category-form">
 
@@ -424,6 +527,7 @@
 
                 </div>
 
+
                 <button
                     type="submit"
                     class="add-btn"
@@ -433,12 +537,15 @@
 
             </form>
 
+
             <p id="message"></p>
 
         </section>
 
 
-        <!-- ================= CATEGORIES ================= -->
+        <!-- =================================================
+             CATEGORIES
+        ================================================= -->
 
         <section class="card">
 
@@ -454,40 +561,53 @@
 
         </section>
 
+
     </main>
 
 
     <script>
 
-        // ============================================
+        // =====================================================
         // LOADING OVERLAY
-        // ============================================
+        // =====================================================
 
         function showLoading() {
-            document.getElementById("loadingOverlay").style.display = "flex";
+
+            document.getElementById(
+                "loadingOverlay"
+            ).style.display = "flex";
+
         }
+
 
         function hideLoading() {
-            document.getElementById("loadingOverlay").style.display = "none";
+
+            document.getElementById(
+                "loadingOverlay"
+            ).style.display = "none";
+
         }
 
 
-        // ============================================
+        // =====================================================
         // LOAD CATEGORIES
-        // ============================================
+        // =====================================================
 
         async function loadCategories() {
 
             const categoryList =
                 document.getElementById("category-list");
 
+
             try {
 
                 const response =
                     await fetch("/api/categories");
 
+
                 const data =
                     await response.json();
+
 
                 if (!response.ok) {
 
@@ -500,6 +620,7 @@
                     return;
                 }
 
+
                 if (data.categories.length === 0) {
 
                     categoryList.innerHTML = `
@@ -511,16 +632,22 @@
                     return;
                 }
 
+
                 categoryList.innerHTML = "";
+
 
                 data.categories.forEach(category => {
 
                     const categoryDiv =
                         document.createElement("div");
 
-                    categoryDiv.className = "category-card";
+
+                    categoryDiv.className =
+                        "category-card";
+
 
                     let actionButton = "";
+
 
                     if (category.status === "ACTIVE") {
 
@@ -546,10 +673,12 @@
 
                     }
 
+
                     const statusClass =
                         category.status === "ACTIVE"
                             ? "status-active"
                             : "status-inactive";
+
 
                     categoryDiv.innerHTML = `
 
@@ -569,9 +698,11 @@
 
                     `;
 
+
                     categoryList.appendChild(categoryDiv);
 
                 });
+
 
             } catch (error) {
 
@@ -586,86 +717,105 @@
         }
 
 
-        // ============================================
+        // =====================================================
         // ADD CATEGORY
-        // ============================================
+        // =====================================================
 
-        document.getElementById("category-form").addEventListener(
-            "submit",
-            async function(event) {
+        document
+            .getElementById("category-form")
+            .addEventListener(
+                "submit",
+                async function(event) {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                const categoryName =
-                    document.getElementById("category_name")
-                    .value
-                    .trim();
 
-                const message =
-                    document.getElementById("message");
+                    const categoryName =
+                        document
+                            .getElementById("category_name")
+                            .value
+                            .trim();
 
-                if (!categoryName) {
 
-                    message.textContent =
-                        "Category name is required.";
+                    const message =
+                        document.getElementById("message");
 
-                    return;
-                }
 
-                try {
-
-                    const response =
-                        await fetch("/api/categories", {
-
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                category_name: categoryName
-                            })
-
-                        });
-
-                    const data =
-                        await response.json();
-
-                    if (!response.ok) {
+                    if (!categoryName) {
 
                         message.textContent =
-                            data.error ||
-                            "Could not create category.";
+                            "Category name is required.";
 
                         return;
                     }
 
-                    message.textContent =
-                        data.message;
 
-                    document.getElementById(
-                        "category-form"
-                    ).reset();
+                    try {
 
-                    loadCategories();
+                        const response =
+                            await fetch(
+                                "/api/categories",
+                                {
+                                    method: "POST",
 
-                } catch (error) {
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
 
-                    message.textContent =
-                        "Could not connect to the server.";
+                                    body: JSON.stringify({
+                                        category_name:
+                                            categoryName
+                                    })
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            message.textContent =
+                                data.error ||
+                                "Could not create category.";
+
+                            return;
+                        }
+
+
+                        message.textContent =
+                            data.message;
+
+
+                        document
+                            .getElementById("category-form")
+                            .reset();
+
+
+                        loadCategories();
+
+
+                    } catch (error) {
+
+                        message.textContent =
+                            "Could not connect to the server.";
+
+                    }
 
                 }
-
-            }
-        );
+            );
 
 
-        // ============================================
+        // =====================================================
         // CHANGE CATEGORY STATUS
-        // ============================================
+        // =====================================================
 
-        async function changeCategoryStatus(categoryId, action) {
+        async function changeCategoryStatus(
+            categoryId,
+            action
+        ) {
 
             try {
 
@@ -677,26 +827,37 @@
                         }
                     );
 
+
                 const data =
                     await response.json();
 
+
                 if (!response.ok) {
 
-                    document.getElementById("message").textContent =
+                    document.getElementById(
+                        "message"
+                    ).textContent =
                         data.error ||
                         "Could not change category status.";
 
                     return;
                 }
 
-                document.getElementById("message").textContent =
+
+                document.getElementById(
+                    "message"
+                ).textContent =
                     data.message;
+
 
                 loadCategories();
 
+
             } catch (error) {
 
-                document.getElementById("message").textContent =
+                document.getElementById(
+                    "message"
+                ).textContent =
                     "Could not connect to the server.";
 
             }
@@ -704,13 +865,14 @@
         }
 
 
-        // ============================================
+        // =====================================================
         // INITIAL LOAD
-        // ============================================
+        // =====================================================
 
         loadCategories();
 
     </script>
+
 
 </body>
 
