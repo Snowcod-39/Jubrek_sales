@@ -27,12 +27,60 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
             background: var(--charcoal);
             color: var(--primary-text);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        /* =====================================================
+           MOBILE MENU BUTTON
+        ===================================================== */
+
+        .mobile-menu-button {
+            display: none;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 9px;
+            background: var(--action-blue);
+            color: var(--white);
+            font-size: 22px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-button:hover {
+            background: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
+        .mobile-menu-button:active {
+            transform: scale(0.97);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 999;
         }
 
         /* =====================================================
@@ -53,6 +101,7 @@
             border-right: 1px solid var(--border-dark);
             overflow-y: auto;
             z-index: 1000;
+            transition: transform 0.25s ease;
         }
 
         .sidebar-brand {
@@ -109,6 +158,7 @@
             align-items: center;
             gap: 10px;
             padding: 11px 12px;
+            min-height: 42px;
             border-radius: 7px;
             color: var(--white);
             text-decoration: none;
@@ -132,8 +182,6 @@
             background: var(--tiffany-blue);
             color: var(--primary-text);
         }
-
-        /* STOCK MANAGEMENT SIDEBAR */
 
         .sidebar-stock-title {
             padding: 0 10px;
@@ -169,7 +217,7 @@
         header {
             margin-left: 250px;
             width: calc(100% - 250px);
-            box-sizing: border-box;
+            min-height: 72px;
             background: var(--charcoal-dark);
             border-bottom: 1px solid var(--border-dark);
             padding: 15px 30px;
@@ -179,15 +227,24 @@
             gap: 20px;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
         }
 
         .brand-icon {
             width: 40px;
             height: 40px;
+            flex-shrink: 0;
             background: var(--action-blue);
             color: var(--white);
             border-radius: 10px;
@@ -202,6 +259,7 @@
             margin: 0;
             color: var(--white);
             font-size: 18px;
+            white-space: nowrap;
         }
 
         .brand-subtitle {
@@ -214,11 +272,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-shrink: 0;
         }
 
         .welcome {
             color: var(--white);
             font-size: 13px;
+            white-space: nowrap;
         }
 
         .logout {
@@ -226,6 +286,10 @@
             color: var(--white);
             background: var(--action-blue);
             border: 1px solid var(--action-blue);
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 8px 13px;
             border-radius: 6px;
             font-size: 13px;
@@ -243,13 +307,11 @@
            MAIN
         ===================================================== */
 
-       main {
-    width: calc(100% - 250px);
-    max-width: none;
-    margin-left: 250px;
-    padding: 30px;
-    box-sizing: border-box;
-}
+        main {
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            padding: 30px;
+        }
 
         .page-heading {
             margin-bottom: 22px;
@@ -266,10 +328,14 @@
             margin: 0;
             color: var(--secondary-text);
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .dashboard-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
             margin-top: 14px;
             text-decoration: none;
             background: var(--action-blue);
@@ -298,6 +364,8 @@
             margin-bottom: 18px;
             font-size: 14px;
             font-weight: bold;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
         }
 
         #message.success {
@@ -338,6 +406,7 @@
             margin: 0 0 20px;
             color: var(--secondary-text);
             font-size: 12px;
+            line-height: 1.5;
         }
 
         /* =====================================================
@@ -365,6 +434,7 @@
         .form-group input,
         .form-group select {
             width: 100%;
+            min-height: 44px;
             padding: 11px 12px;
             border: 1px solid rgba(32, 36, 33, 0.18);
             border-radius: 7px;
@@ -384,6 +454,7 @@
 
         .add-button {
             margin-top: 20px;
+            min-height: 44px;
             background: var(--action-blue);
             color: var(--white);
             border: none;
@@ -421,6 +492,7 @@
 
         .search-wrapper input {
             width: 100%;
+            min-height: 44px;
             padding: 11px 14px 11px 38px;
             border: 1px solid rgba(32, 36, 33, 0.18);
             border-radius: 8px;
@@ -443,6 +515,7 @@
             transform: translateY(-50%);
             color: var(--secondary-text);
             font-size: 15px;
+            pointer-events: none;
         }
 
         .product-count {
@@ -457,17 +530,18 @@
         ===================================================== */
 
         #productList {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-}
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
 
         /* =====================================================
            PRODUCT CARD
         ===================================================== */
 
         .product-card {
+            min-width: 0;
             border: 1px solid rgba(32, 36, 33, 0.13);
             border-radius: 10px;
             padding: 17px;
@@ -518,12 +592,14 @@
             color: var(--primary-text);
             font-size: 16px;
             font-weight: bold;
+            overflow-wrap: anywhere;
         }
 
         .product-category {
             margin: 4px 0 0;
             color: var(--secondary-text);
             font-size: 12px;
+            overflow-wrap: anywhere;
         }
 
         .product-id {
@@ -541,6 +617,7 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 5px;
+            flex-shrink: 0;
         }
 
         .status {
@@ -594,6 +671,7 @@
             color: var(--primary-text);
             font-size: 13px;
             font-weight: bold;
+            overflow-wrap: anywhere;
         }
 
         .quantity-low {
@@ -607,18 +685,19 @@
         .product-controls {
             margin-top: 15px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 7px;
         }
 
         .control-button {
-            height: 36px;
+            min-width: 0;
+            min-height: 40px;
             border-radius: 7px;
             border: 1px solid rgba(23, 105, 170, 0.25);
             background: rgba(23, 105, 170, 0.13);
             color: var(--action-blue);
             cursor: pointer;
-            font-size: 17px;
+            font-size: 15px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -636,6 +715,7 @@
             background: rgba(165, 42, 42, 0.10);
             color: #a52a2a;
             border-color: rgba(165, 42, 42, 0.20);
+            font-size: 10px;
         }
 
         .control-button.danger:hover {
@@ -652,6 +732,115 @@
         .control-button:disabled:hover {
             background: rgba(23, 105, 170, 0.13);
             color: var(--action-blue);
+        }
+
+        /* =====================================================
+           PRODUCT EDIT PANEL
+        ===================================================== */
+
+        #productEditPanel {
+            display: none;
+            background: #eef0ef;
+            border: 1px solid rgba(23, 105, 170, 0.25);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        #productEditPanel.visible {
+            display: block;
+        }
+
+        .edit-product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .edit-product-header h3 {
+            margin: 0;
+            color: var(--primary-text);
+            font-size: 18px;
+        }
+
+        .edit-product-header p {
+            margin: 5px 0 0;
+            color: var(--secondary-text);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .edit-product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .edit-product-group {
+            min-width: 0;
+        }
+
+        .edit-product-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--primary-text);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .edit-product-group input,
+        .edit-product-group select {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 11px;
+            border: 1px solid #c8cecc;
+            border-radius: 7px;
+            background: white;
+            color: #202421;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .edit-product-actions {
+            display: flex;
+            gap: 9px;
+            margin-top: 16px;
+        }
+
+        .edit-product-save,
+        .edit-product-cancel {
+            min-height: 42px;
+            border: none;
+            border-radius: 7px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .edit-product-save {
+            background: var(--action-blue);
+            color: white;
+        }
+
+        .edit-product-save:hover {
+            background: var(--tiffany-blue);
+            color: var(--charcoal);
+        }
+
+        .edit-product-cancel {
+            background: #d4d8d6;
+            color: var(--primary-text);
+        }
+
+        .edit-product-cancel:hover {
+            background: #c5cac8;
+        }
+
+        .edit-product-button {
+            font-size: 15px;
         }
 
         /* =====================================================
@@ -689,9 +878,13 @@
             margin: 0;
             color: var(--secondary-text);
             font-size: 12px;
+            line-height: 1.4;
         }
 
         .close-panel {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
             border: none;
             background: transparent;
             color: var(--secondary-text);
@@ -699,9 +892,11 @@
             font-size: 22px;
             line-height: 1;
             padding: 2px 5px;
+            border-radius: 7px;
         }
 
         .close-panel:hover {
+            background: rgba(165, 42, 42, 0.10);
             color: #a52a2a;
         }
 
@@ -713,6 +908,7 @@
         }
 
         .selected-info-box {
+            min-width: 0;
             background: var(--card-grey);
             border-radius: 7px;
             padding: 10px 12px;
@@ -728,6 +924,7 @@
         .selected-info-box strong {
             color: var(--primary-text);
             font-size: 13px;
+            overflow-wrap: anywhere;
         }
 
         .stock-form-grid {
@@ -739,6 +936,7 @@
         .stock-form-group {
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         .stock-form-group.full {
@@ -755,14 +953,19 @@
         .stock-form-group input,
         .stock-form-group textarea {
             width: 100%;
+            min-height: 44px;
             padding: 10px 11px;
             border: 1px solid rgba(32, 36, 33, 0.18);
             border-radius: 7px;
             background: var(--white);
             color: var(--primary-text);
-            font-size: 13px;
+            font-size: 14px;
             outline: none;
             resize: vertical;
+        }
+
+        .stock-form-group textarea {
+            min-height: 80px;
         }
 
         .stock-form-group input:focus,
@@ -773,6 +976,7 @@
 
         .stock-action-submit {
             margin-top: 14px;
+            min-height: 44px;
             background: var(--action-blue);
             color: var(--white);
             border: none;
@@ -844,146 +1048,391 @@
         }
 
         /* =====================================================
-           RESPONSIVE
+           RESPONSIVE - TABLET
         ===================================================== */
 
+        @media (max-width: 1200px) {
+
+            #productList {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            header {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+
+            main {
+                width: calc(100% - 220px);
+                margin-left: 220px;
+                padding: 25px;
+            }
+
+        }
+
         /* =====================================================
-   RESPONSIVE
-===================================================== */
+           RESPONSIVE - MOBILE
+        ===================================================== */
 
-@media (max-width: 1200px) {
+        @media (max-width: 750px) {
 
-    #productList {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+            body {
+                overflow-x: hidden;
+            }
 
-}
+            .mobile-menu-button {
+                display: flex;
+            }
 
+            .sidebar {
+                width: min(290px, 86vw);
+                transform: translateX(-105%);
+                padding: 18px 14px;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.35);
+            }
 
-@media (max-width: 900px) {
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
 
-    .sidebar {
-        width: 220px;
-    }
+            .sidebar-overlay.mobile-open {
+                display: block;
+            }
 
-    header {
-        margin-left: 220px;
-        width: calc(100% - 220px);
-    }
+            header {
+                margin-left: 0;
+                width: 100%;
+                min-height: 64px;
+                padding: 10px 14px;
+                gap: 10px;
+            }
 
-    main {
-        width: calc(100% - 220px);
-        margin-left: 220px;
-        padding: 25px;
-    }
+            .header-left {
+                min-width: 0;
+                flex: 1;
+            }
 
-}
+            .brand {
+                min-width: 0;
+                gap: 9px;
+            }
 
+            .brand-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 9px;
+                font-size: 18px;
+            }
 
-@media (max-width: 750px) {
+            .brand-name {
+                font-size: 14px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 190px;
+            }
 
-    .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        min-height: auto;
-        padding: 15px;
-    }
+            .brand-subtitle {
+                font-size: 10px;
+            }
 
-    .sidebar-brand {
-        padding-bottom: 15px;
-    }
+            .header-right {
+                gap: 8px;
+            }
 
-    .sidebar-nav {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-    }
+            .welcome {
+                display: none;
+            }
 
-    header {
-        margin-left: 0;
-        width: 100%;
-        padding: 14px 18px;
-    }
+            .logout {
+                min-height: 40px;
+                padding: 8px 11px;
+                font-size: 12px;
+            }
 
-    main {
-        width: 100%;
-        margin-left: 0;
-        padding: 20px;
-    }
+            main {
+                width: 100%;
+                margin-left: 0;
+                padding: 18px 14px 30px;
+            }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
+            .page-heading {
+                margin-bottom: 18px;
+            }
 
-    .stock-form-grid {
-        grid-template-columns: 1fr;
-    }
+            .page-heading h2 {
+                font-size: 22px;
+            }
 
-    .stock-form-group.full {
-        grid-column: auto;
-    }
+            .page-heading p {
+                font-size: 13px;
+            }
 
-    .selected-product-info {
-        grid-template-columns: 1fr;
-    }
+            .dashboard-link {
+                width: 100%;
+                min-height: 44px;
+                margin-top: 12px;
+            }
 
-    .products-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
+            section {
+                padding: 16px;
+                margin-bottom: 16px;
+                border-radius: 10px;
+            }
 
-    .search-wrapper {
-        max-width: none;
-    }
+            section h3 {
+                font-size: 17px;
+            }
 
-}
+            .section-description {
+                margin-bottom: 16px;
+                line-height: 1.45;
+            }
 
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 13px;
+            }
 
-@media (max-width: 600px) {
+            .form-group input,
+            .form-group select {
+                min-height: 46px;
+                font-size: 16px;
+            }
 
-    #productList {
-        grid-template-columns: 1fr;
-    }
+            .add-button {
+                width: 100%;
+                min-height: 46px;
+                margin-top: 16px;
+            }
 
-    .sidebar-nav {
-        grid-template-columns: 1fr;
-    }
+            .products-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
 
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+            .search-wrapper {
+                max-width: none;
+            }
 
-    .header-right {
-        width: 100%;
-        justify-content: space-between;
-    }
+            .search-wrapper input {
+                min-height: 46px;
+                font-size: 16px;
+            }
 
-    main {
-        width: 100%;
-        margin-left: 0;
-        padding: 15px;
-    }
+            .product-count {
+                align-self: flex-start;
+            }
 
-    section {
-        padding: 18px;
-    }
+            #productList {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
 
-    .page-heading h2 {
-        font-size: 21px;
-    }
+            .product-card {
+                padding: 15px;
+            }
 
-}
+            .product-card:hover {
+                transform: none;
+            }
+
+            .product-top {
+                gap: 8px;
+            }
+
+            .product-name {
+                font-size: 15px;
+            }
+
+            .product-details {
+                gap: 12px 10px;
+            }
+
+            .product-controls {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .control-button {
+                min-height: 44px;
+                font-size: 16px;
+            }
+
+            .control-button.danger {
+                font-size: 9px;
+            }
+
+            .edit-product-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .edit-product-group input,
+            .edit-product-group select {
+                min-height: 46px;
+                font-size: 16px;
+            }
+
+            .edit-product-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .edit-product-save,
+            .edit-product-cancel {
+                width: 100%;
+                min-height: 46px;
+            }
+
+            .stock-panel-header {
+                gap: 10px;
+            }
+
+            .stock-panel-header h4 {
+                font-size: 15px;
+            }
+
+            .selected-product-info {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .selected-info-box {
+                padding: 11px 12px;
+            }
+
+            .stock-form-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stock-form-group.full {
+                grid-column: auto;
+            }
+
+            .stock-form-group input,
+            .stock-form-group textarea {
+                min-height: 46px;
+                font-size: 16px;
+            }
+
+            .stock-form-group textarea {
+                min-height: 90px;
+            }
+
+            .stock-action-submit {
+                width: 100%;
+                min-height: 46px;
+            }
+
+            .empty {
+                padding: 25px 15px;
+            }
+        }
+
+        /* =====================================================
+           VERY SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 400px) {
+
+            header {
+                padding: 9px 10px;
+            }
+
+            .mobile-menu-button {
+                width: 40px;
+                height: 40px;
+            }
+
+            .brand-icon {
+                width: 36px;
+                height: 36px;
+            }
+
+            .brand-name {
+                font-size: 13px;
+                max-width: 145px;
+            }
+
+            .logout {
+                padding: 8px 9px;
+                font-size: 11px;
+            }
+
+            main {
+                padding: 15px 10px 25px;
+            }
+
+            section {
+                padding: 13px;
+            }
+
+            .page-heading h2 {
+                font-size: 20px;
+            }
+
+            .product-card {
+                padding: 13px;
+            }
+
+            .product-top {
+                flex-direction: column;
+            }
+
+            .badges {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .product-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .control-button {
+                min-height: 44px;
+            }
+
+            .control-button.danger {
+                font-size: 11px;
+            }
+
+            .edit-product-header,
+            .stock-panel-header {
+                gap: 6px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
 <!-- =====================================================
+     MOBILE SIDEBAR OVERLAY
+===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="closeMobileSidebar()"
+></div>
+
+
+<!-- =====================================================
      ADMIN SIDEBAR
 ===================================================== -->
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
     <div class="sidebar-brand">
 
@@ -1067,10 +1516,6 @@
 
     </nav>
 
-    <!-- =================================================
-         STOCK MANAGEMENT
-    ================================================= -->
-
     <div class="sidebar-stock-title">
         STOCK MANAGEMENT
     </div>
@@ -1119,6 +1564,7 @@
 
 </aside>
 
+
 <!-- =====================================================
      LOADING OVERLAY
 ===================================================== -->
@@ -1135,27 +1581,42 @@
 
 </div>
 
+
 <!-- =====================================================
      HEADER
 ===================================================== -->
 
 <header>
 
-    <div class="brand">
+    <div class="header-left">
 
-        <div class="brand-icon">
-            J
-        </div>
+        <button
+            type="button"
+            class="mobile-menu-button"
+            id="mobileMenuButton"
+            onclick="toggleMobileSidebar()"
+            aria-label="Open menu"
+        >
+            ☰
+        </button>
 
-        <div>
+        <div class="brand">
 
-            <h1 class="brand-name">
-                JUBREK ENTERPRISES
-            </h1>
+            <div class="brand-icon">
+                J
+            </div>
 
-            <p class="brand-subtitle">
-                Sales Management System
-            </p>
+            <div>
+
+                <h1 class="brand-name">
+                    JUBREK ENTERPRISES
+                </h1>
+
+                <p class="brand-subtitle">
+                    Sales Management System
+                </p>
+
+            </div>
 
         </div>
 
@@ -1177,6 +1638,7 @@
     </div>
 
 </header>
+
 
 <!-- =====================================================
      MAIN
@@ -1204,6 +1666,7 @@
     </div>
 
     <p id="message"></p>
+
 
     <!-- =================================================
          ADD PRODUCT
@@ -1335,6 +1798,7 @@
 
     </section>
 
+
     <!-- =================================================
          PRODUCTS
     ================================================= -->
@@ -1374,6 +1838,116 @@
             </div>
 
         </div>
+
+
+        <!-- =================================================
+             EDIT PRODUCT PANEL
+        ================================================= -->
+
+        <div id="productEditPanel">
+
+            <div class="edit-product-header">
+
+                <div>
+
+                    <h3>
+                        Edit Product
+                    </h3>
+
+                    <p id="editProductDescription">
+                        Update the product details below.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="close-panel"
+                    onclick="closeEditProduct()"
+                    title="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <form id="editProductForm">
+
+                <div class="edit-product-grid">
+
+                    <div class="edit-product-group">
+
+                        <label for="editBuyingPrice">
+                            Buying Price
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editBuyingPrice"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="edit-product-group">
+
+                        <label for="editSellingPrice">
+                            Selling Price
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editSellingPrice"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="edit-product-group">
+
+                        <label for="editMinimumStock">
+                            Minimum Stock
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editMinimumStock"
+                            min="0"
+                            step="0.001"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="edit-product-actions">
+
+                    <button
+                        type="submit"
+                        class="edit-product-save"
+                    >
+                        Save Changes
+                    </button>
+
+                    <button
+                        type="button"
+                        class="edit-product-cancel"
+                        onclick="closeEditProduct()"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
 
         <!-- =================================================
              STOCK ACTION PANEL
@@ -1513,6 +2087,7 @@
 
         </div>
 
+
         <div id="productList">
 
             <div class="empty">
@@ -1525,6 +2100,7 @@
 
 </main>
 
+
 <script>
 
 /* =========================================================
@@ -1535,6 +2111,66 @@ let allProducts = [];
 let selectedProduct = null;
 let selectedStockAction = null;
 let pendingSidebarStockAction = null;
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+function toggleMobileSidebar() {
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const overlay =
+        document.getElementById("sidebarOverlay");
+
+    const isOpen =
+        sidebar.classList.toggle("mobile-open");
+
+    overlay.classList.toggle(
+        "mobile-open",
+        isOpen
+    );
+
+    document.body.style.overflow =
+        isOpen ? "hidden" : "";
+}
+
+
+function closeMobileSidebar() {
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("mobile-open");
+
+    document
+        .getElementById("sidebarOverlay")
+        .classList.remove("mobile-open");
+
+    document.body.style.overflow = "";
+}
+
+
+document
+    .querySelectorAll(".sidebar-link")
+    .forEach(link => {
+
+        link.addEventListener(
+            "click",
+            function() {
+
+                if (
+                    window.innerWidth <= 750 &&
+                    this.tagName.toLowerCase() === "a"
+                ) {
+                    closeMobileSidebar();
+                }
+
+            }
+        );
+
+    });
 
 
 /* =========================================================
@@ -1623,6 +2259,8 @@ function selectSidebarStockAction(action) {
         `${actionName} selected. Click an active product below.`,
         "success"
     );
+
+    closeMobileSidebar();
 
     document
         .getElementById("productsSection")
@@ -1946,8 +2584,6 @@ function renderProducts() {
             );
         }
 
-        /* Product card selection for sidebar action */
-
         productDiv.addEventListener(
             "click",
             function() {
@@ -2135,6 +2771,19 @@ function renderProducts() {
 
                 <button
                     type="button"
+                    class="control-button edit-product-button"
+                    onclick="
+                        event.stopPropagation();
+
+                        openEditProduct(${product.id})
+                    "
+                    title="Edit Buying Price, Selling Price and Minimum Stock"
+                >
+                    ✎
+                </button>
+
+                <button
+                    type="button"
                     class="control-button"
                     onclick="
                         event.stopPropagation();
@@ -2230,6 +2879,226 @@ document
 
 
 /* =========================================================
+   EDIT PRODUCT
+========================================================= */
+
+function openEditProduct(productId) {
+
+    const product =
+        allProducts.find(
+            item =>
+                Number(item.id) ===
+                Number(productId)
+        );
+
+    if (!product) {
+
+        showMessage(
+            "Product could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    document
+        .getElementById(
+            "editProductDescription"
+        )
+        .textContent =
+        `Editing ${product.product_name} (Product ID: ${product.id})`;
+
+    document
+        .getElementById(
+            "editBuyingPrice"
+        )
+        .value =
+        product.buying_price;
+
+    document
+        .getElementById(
+            "editSellingPrice"
+        )
+        .value =
+        product.selling_price;
+
+    document
+        .getElementById(
+            "editMinimumStock"
+        )
+        .value =
+        product.minimum_stock;
+
+    document
+        .getElementById("productEditPanel")
+        .classList.add("visible");
+
+    document
+        .getElementById("stockActionPanel")
+        .classList.remove("visible");
+
+    document
+        .getElementById("editBuyingPrice")
+        .focus();
+
+    document
+        .getElementById("productEditPanel")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+}
+
+
+function closeEditProduct() {
+
+    document
+        .getElementById("productEditPanel")
+        .classList.remove("visible");
+
+    document
+        .getElementById("editProductForm")
+        .reset();
+}
+
+
+document
+    .getElementById("editProductForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const description =
+                document.getElementById(
+                    "editProductDescription"
+                );
+
+            const match =
+                description.textContent.match(
+                    /Product ID:\s*(\d+)/
+                );
+
+            if (!match) {
+
+                showMessage(
+                    "Could not identify the product being edited.",
+                    "error"
+                );
+
+                return;
+            }
+
+            const productId =
+                Number(match[1]);
+
+            const buyingPrice =
+                document.getElementById(
+                    "editBuyingPrice"
+                ).value;
+
+            const sellingPrice =
+                document.getElementById(
+                    "editSellingPrice"
+                ).value;
+
+            const minimumStock =
+                document.getElementById(
+                    "editMinimumStock"
+                ).value;
+
+            if (
+                buyingPrice === "" ||
+                sellingPrice === "" ||
+                minimumStock === "" ||
+                Number(buyingPrice) < 0 ||
+                Number(sellingPrice) < 0 ||
+                Number(minimumStock) < 0
+            ) {
+
+                showMessage(
+                    "Enter valid non-negative values.",
+                    "error"
+                );
+
+                return;
+            }
+
+            try {
+
+                showLoading(
+                    "Saving product changes..."
+                );
+
+                const response =
+                    await fetch(
+                        `/api/products/${productId}`,
+                        {
+                            method: "PATCH",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    buying_price:
+                                        buyingPrice,
+
+                                    selling_price:
+                                        sellingPrice,
+
+                                    minimum_stock:
+                                        minimumStock
+                                })
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.error ||
+                        "Could not update product.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                showMessage(
+                    data.message ||
+                    "Product updated successfully.",
+                    "success"
+                );
+
+                closeEditProduct();
+
+                await loadProducts();
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Could not connect to the server.",
+                    "error"
+                );
+
+            } finally {
+
+                hideLoading();
+
+            }
+        }
+    );
+
+
+/* =========================================================
    OPEN STOCK PANEL
 ========================================================= */
 
@@ -2308,7 +3177,6 @@ function openStockPanel(
             "stockReason"
         );
 
-    // Only the quantity field relevant to the selected action is required.
     quantityInput.required = true;
     newQuantityInput.required = false;
 
@@ -2369,6 +3237,7 @@ function openStockPanel(
 
         submitButton.textContent =
             "Add Stock";
+
     }
 
     else if (action === "remove") {
@@ -2395,6 +3264,7 @@ function openStockPanel(
 
         submitButton.textContent =
             "Remove Stock";
+
     }
 
     else if (action === "adjust") {
@@ -2461,10 +3331,17 @@ function closeStockPanel() {
 
     stockForm.reset();
 
-    // Restore the default state for the next stock action.
     document.getElementById(
         "stockQuantity"
     ).required = true;
+
+    document.getElementById(
+        "stockQuantity"
+    ).style.display = "block";
+
+    document.getElementById(
+        "newQuantityGroup"
+    ).style.display = "none";
 
     document.getElementById(
         "newQuantity"
@@ -2578,6 +3455,7 @@ document
                     reason:
                         reason
                 };
+
             }
 
             else if (
@@ -2625,6 +3503,7 @@ document
                     reason:
                         reason
                 };
+
             }
 
             else if (
@@ -2685,6 +3564,7 @@ document
 
                     loadingText =
                         "Adding stock...";
+
                 }
 
                 else if (
@@ -2693,6 +3573,7 @@ document
 
                     loadingText =
                         "Removing stock...";
+
                 }
 
                 else if (
@@ -2728,8 +3609,12 @@ document
                 let data = {};
 
                 try {
-                    data = await response.json();
+
+                    data =
+                        await response.json();
+
                 } catch (jsonError) {
+
                     console.error(
                         "Could not parse server response:",
                         jsonError

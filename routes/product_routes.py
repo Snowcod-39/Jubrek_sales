@@ -1,19 +1,29 @@
 from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
+from decimal import Decimal, InvalidOperation
 from db import get_db_connection
+
 
 product_routes = Blueprint("product_routes", __name__)
 
 
+# ============================================================
+# ACCESS CHECK
+# ============================================================
+
 def admin_required():
-    return "user_id" in session and session.get("role") == "ADMIN"
+    return (
+        "user_id" in session
+        and session.get("role") == "ADMIN"
+    )
 
 
 # ============================================================
-# ADMIN PRODUCT MANAGEMENT PAGE
+# PRODUCT MANAGEMENT PAGE
 # ============================================================
 
 @product_routes.route("/admin/products")
 def product_management():
+
     if not admin_required():
         return redirect(url_for("login"))
 
@@ -30,87 +40,52 @@ def create_product():
     if not admin_required():
         return jsonify({"error": "Admin access required."}), 403
 
-    data = request.get_json()
+    data = request.get_json() or {}
 
-    if not data:
-        return jsonify({"error": "Request data is required."}), 400
-
-    product_name = data.get("product_name", "").strip()
+    product_name = str(data.get("product_name", "")).strip()
     category_id = data.get("category_id")
     buying_price = data.get("buying_price")
     selling_price = data.get("selling_price")
-    quantity = data.get("quantity")
-    minimum_stock = data.get("minimum_stock")
+    quantity = data.get("quantity", 0)
+    minimum_stock = data.get("minimum_stock", 0)
 
     if not product_name:
         return jsonify({"error": "Product name is required."}), 400
 
-    if category_id is None or category_id == "":
+    if category_id in (None, ""):
         return jsonify({"error": "Category is required."}), 400
-
-    if buying_price is None:
-        return jsonify({"error": "Buying price is required."}), 400
-
-    if selling_price is None:
-        return jsonify({"error": "Selling price is required."}), 400
-
-    if quantity is None:
-        return jsonify({"error": "Quantity is required."}), 400
-
-    if minimum_stock is None:
-        return jsonify({"error": "Minimum stock is required."}), 400
 
     try:
         category_id = int(category_id)
+        buying_price = Decimal(str(buying_price))
+        selling_price = Decimal(str(selling_price))
+        quantity = Decimal(str(quantity))
+        minimum_stock = Decimal(str(minimum_stock))
+    except (ValueError, TypeError, InvalidOperation):
+        return jsonify({"error": "Enter valid product values."}), 400
 
-        buying_price = float(buying_price)
-        selling_price = float(selling_price)
-        quantity = float(quantity)
-        minimum_stock = float(minimum_stock)
+    if buying_price < 0 or selling_price < 0:
+        return jsonify({"error": "Prices cannot be negative."}), 400
 
-    except (ValueError, TypeError):
-        return jsonify({"error": "Invalid product values."}), 400
-
-    if buying_price < 0:
-        return jsonify({"error": "Buying price cannot be negative."}), 400
-
-    if selling_price < 0:
-        return jsonify({"error": "Selling price cannot be negative."}), 400
-
-    if quantity < 0:
-        return jsonify({"error": "Quantity cannot be negative."}), 400
-
-    if minimum_stock < 0:
-        return jsonify({"error": "Minimum stock cannot be negative."}), 400
+    if quantity < 0 or minimum_stock < 0:
+        return jsonify({"error": "Stock values cannot be negative."}), 400
 
     connection = get_db_connection()
 
     try:
         with connection.cursor() as cursor:
-
-            # Check category
-            cursor.execute(
-                """
+            cursor.execute("""
                 SELECT id
                 FROM categories
                 WHERE id = %s
-                AND status = 'ACTIVE';
-                """,
-                (category_id,)
-            )
+                  AND status = 'ACTIVE';
+            """, (category_id,))
 
-            category = cursor.fetchone()
-
-            if category is None:
+            if cursor.fetchone() is None:
                 connection.rollback()
+                return jsonify({"error": "Category not found or inactive."}), 400
 
-                return jsonify({
-                    "error": "Selected category does not exist or is inactive."
-                }), 400
-
-            # Create product
-            cursor.execute(
-                """
+            cursor.execute("""
                 INSERT INTO products
                 (
                     product_name,
@@ -119,7 +94,9 @@ def create_product():
                     selling_price,
                     quantity,
                     minimum_stock,
-                    status
+                    status,
+                    created_at,
+                    updated_at
                 )
                 VALUES
                 (
@@ -129,59 +106,33 @@ def create_product():
                     %s,
                     %s,
                     %s,
-                    'ACTIVE'
+                    'ACTIVE',
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP
                 )
-                RETURNING
-                    id,
-                    product_name,
-                    category_id,
-                    buying_price,
-                    selling_price,
-                    quantity,
-                    minimum_stock,
-                    status;
-                """,
-                (
-                    product_name,
-                    category_id,
-                    buying_price,
-                    selling_price,
-                    quantity,
-                    minimum_stock
-                )
-            )
+                RETURNING id;
+            """, (
+                product_name,
+                category_id,
+                buying_price,
+                selling_price,
+                quantity,
+                minimum_stock
+            ))
 
-            product = cursor.fetchone()
+            product_id = cursor.fetchone()[0]
 
         connection.commit()
 
         return jsonify({
             "message": "Product created successfully.",
-            "product": {
-                "id": product[0],
-                "product_name": product[1],
-                "category_id": product[2],
-                "buying_price": str(product[3]),
-                "selling_price": str(product[4]),
-                "quantity": str(product[5]),
-                "minimum_stock": str(product[6]),
-                "status": product[7]
-            }
+            "product_id": product_id
         }), 201
 
     except Exception as e:
-
         connection.rollback()
-
-        print(
-            "PRODUCT CREATE ERROR:",
-            type(e).__name__,
-            str(e)
-        )
-
-        return jsonify({
-            "error": "Could not create product."
-        }), 500
+        print("CREATE PRODUCT ERROR:", type(e).__name__, str(e))
+        return jsonify({"error": "Could not create product."}), 500
 
     finally:
         connection.close()
@@ -189,6 +140,8 @@ def create_product():
 
 # ============================================================
 # GET PRODUCTS
+# ADMIN: all products
+# EMPLOYEE: active products only
 # ============================================================
 
 @product_routes.route("/api/products", methods=["GET"])
@@ -199,16 +152,16 @@ def get_products():
 
     role = session.get("role")
 
+    if role not in ["ADMIN", "EMPLOYEE"]:
+        return jsonify({"error": "Access denied."}), 403
+
     connection = get_db_connection()
 
     try:
-
         with connection.cursor() as cursor:
 
             if role == "ADMIN":
-
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT
                         p.id,
                         p.product_name,
@@ -219,24 +172,23 @@ def get_products():
                         p.quantity,
                         p.minimum_stock,
                         p.status,
-                        p.created_at
+                        p.created_at,
+                        p.updated_at
                     FROM products p
                     LEFT JOIN categories c
                         ON p.category_id = c.id
                     ORDER BY
                         CASE
-                            WHEN p.quantity <= p.minimum_stock THEN 0
+                            WHEN p.status = 'ACTIVE'
+                             AND p.quantity <= p.minimum_stock
+                            THEN 0
                             ELSE 1
                         END,
                         p.quantity ASC,
                         p.product_name ASC;
-                    """
-                )
-
-            elif role == "EMPLOYEE":
-
-                cursor.execute(
-                    """
+                """)
+            else:
+                cursor.execute("""
                     SELECT
                         p.id,
                         p.product_name,
@@ -247,26 +199,21 @@ def get_products():
                         p.quantity,
                         p.minimum_stock,
                         p.status,
-                        p.created_at
+                        p.created_at,
+                        p.updated_at
                     FROM products p
                     LEFT JOIN categories c
                         ON p.category_id = c.id
                     WHERE p.status = 'ACTIVE'
                     ORDER BY
                         CASE
-                            WHEN p.quantity <= p.minimum_stock THEN 0
+                            WHEN p.quantity <= p.minimum_stock
+                            THEN 0
                             ELSE 1
                         END,
                         p.quantity ASC,
                         p.product_name ASC;
-                    """
-                )
-
-            else:
-
-                return jsonify({
-                    "error": "Access denied."
-                }), 403
+                """)
 
             products = cursor.fetchall()
 
@@ -282,15 +229,113 @@ def get_products():
                     "quantity": str(product[6]),
                     "minimum_stock": str(product[7]),
                     "status": product[8],
-                    "created_at": (
-                        product[9].isoformat()
-                        if product[9]
-                        else None
-                    )
+                    "created_at": product[9].isoformat() if product[9] else None,
+                    "updated_at": product[10].isoformat() if product[10] else None
                 }
                 for product in products
             ]
         })
+
+    except Exception as e:
+        print("GET PRODUCTS ERROR:", type(e).__name__, str(e))
+        return jsonify({"error": "Could not load products."}), 500
+
+    finally:
+        connection.close()
+
+
+# ============================================================
+# EDIT PRODUCT PRICES / MINIMUM STOCK
+# ADMIN ONLY
+# ============================================================
+
+@product_routes.route("/api/products/<int:product_id>", methods=["PATCH"])
+def update_product(product_id):
+
+    if not admin_required():
+        return jsonify({"error": "Admin access required."}), 403
+
+    data = request.get_json() or {}
+
+    if not data:
+        return jsonify({"error": "Request data is required."}), 400
+
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor() as cursor:
+
+            cursor.execute("""
+                SELECT
+                    id,
+                    product_name,
+                    category_id,
+                    buying_price,
+                    selling_price,
+                    quantity,
+                    minimum_stock,
+                    status
+                FROM products
+                WHERE id = %s
+                FOR UPDATE;
+            """, (product_id,))
+
+            product = cursor.fetchone()
+
+            if product is None:
+                connection.rollback()
+                return jsonify({"error": "Product not found."}), 404
+
+            current_buying_price = product[3]
+            current_selling_price = product[4]
+            current_minimum_stock = product[6]
+
+            buying_price = data.get("buying_price", current_buying_price)
+            selling_price = data.get("selling_price", current_selling_price)
+            minimum_stock = data.get("minimum_stock", current_minimum_stock)
+
+            try:
+                buying_price = Decimal(str(buying_price))
+                selling_price = Decimal(str(selling_price))
+                minimum_stock = Decimal(str(minimum_stock))
+            except (ValueError, TypeError, InvalidOperation):
+                connection.rollback()
+                return jsonify({"error": "Enter valid values."}), 400
+
+            if buying_price < 0 or selling_price < 0:
+                connection.rollback()
+                return jsonify({"error": "Prices cannot be negative."}), 400
+
+            if minimum_stock < 0:
+                connection.rollback()
+                return jsonify({"error": "Minimum stock cannot be negative."}), 400
+
+            cursor.execute("""
+                UPDATE products
+                SET
+                    buying_price = %s,
+                    selling_price = %s,
+                    minimum_stock = %s,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = %s;
+            """, (
+                buying_price,
+                selling_price,
+                minimum_stock,
+                product_id
+            ))
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Product updated successfully.",
+            "product_id": product_id
+        }), 200
+
+    except Exception as e:
+        connection.rollback()
+        print("UPDATE PRODUCT ERROR:", type(e).__name__, str(e))
+        return jsonify({"error": "Could not update product."}), 500
 
     finally:
         connection.close()
@@ -300,72 +345,35 @@ def get_products():
 # DEACTIVATE PRODUCT
 # ============================================================
 
-@product_routes.route(
-    "/api/products/<int:product_id>/deactivate",
-    methods=["PATCH"]
-)
+@product_routes.route("/api/products/<int:product_id>/deactivate", methods=["PATCH"])
 def deactivate_product(product_id):
 
     if not admin_required():
-        return jsonify({
-            "error": "Admin access required."
-        }), 403
+        return jsonify({"error": "Admin access required."}), 403
 
     connection = get_db_connection()
 
     try:
-
         with connection.cursor() as cursor:
-
-            cursor.execute(
-                """
+            cursor.execute("""
                 UPDATE products
                 SET
                     status = 'INACTIVE',
                     updated_at = CURRENT_TIMESTAMP
-                WHERE id = %s
-                RETURNING
-                    id,
-                    product_name,
-                    status;
-                """,
-                (product_id,)
-            )
+                WHERE id = %s;
+            """, (product_id,))
 
-            product = cursor.fetchone()
-
-        if product is None:
-
-            connection.rollback()
-
-            return jsonify({
-                "error": "Product not found."
-            }), 404
+            if cursor.rowcount == 0:
+                connection.rollback()
+                return jsonify({"error": "Product not found."}), 404
 
         connection.commit()
-
-        return jsonify({
-            "message": "Product deactivated successfully.",
-            "product": {
-                "id": product[0],
-                "product_name": product[1],
-                "status": product[2]
-            }
-        })
+        return jsonify({"message": "Product deactivated successfully."}), 200
 
     except Exception as e:
-
         connection.rollback()
-
-        print(
-            "PRODUCT DEACTIVATE ERROR:",
-            type(e).__name__,
-            str(e)
-        )
-
-        return jsonify({
-            "error": "Could not deactivate product."
-        }), 500
+        print("DEACTIVATE PRODUCT ERROR:", type(e).__name__, str(e))
+        return jsonify({"error": "Could not deactivate product."}), 500
 
     finally:
         connection.close()
@@ -375,72 +383,35 @@ def deactivate_product(product_id):
 # REACTIVATE PRODUCT
 # ============================================================
 
-@product_routes.route(
-    "/api/products/<int:product_id>/reactivate",
-    methods=["PATCH"]
-)
+@product_routes.route("/api/products/<int:product_id>/reactivate", methods=["PATCH"])
 def reactivate_product(product_id):
 
     if not admin_required():
-        return jsonify({
-            "error": "Admin access required."
-        }), 403
+        return jsonify({"error": "Admin access required."}), 403
 
     connection = get_db_connection()
 
     try:
-
         with connection.cursor() as cursor:
-
-            cursor.execute(
-                """
+            cursor.execute("""
                 UPDATE products
                 SET
                     status = 'ACTIVE',
                     updated_at = CURRENT_TIMESTAMP
-                WHERE id = %s
-                RETURNING
-                    id,
-                    product_name,
-                    status;
-                """,
-                (product_id,)
-            )
+                WHERE id = %s;
+            """, (product_id,))
 
-            product = cursor.fetchone()
-
-        if product is None:
-
-            connection.rollback()
-
-            return jsonify({
-                "error": "Product not found."
-            }), 404
+            if cursor.rowcount == 0:
+                connection.rollback()
+                return jsonify({"error": "Product not found."}), 404
 
         connection.commit()
-
-        return jsonify({
-            "message": "Product reactivated successfully.",
-            "product": {
-                "id": product[0],
-                "product_name": product[1],
-                "status": product[2]
-            }
-        })
+        return jsonify({"message": "Product reactivated successfully."}), 200
 
     except Exception as e:
-
         connection.rollback()
-
-        print(
-            "PRODUCT REACTIVATE ERROR:",
-            type(e).__name__,
-            str(e)
-        )
-
-        return jsonify({
-            "error": "Could not reactivate product."
-        }), 500
+        print("REACTIVATE PRODUCT ERROR:", type(e).__name__, str(e))
+        return jsonify({"error": "Could not reactivate product."}), 500
 
     finally:
         connection.close()

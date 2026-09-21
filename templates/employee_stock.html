@@ -822,7 +822,7 @@
             border-collapse:
                 collapse;
 
-            min-width: 720px;
+            min-width: 650px;
         }
 
         th,
@@ -877,47 +877,6 @@
                 var(--secondary-text);
 
             padding: 25px;
-        }
-
-
-        /* =====================================================
-           TRANSACTION TYPES
-        ===================================================== */
-
-        .transaction-type {
-            display: inline-block;
-
-            padding: 5px 8px;
-
-            border-radius: 15px;
-
-            font-size: 10px;
-
-            font-weight: bold;
-        }
-
-        .stock-in {
-            background:
-                #d8eadf;
-
-            color:
-                #216b3b;
-        }
-
-        .stock-out {
-            background:
-                #f0dada;
-
-            color:
-                #a42626;
-        }
-
-        .adjustment {
-            background:
-                #eee1b8;
-
-            color:
-                #765e00;
         }
 
 
@@ -2273,10 +2232,6 @@ async function loadStockHistory() {
                             </th>
 
                             <th>
-                                Type
-                            </th>
-
-                            <th>
                                 Quantity
                             </th>
 
@@ -2308,46 +2263,6 @@ async function loadStockHistory() {
         transactions.forEach(
             transaction => {
 
-                let typeClass =
-                    "";
-
-
-                const type =
-                    transaction.transaction_type;
-
-
-                if (
-                    type === "STOCK_IN" ||
-                    type === "IN"
-                ) {
-
-                    typeClass =
-                        "stock-in";
-
-                }
-
-                else if (
-                    type === "STOCK_OUT" ||
-                    type === "OUT" ||
-                    type === "SALE_OUT"
-                ) {
-
-                    typeClass =
-                        "stock-out";
-
-                }
-
-                else if (
-                    type === "STOCK_ADJUSTMENT" ||
-                    type === "ADJUSTMENT"
-                ) {
-
-                    typeClass =
-                        "adjustment";
-
-                }
-
-
                 html += `
 
                     <tr>
@@ -2362,17 +2277,6 @@ async function loadStockHistory() {
                                     )
                                 }
                             </strong>
-
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="transaction-type ${typeClass}"
-                            >
-                                ${escapeHtml(type)}
-                            </span>
 
                         </td>
 
