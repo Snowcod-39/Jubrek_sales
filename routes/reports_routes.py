@@ -1,9 +1,16 @@
 from flask import Blueprint, jsonify, session, render_template, request
-
 from db import get_db_connection
+from datetime import datetime
 
 
 reports_routes = Blueprint("reports_routes", __name__)
+
+
+# =========================================================
+# BUSINESS TIMEZONE
+# =========================================================
+
+BUSINESS_TIMEZONE = "Africa/Nairobi"
 
 
 # =========================================================
@@ -42,7 +49,8 @@ def report_summary():
         "daily",
         "weekly",
         "monthly",
-        "annually"
+        "annually",
+        "all"
     ]
 
     if period not in allowed_periods:
@@ -50,103 +58,256 @@ def report_summary():
             "error": "Invalid report period."
         }), 400
 
+    # -----------------------------------------------------
+    # Optional calendar date
+    # -----------------------------------------------------
+
+    selected_date = request.args.get("date")
+
+    if selected_date:
+        try:
+            selected_date = datetime.strptime(
+                selected_date,
+                "%Y-%m-%d"
+            ).date()
+
+        except ValueError:
+            return jsonify({
+                "error": "Invalid date. Use YYYY-MM-DD."
+            }), 400
+
     connection = None
 
     try:
+
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # -------------------------------------------------
-        # Determine date filter
-        # -------------------------------------------------
+        # =================================================
+        # IMPORTANT:
+        # All "today" calculations use AFRICA/NAIROBI.
+        #
+        # This prevents Railway/PostgreSQL's server timezone
+        # from changing which business day a transaction
+        # belongs to.
+        # =================================================
 
-        if period == "daily":
+        nairobi_today_sql = """
+            (CURRENT_TIMESTAMP AT TIME ZONE 'Africa/Nairobi')::date
+        """
+
+        # =================================================
+        # DETERMINE DATE FILTER
+        # =================================================
+
+        if selected_date:
+
+            # -------------------------------------------------
+            # Specific date selected from calendar
+            # -------------------------------------------------
 
             date_condition = """
-                DATE(s.sale_date) = CURRENT_DATE
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date = %s
             """
 
             expense_date_condition = """
-                e.expense_date = CURRENT_DATE
+                e.expense_date = %s
             """
+
+            date_params = [selected_date]
+            expense_date_params = [selected_date]
+
+            response_period = "selected_date"
+
+        elif period == "daily":
+
+            # -------------------------------------------------
+            # Today in Kenya
+            # -------------------------------------------------
+
+            date_condition = f"""
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date =
+                {nairobi_today_sql}
+            """
+
+            expense_date_condition = f"""
+                e.expense_date =
+                {nairobi_today_sql}
+            """
+
+            date_params = []
+            expense_date_params = []
+
+            response_period = "daily"
 
         elif period == "weekly":
 
-            date_condition = """
-                s.sale_date >= DATE_TRUNC(
+            # -------------------------------------------------
+            # Current week in Kenya
+            #
+            # DATE_TRUNC is applied to the Nairobi local date,
+            # not the Railway/PostgreSQL server date.
+            # -------------------------------------------------
+
+            date_condition = f"""
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date >=
+                DATE_TRUNC(
                     'week',
-                    CURRENT_DATE
-                )
-                AND s.sale_date < DATE_TRUNC(
-                    'week',
-                    CURRENT_DATE
-                ) + INTERVAL '1 week'
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date <
+                (
+                    DATE_TRUNC(
+                        'week',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 week'
+                )::date
             """
 
-            expense_date_condition = """
-                e.expense_date >= DATE_TRUNC(
+            expense_date_condition = f"""
+                e.expense_date >=
+                DATE_TRUNC(
                     'week',
-                    CURRENT_DATE
-                )
-                AND e.expense_date < DATE_TRUNC(
-                    'week',
-                    CURRENT_DATE
-                ) + INTERVAL '1 week'
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                e.expense_date <
+                (
+                    DATE_TRUNC(
+                        'week',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 week'
+                )::date
             """
+
+            date_params = []
+            expense_date_params = []
+
+            response_period = "weekly"
 
         elif period == "monthly":
 
-            date_condition = """
-                s.sale_date >= DATE_TRUNC(
+            # -------------------------------------------------
+            # Current month in Kenya
+            # -------------------------------------------------
+
+            date_condition = f"""
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date >=
+                DATE_TRUNC(
                     'month',
-                    CURRENT_DATE
-                )
-                AND s.sale_date < DATE_TRUNC(
-                    'month',
-                    CURRENT_DATE
-                ) + INTERVAL '1 month'
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date <
+                (
+                    DATE_TRUNC(
+                        'month',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 month'
+                )::date
             """
 
-            expense_date_condition = """
-                e.expense_date >= DATE_TRUNC(
+            expense_date_condition = f"""
+                e.expense_date >=
+                DATE_TRUNC(
                     'month',
-                    CURRENT_DATE
-                )
-                AND e.expense_date < DATE_TRUNC(
-                    'month',
-                    CURRENT_DATE
-                ) + INTERVAL '1 month'
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                e.expense_date <
+                (
+                    DATE_TRUNC(
+                        'month',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 month'
+                )::date
             """
+
+            date_params = []
+            expense_date_params = []
+
+            response_period = "monthly"
+
+        elif period == "annually":
+
+            # -------------------------------------------------
+            # Current year in Kenya
+            # -------------------------------------------------
+
+            date_condition = f"""
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date >=
+                DATE_TRUNC(
+                    'year',
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                (s.sale_date AT TIME ZONE 'Africa/Nairobi')::date <
+                (
+                    DATE_TRUNC(
+                        'year',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 year'
+                )::date
+            """
+
+            expense_date_condition = f"""
+                e.expense_date >=
+                DATE_TRUNC(
+                    'year',
+                    {nairobi_today_sql}
+                )::date
+
+                AND
+
+                e.expense_date <
+                (
+                    DATE_TRUNC(
+                        'year',
+                        {nairobi_today_sql}
+                    ) + INTERVAL '1 year'
+                )::date
+            """
+
+            date_params = []
+            expense_date_params = []
+
+            response_period = "annually"
 
         else:
 
+            # -------------------------------------------------
+            # ALL RECORDS
+            # -------------------------------------------------
+
             date_condition = """
-                s.sale_date >= DATE_TRUNC(
-                    'year',
-                    CURRENT_DATE
-                )
-                AND s.sale_date < DATE_TRUNC(
-                    'year',
-                    CURRENT_DATE
-                ) + INTERVAL '1 year'
+                TRUE
             """
 
             expense_date_condition = """
-                e.expense_date >= DATE_TRUNC(
-                    'year',
-                    CURRENT_DATE
-                )
-                AND e.expense_date < DATE_TRUNC(
-                    'year',
-                    CURRENT_DATE
-                ) + INTERVAL '1 year'
+                TRUE
             """
+
+            date_params = []
+            expense_date_params = []
+
+            response_period = "all"
 
         # =================================================
         # SALES + PROFIT SUMMARY
         # =================================================
 
-        cursor.execute(f"""
+        sales_query = f"""
             SELECT
                 COUNT(DISTINCT s.id) AS total_sales,
 
@@ -171,7 +332,12 @@ def report_summary():
                 {date_condition}
 
                 AND s.delivery_status = 'RELEASED';
-        """)
+        """
+
+        cursor.execute(
+            sales_query,
+            date_params
+        )
 
         sales_data = cursor.fetchone()
 
@@ -183,7 +349,7 @@ def report_summary():
         # EXPENSE SUMMARY
         # =================================================
 
-        cursor.execute(f"""
+        expense_query = f"""
             SELECT
                 COUNT(*) AS total_expenses,
 
@@ -194,8 +360,14 @@ def report_summary():
 
             FROM expenses e
 
-            WHERE {expense_date_condition};
-        """)
+            WHERE
+                {expense_date_condition};
+        """
+
+        cursor.execute(
+            expense_query,
+            expense_date_params
+        )
 
         expense_data = cursor.fetchone()
 
@@ -220,7 +392,7 @@ def report_summary():
         # SALES BY EMPLOYEE
         # =================================================
 
-        cursor.execute(f"""
+        sales_employee_query = f"""
             SELECT
                 emp.id,
                 emp.full_name,
@@ -237,7 +409,9 @@ def report_summary():
 
             LEFT JOIN sales s
                 ON emp.id = s.employee_id
+
                 AND {date_condition}
+
                 AND s.delivery_status = 'RELEASED'
 
             LEFT JOIN sale_items si
@@ -249,7 +423,12 @@ def report_summary():
 
             ORDER BY
                 total_sales_amount DESC;
-        """)
+        """
+
+        cursor.execute(
+            sales_employee_query,
+            date_params
+        )
 
         employee_rows = cursor.fetchall()
 
@@ -268,7 +447,7 @@ def report_summary():
         # EXPENSES BY EMPLOYEE
         # =================================================
 
-        cursor.execute(f"""
+        expense_employee_query = f"""
             SELECT
                 emp.id,
                 emp.full_name,
@@ -285,6 +464,7 @@ def report_summary():
 
             LEFT JOIN expenses e
                 ON emp.id = e.created_by_employee_id
+
                 AND {expense_date_condition}
 
             GROUP BY
@@ -293,7 +473,12 @@ def report_summary():
 
             ORDER BY
                 total_expense_amount DESC;
-        """)
+        """
+
+        cursor.execute(
+            expense_employee_query,
+            expense_date_params
+        )
 
         expense_employee_rows = cursor.fetchall()
 
@@ -314,7 +499,12 @@ def report_summary():
 
         return jsonify({
 
-            "period": period,
+            "period": response_period,
+
+            "selected_date":
+                selected_date.isoformat()
+                if selected_date
+                else None,
 
             "summary": {
 

@@ -495,6 +495,33 @@
                 rgba(129, 216, 208, 0.25);
         }
 
+        .period-box input[type="date"] {
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid #b8beb9;
+    border-radius: 7px;
+    font-size: 14px;
+    background: #eeeeeb;
+    color: var(--charcoal);
+    outline: none;
+    cursor: pointer;
+}
+
+.period-box input[type="date"]:focus {
+    border-color: var(--tiffany-blue);
+    box-shadow:
+        0 0 0 2px
+        rgba(129, 216, 208, 0.25);
+}
+
+@media (max-width: 750px) {
+    .period-box input[type="date"] {
+        width: 100%;
+        min-height: 46px;
+        font-size: 16px;
+    }
+}
+
 
         /* =========================================================
            SECTION TITLE
@@ -1430,36 +1457,38 @@
             ============================================== -->
 
             <div class="period-box">
+    <label for="period">
+        Report Period
+    </label>
 
-                <label for="period">
-                    Report Period
-                </label>
+    <select
+        id="period"
+        onchange="periodChanged()"
+    >
+        <option value="daily">
+            Today
+        </option>
+        <option value="weekly">
+            This Week
+        </option>
+        <option value="monthly">
+            This Month
+        </option>
+        <option value="annually">
+            This Year
+        </option>
+    </select>
 
+    <label for="reportDate">
+        Select Date
+    </label>
 
-                <select
-                    id="period"
-                    onchange="loadReport()"
-                >
-
-                    <option value="daily">
-                        Today
-                    </option>
-
-                    <option value="weekly">
-                        This Week
-                    </option>
-
-                    <option value="monthly">
-                        This Month
-                    </option>
-
-                    <option value="annually">
-                        This Year
-                    </option>
-
-                </select>
-
-            </div>
+    <input
+        type="date"
+        id="reportDate"
+        onchange="loadReportByDate()"
+    >
+</div>
 
 
             <!-- =============================================
@@ -1886,13 +1915,39 @@ function hideLoader() {
     ).style.display = "none";
 
 }
+// ---------------------------------------------------------
+// PERIOD CHANGED
+// ---------------------------------------------------------
+function periodChanged() {
 
+    // Clear manually selected date
+    document.getElementById("reportDate").value = "";
+
+    loadReport();
+}
+
+
+// ---------------------------------------------------------
+// LOAD REPORT FOR SELECTED DATE
+// ---------------------------------------------------------
+async function loadReportByDate() {
+
+    const selectedDate =
+        document.getElementById("reportDate").value;
+
+    if (!selectedDate) {
+        loadReport();
+        return;
+    }
+
+    loadReport(selectedDate);
+}
 
 // ---------------------------------------------------------
 // LOAD REPORT
 // ---------------------------------------------------------
 
-async function loadReport() {
+async function loadReport(selectedDate = null) {
 
     const period =
         document.getElementById("period").value;
@@ -1910,10 +1965,19 @@ async function loadReport() {
 
     try {
 
+         let url =
+            `/api/reports/summary?period=${period}`;
+
+        // If a specific Nairobi date was selected,
+        // send that date to the backend.
+        if (selectedDate) {
+            url +=
+                `&date=${encodeURIComponent(selectedDate)}`;
+        }
+
         const response =
-            await fetch(
-                `/api/reports/summary?period=${period}`
-            );
+            await fetch(url);
+                
 
 
         const data =

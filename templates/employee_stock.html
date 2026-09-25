@@ -732,6 +732,104 @@
 
 
         /* =====================================================
+           CURRENT STOCK
+        ===================================================== */
+
+        .current-stock-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 0;
+        }
+
+        .current-stock-header > div {
+            min-width: 0;
+        }
+
+        .current-stock-header h3 {
+            margin: 0 0 8px;
+
+            line-height: 1.2;
+
+            letter-spacing: normal;
+
+            word-spacing: normal;
+        }
+
+        .current-stock-header .card-description {
+            margin: 0;
+        }
+
+        .current-stock-button {
+            background:
+                var(--action-blue);
+
+            color:
+                var(--white);
+
+            border:
+                1px solid
+                var(--action-blue);
+
+            padding: 9px 14px;
+
+            margin: 0;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+
+            font-family: inherit;
+
+            white-space: nowrap;
+        }
+
+        .current-stock-button:hover {
+            background:
+                var(--tiffany-blue);
+
+            border-color:
+                var(--tiffany-blue);
+
+            color:
+                var(--primary-text);
+        }
+
+        .current-stock-content {
+            display: none;
+
+            margin-top: 18px;
+        }
+
+        .current-stock-content.open {
+            display: block;
+        }
+
+        .stock-status-low {
+            font-weight: bold;
+
+            color: #9a3d22;
+        }
+
+        .stock-status-ok {
+            font-weight: bold;
+
+            color: #176b45;
+        }
+
+
+        /* =====================================================
            HISTORY
         ===================================================== */
 
@@ -763,12 +861,6 @@
 
         .history-header .card-description {
             margin: 0;
-
-            line-height: 1.4;
-
-            letter-spacing: normal;
-
-            word-spacing: normal;
         }
 
         .refresh-button {
@@ -958,6 +1050,15 @@
 
                 flex-direction:
                     column;
+            }
+
+            .current-stock-header {
+                align-items:
+                    flex-start;
+            }
+
+            .current-stock-button {
+                width: 100%;
             }
 
         }
@@ -1220,6 +1321,58 @@
             </button>
 
         </form>
+
+    </section>
+
+
+    <!-- =================================================
+         CURRENT STOCK
+    ================================================= -->
+
+    <section class="card">
+
+        <div class="current-stock-header">
+
+            <div>
+
+                <h3>
+                    Current Stock
+                </h3>
+
+                <p class="card-description">
+                    View all active products and their current
+                    stock quantities.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="currentStockToggle"
+                onclick="toggleCurrentStock()"
+                class="current-stock-button"
+            >
+                View Current Stock
+            </button>
+
+        </div>
+
+
+        <div
+            id="currentStockContent"
+            class="current-stock-content"
+        >
+
+            <div id="currentStock">
+
+                <div class="empty">
+                    Click "View Current Stock" to load stock.
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
 
@@ -1612,20 +1765,11 @@ function selectProduct(productId) {
         product.product_name;
 
 
-    /*
-     * Product ID is automatically filled.
-     */
-
     document
         .getElementById("addProductId")
         .value =
         product.id;
 
-
-    /*
-     * Automatically show the existing
-     * product category.
-     */
 
     const categoryInput =
         document.getElementById(
@@ -1651,10 +1795,6 @@ function selectProduct(productId) {
 
         ) || null;
 
-
-    /*
-     * Show selected product information.
-     */
 
     const selectedProductBox =
         document.getElementById(
@@ -2005,11 +2145,6 @@ document
             }
 
 
-            /*
-             * Make sure the employee selected
-             * an actual product.
-             */
-
             if (
                 productInput.value.trim()
                 !==
@@ -2079,10 +2214,6 @@ document
                 );
 
 
-                /*
-                 * Reset form.
-                 */
-
                 document
                     .getElementById(
                         "addStockForm"
@@ -2119,12 +2250,25 @@ document
                     null;
 
 
+                await loadProducts();
+
                 /*
-                 * Refresh product quantities
-                 * and stock history.
+                 * Only refresh current stock if
+                 * the employee has opened it.
                  */
 
-                await loadProducts();
+                if (
+                    document
+                        .getElementById(
+                            "currentStockContent"
+                        )
+                        .classList
+                        .contains("open")
+                ) {
+
+                    await loadCurrentStock();
+
+                }
 
                 await loadStockHistory();
 
@@ -2148,6 +2292,296 @@ document
 
         }
     );
+
+
+/* =========================================================
+   CURRENT STOCK TOGGLE
+========================================================= */
+
+async function toggleCurrentStock() {
+
+    const content =
+        document.getElementById(
+            "currentStockContent"
+        );
+
+    const button =
+        document.getElementById(
+            "currentStockToggle"
+        );
+
+
+    const isOpen =
+        content.classList.contains(
+            "open"
+        );
+
+
+    if (isOpen) {
+
+        content.classList.remove(
+            "open"
+        );
+
+        button.textContent =
+            "View Current Stock";
+
+        return;
+
+    }
+
+
+    content.classList.add(
+        "open"
+    );
+
+    button.textContent =
+        "Hide Current Stock";
+
+
+    await loadCurrentStock();
+
+}
+
+
+/* =========================================================
+   CURRENT STOCK
+========================================================= */
+
+async function loadCurrentStock() {
+
+    const container =
+        document.getElementById(
+            "currentStock"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="empty">
+            Loading current stock...
+        </div>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/products"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Could not load current stock."
+            );
+
+        }
+
+
+        const currentProducts =
+            (result.products || [])
+                .filter(product => {
+
+                    return (
+                        product.status === "ACTIVE" ||
+                        !product.status
+                    );
+
+                });
+
+
+        if (!currentProducts.length) {
+
+            container.innerHTML = `
+
+                <div class="empty">
+                    No active products found.
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        let html = `
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Current Quantity
+                            </th>
+
+                            <th>
+                                Minimum Stock
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+        `;
+
+
+        currentProducts.forEach(
+            product => {
+
+                const quantity =
+                    Number(
+                        product.quantity
+                    );
+
+                const minimumStock =
+                    Number(
+                        product.minimum_stock
+                    );
+
+                const isLowStock =
+                    quantity <= minimumStock;
+
+
+                html += `
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                ${
+                                    escapeHtml(
+                                        product.product_name
+                                    )
+                                }
+                            </strong>
+
+                            <div
+                                style="
+                                    margin-top: 3px;
+                                    color: var(--secondary-text);
+                                    font-size: 11px;
+                                "
+                            >
+                                ID:
+                                ${
+                                    escapeHtml(
+                                        product.id
+                                    )
+                                }
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            ${
+                                escapeHtml(
+                                    product.category_name ||
+                                    "No category"
+                                )
+                            }
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="${
+                                    isLowStock
+                                        ? "stock-status-low"
+                                        : "stock-status-ok"
+                                }"
+                            >
+                                ${
+                                    escapeHtml(
+                                        product.quantity
+                                    )
+                                }
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${
+                                escapeHtml(
+                                    product.minimum_stock
+                                )
+                            }
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        html += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+
+        container.innerHTML =
+            html;
+
+
+    } catch (error) {
+
+        console.error(
+            "CURRENT STOCK ERROR:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Error loading current stock:
+                ${escapeHtml(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
 
 
 /* =========================================================
@@ -2196,11 +2630,6 @@ async function loadStockHistory() {
         const transactions =
             result.transactions || [];
 
-
-        /*
-         * The backend already filters this
-         * endpoint to the logged-in employee.
-         */
 
         if (!transactions.length) {
 
@@ -2446,6 +2875,10 @@ async function initializePage() {
         loadProducts(),
         loadCategories()
     ]);
+
+    /*
+     * Current Stock stays collapsed initially.
+     */
 
     await loadStockHistory();
 

@@ -1,13 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Receipt</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        JUBREK ENTERPRISES - Receipt
+    </title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f4f4f4;
@@ -31,11 +39,19 @@
         .header h1 {
             margin: 0;
             font-size: 24px;
+            line-height: 1.25;
+        }
+
+        .header h3 {
+            margin: 7px 0;
+            font-size: 14px;
+            font-weight: normal;
         }
 
         .header p {
-            margin: 5px 0;
-            font-size: 14px;
+            margin: 8px 0;
+            font-size: 15px;
+            font-weight: bold;
         }
 
         .receipt-info {
@@ -44,7 +60,33 @@
         }
 
         .receipt-info div {
-            margin-bottom: 5px;
+            margin-bottom: 7px;
+        }
+
+        .receipt-info strong {
+            display: inline-block;
+            min-width: 95px;
+        }
+
+        .customer-name {
+            font-weight: bold;
+        }
+
+        .notes-section {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+            font-size: 13px;
+        }
+
+        .notes-label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .notes-text {
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .items {
@@ -58,6 +100,11 @@
             padding: 8px 4px;
             border-bottom: 1px solid #ddd;
             text-align: left;
+            font-size: 13px;
+        }
+
+        .items th {
+            font-size: 12px;
         }
 
         .items th:last-child,
@@ -65,17 +112,33 @@
             text-align: right;
         }
 
-        .total {
-            text-align: right;
+        .totals {
+            margin-top: 18px;
+            border-top: 1px solid #222;
+            padding-top: 10px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .total-row.main-total {
             font-size: 18px;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 8px;
         }
 
         .footer {
             text-align: center;
             margin-top: 25px;
             font-size: 13px;
+        }
+
+        .footer p {
+            margin: 6px 0;
         }
 
         .print-button {
@@ -110,18 +173,36 @@
             .print-button {
                 display: none;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
     <div class="receipt">
 
         <div class="header">
-            <h1>WHOLESALER</h1>
-            <p>Sales Receipt</p>
+
+            <h1>
+                JUBREK ENTERPRISES
+            </h1>
+
+            <h3>
+                0722 477 300
+                <br>
+                0783 611 304
+            </h3>
+
+            <p>
+                Sales Receipt
+            </p>
+
         </div>
+
 
         <div class="receipt-info">
 
@@ -141,21 +222,65 @@
             </div>
 
             <div>
+                <strong>Customer:</strong>
+                <span
+                    id="customerName"
+                    class="customer-name"
+                >
+                    -
+                </span>
+            </div>
+
+            <div>
                 <strong>Payment:</strong>
                 <span id="paymentMethod"></span>
             </div>
 
         </div>
 
+
+        <div
+            id="notesSection"
+            class="notes-section"
+            style="display:none;"
+        >
+
+            <div class="notes-label">
+                Notes:
+            </div>
+
+            <div
+                id="notesText"
+                class="notes-text"
+            ></div>
+
+        </div>
+
+
         <table class="items">
 
             <thead>
+
                 <tr>
-                    <th>Product</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Amount</th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Qty
+                    </th>
+
+                    <th>
+                        Price
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
                 </tr>
+
             </thead>
 
             <tbody id="itemsBody">
@@ -163,93 +288,348 @@
 
         </table>
 
-        <div class="total">
-            Total: KSh <span id="totalAmount"></span>
+
+        <div class="totals">
+
+            <div class="total-row main-total">
+
+                <span>
+                    Total:
+                </span>
+
+                <span>
+                    KSh
+                    <span id="totalAmount">
+                        0.00
+                    </span>
+                </span>
+
+            </div>
+
+
+            <div
+                id="amountReceivedRow"
+                class="total-row"
+                style="display:none;"
+            >
+
+                <span>
+                    Amount Received:
+                </span>
+
+                <span>
+                    KSh
+                    <span id="amountReceived">
+                        0.00
+                    </span>
+                </span>
+
+            </div>
+            
         </div>
 
+
         <div class="footer">
-            <p>Thank you for your business.</p>
-            <p> Designed by: Optimum Softwares</p>
-            <p> Contact: 0707546742</p>
-            
+
+            <p>
+                Goods once sold are not re-accepted!!!
+            </p>
+
+            <p>
+                Thank you for your business.
+            </p>
+
         </div>
 
     </div>
 
-    <button class="print-button" onclick="window.print()">
+
+    <button
+        class="print-button"
+        onclick="window.print()"
+    >
         Print Receipt
     </button>
 
 
     <script>
 
-        const saleId = new URLSearchParams(
-            window.location.search
-        ).get("sale_id");
+        const saleId =
+            new URLSearchParams(
+                window.location.search
+            ).get("sale_id");
+
+
+        function formatMoney(value) {
+
+            const number =
+                Number(value || 0);
+
+            return number.toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "-";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return value;
+            }
+
+            return date.toLocaleString(
+                "en-KE",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        }
+
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return "";
+            }
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
 
 
         async function loadReceipt() {
 
             if (!saleId) {
-                alert("No sale specified.");
+
+                alert(
+                    "No sale specified."
+                );
+
                 return;
+
             }
+
 
             try {
 
-                const response = await fetch(
-                    `/api/sales/${saleId}/receipt`
-                );
+                const response =
+                    await fetch(
+                        `/api/sales/${saleId}/receipt`
+                    );
 
-                const data = await response.json();
+
+                const data =
+                    await response.json();
+
 
                 if (!response.ok) {
-                    alert(data.error || "Could not load receipt.");
+
+                    alert(
+                        data.error ||
+                        "Could not load receipt."
+                    );
+
                     return;
+
                 }
 
-                document.getElementById("receiptNumber").textContent =
+
+                document.getElementById(
+                    "receiptNumber"
+                ).textContent =
                     data.receipt_number;
 
-                document.getElementById("saleDate").textContent =
-                    new Date(data.sale_date).toLocaleString();
 
-                document.getElementById("employeeName").textContent =
-                    data.employee_name;
+                document.getElementById(
+                    "saleDate"
+                ).textContent =
+                    formatDate(
+                        data.sale_date
+                    );
 
-                document.getElementById("paymentMethod").textContent =
-                    data.payment_method;
 
-                document.getElementById("totalAmount").textContent =
-                    data.total_amount;
+                document.getElementById(
+                    "employeeName"
+                ).textContent =
+                    data.employee_name || "-";
 
+
+                document.getElementById(
+                    "paymentMethod"
+                ).textContent =
+                    String(
+                        data.payment_method ||
+                        ""
+                    ).toUpperCase() === "MPESA"
+                        ? "M-Pesa"
+                        : "Cash";
+
+
+                /* =========================================
+                   CUSTOMER NAME
+                ========================================= */
+
+                document.getElementById(
+                    "customerName"
+                ).textContent =
+                    data.customer_name
+                        ? data.customer_name
+                        : "-";
+
+
+                /* =========================================
+                   NOTES
+                ========================================= */
+
+                const notesSection =
+                    document.getElementById(
+                        "notesSection"
+                    );
+
+                const notesText =
+                    document.getElementById(
+                        "notesText"
+                    );
+
+
+                if (data.notes) {
+
+                    notesText.textContent =
+                        data.notes;
+
+                    notesSection.style.display =
+                        "block";
+
+                } else {
+
+                    notesText.textContent = "";
+
+                    notesSection.style.display =
+                        "none";
+
+                }
+
+
+                /* =========================================
+                   TOTAL
+                ========================================= */
+
+                document.getElementById(
+                    "totalAmount"
+                ).textContent =
+                    formatMoney(
+                        data.total_amount
+                    );
+            
+                /* =========================================
+                   ITEMS
+                ========================================= */
 
                 const itemsBody =
-                    document.getElementById("itemsBody");
+                    document.getElementById(
+                        "itemsBody"
+                    );
 
                 itemsBody.innerHTML = "";
 
 
-                data.items.forEach(item => {
+                data.items.forEach(
+                    item => {
 
-                    const row = document.createElement("tr");
+                        const row =
+                            document.createElement(
+                                "tr"
+                            );
 
-                    row.innerHTML = `
-                        <td>${item.product_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.selling_price}</td>
-                        <td>${item.subtotal}</td>
-                    `;
 
-                    itemsBody.appendChild(row);
+                        row.innerHTML = `
 
-                });
+                            <td>
+                                ${escapeHtml(
+                                    item.product_name
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    item.quantity
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatMoney(
+                                    item.selling_price
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatMoney(
+                                    item.subtotal
+                                )}
+                            </td>
+
+                        `;
+
+
+                        itemsBody.appendChild(
+                            row
+                        );
+
+                    }
+                );
+
 
             } catch (error) {
 
-                console.error("RECEIPT LOAD ERROR:", error);
+                console.error(
+                    "RECEIPT LOAD ERROR:",
+                    error
+                );
 
-                alert("Could not load receipt.");
+                alert(
+                    "Could not load receipt."
+                );
 
             }
 
@@ -261,5 +641,5 @@
     </script>
 
 </body>
-</html>
 
+</html>

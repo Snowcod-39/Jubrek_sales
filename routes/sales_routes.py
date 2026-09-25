@@ -68,9 +68,6 @@ def get_next_receipt():
 
         with connection.cursor() as cursor:
 
-            # Lock system receipt-number generation
-            # so two employees cannot receive the same
-            # next number at the same time.
             cursor.execute("""
                 SELECT pg_advisory_xact_lock(700001);
             """)
@@ -89,8 +86,7 @@ def get_next_receipt():
 
         return jsonify({
             "receipt_number": next_receipt,
-            "formatted_receipt_number":
-                str(next_receipt)
+            "formatted_receipt_number": str(next_receipt)
         }), 200
 
     except Exception as e:
@@ -125,7 +121,7 @@ def record_sale():
             "error": "Employee access required."
         }), 403
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     if not data:
         return jsonify({
@@ -134,46 +130,148 @@ def record_sale():
 
     items = data.get("items")
 
-    payment_method = (
+    payment_method = str(
         data.get(
             "payment_method",
             "CASH"
-        ).upper()
-    )
+        )
+    ).upper().strip()
 
-    receipt_type = (
+    receipt_type = str(
         data.get(
             "receipt_type",
             "SYSTEM"
-        ).upper()
-    )
+        )
+    ).upper().strip()
 
-    receipt_number = data.get(
-        "receipt_number"
-    )
+    receipt_number = data.get("receipt_number")
+
 
     # =========================================================
-    # CHECK RECEIPT TYPE
+    # CUSTOMER NAME
+    # =========================================================
+
+    customer_name = data.get("customer_name")
+
+    if customer_name is not None:
+
+        customer_name = str(
+            customer_name
+        ).strip()
+
+        if customer_name == "":
+            customer_name = None
+
+
+    # =========================================================
+    # NOTES
+    # =========================================================
+
+    notes = data.get("notes")
+
+    if notes is not None:
+
+        notes = str(
+            notes
+        ).strip()
+
+        if notes == "":
+            notes = None
+
+
+    # =========================================================
+    # PAYMENT METHOD
+    # =========================================================
+
+    if payment_method not in (
+        "CASH",
+        "MPESA"
+    ):
+
+        return jsonify({
+            "error":
+                "Invalid payment method. Use CASH or MPESA."
+        }), 400
+
+
+    # =========================================================
+    # AMOUNT RECEIVED
+    # =========================================================
+
+    amount_received = None
+
+    if payment_method == "CASH":
+
+        raw_amount_received = data.get(
+            "amount_received"
+        )
+
+        if (
+            raw_amount_received is None
+            or
+            str(raw_amount_received).strip() == ""
+        ):
+
+            return jsonify({
+                "error":
+                    "Amount received is required for cash payments."
+            }), 400
+
+        try:
+
+            amount_received = Decimal(
+                str(raw_amount_received)
+            )
+
+        except (
+            ValueError,
+            TypeError,
+            InvalidOperation
+        ):
+
+            return jsonify({
+                "error":
+                    "Invalid amount received."
+            }), 400
+
+        if amount_received < 0:
+
+            return jsonify({
+                "error":
+                    "Amount received cannot be negative."
+            }), 400
+
+
+    # =========================================================
+    # RECEIPT TYPE
     # =========================================================
 
     if receipt_type not in (
         "SYSTEM",
         "MANUAL"
     ):
+
         return jsonify({
             "error":
                 "Invalid receipt type. Use SYSTEM or MANUAL."
         }), 400
 
+
     # =========================================================
-    # CHECK PRODUCTS
+    # PRODUCTS
     # =========================================================
 
-    if not items or not isinstance(items, list):
+    if (
+        not items
+        or
+        not isinstance(items, list)
+    ):
+
         return jsonify({
             "error":
                 "At least one product is required."
         }), 400
+
 
     # =========================================================
     # MANUAL RECEIPT NUMBER
@@ -182,6 +280,7 @@ def record_sale():
     if receipt_type == "MANUAL":
 
         if receipt_number is None:
+
             return jsonify({
                 "error":
                     "Manual receipt number is required."
@@ -207,6 +306,7 @@ def record_sale():
 
         receipt_number = None
 
+
     connection = get_db_connection()
 
     try:
@@ -216,6 +316,7 @@ def record_sale():
             receipt_book_id = None
             receipt_alert = None
             expected_receipt = None
+
 
             # =================================================
             # SYSTEM RECEIPT
@@ -237,9 +338,8 @@ def record_sale():
                       AND receipt_book_id IS NULL;
                 """)
 
-                receipt_number = (
-                    cursor.fetchone()[0]
-                )
+                receipt_number = cursor.fetchone()[0]
+
 
             # =================================================
             # MANUAL RECEIPT
@@ -263,9 +363,7 @@ def record_sale():
                     FOR UPDATE;
                 """)
 
-                receipt_book = (
-                    cursor.fetchone()
-                )
+                receipt_book = cursor.fetchone()
 
                 if receipt_book is None:
 
@@ -276,6 +374,7 @@ def record_sale():
                             "There is no active manual receipt book."
                     }), 400
 
+
                 (
                     receipt_book_id,
                     start_number,
@@ -284,15 +383,16 @@ def record_sale():
                     book_status
                 ) = receipt_book
 
+
                 if book_status != "ACTIVE":
 
                     connection.rollback()
 
                     return jsonify({
                         "error":
-                            "The current manual receipt book "
-                            "is not active."
+                            "The current manual receipt book is not active."
                     }), 400
+
 
                 if (
                     receipt_number < start_number
@@ -309,9 +409,10 @@ def record_sale():
                             f"and {end_number}."
                     }), 400
 
-                # ---------------------------------------------
-                # CHECK DUPLICATE MANUAL RECEIPT
-                # ---------------------------------------------
+
+                # =================================================
+                # DUPLICATE MANUAL RECEIPT
+                # =================================================
 
                 cursor.execute("""
                     SELECT id
@@ -324,9 +425,7 @@ def record_sale():
                     receipt_number
                 ))
 
-                existing_sale = (
-                    cursor.fetchone()
-                )
+                existing_sale = cursor.fetchone()
 
                 if existing_sale:
 
@@ -338,9 +437,10 @@ def record_sale():
                             "has already been used."
                     }), 400
 
-                # ---------------------------------------------
-                # FIND PREVIOUS RECEIPT
-                # ---------------------------------------------
+
+                # =================================================
+                # PREVIOUS RECEIPT
+                # =================================================
 
                 cursor.execute("""
                     SELECT receipt_number
@@ -352,9 +452,7 @@ def record_sale():
                     receipt_book_id,
                 ))
 
-                previous_receipt = (
-                    cursor.fetchone()
-                )
+                previous_receipt = cursor.fetchone()
 
                 expected_receipt = start_number
 
@@ -364,19 +462,15 @@ def record_sale():
                         previous_receipt[0] + 1
                     )
 
-                # ---------------------------------------------
-                # CHECK FOR MISSING RECEIPTS
-                # ---------------------------------------------
+
+                # =================================================
+                # MISSING RECEIPT ALERT
+                # =================================================
 
                 if receipt_number > expected_receipt:
 
-                    missing_from = (
-                        expected_receipt
-                    )
-
-                    missing_to = (
-                        receipt_number - 1
-                    )
+                    missing_from = expected_receipt
+                    missing_to = receipt_number - 1
 
                     if missing_from == missing_to:
 
@@ -397,6 +491,7 @@ def record_sale():
                             f"receipt {receipt_number}."
                         )
 
+
             # =================================================
             # CREATE SALE
             # =================================================
@@ -411,7 +506,11 @@ def record_sale():
                     payment_method,
                     payment_status,
                     receipt_type,
-                    delivery_status
+                    delivery_status,
+                    customer_name,
+                    notes,
+                    amount_received,
+                    change_amount
                 )
                 VALUES
                 (
@@ -422,7 +521,11 @@ def record_sale():
                     %s,
                     'PAID',
                     %s,
-                    'NOT RELEASED'
+                    'NOT RELEASED',
+                    %s,
+                    %s,
+                    %s,
+                    %s
                 )
                 RETURNING id;
             """, (
@@ -431,15 +534,18 @@ def record_sale():
                 receipt_number,
                 Decimal("0.00"),
                 payment_method,
-                receipt_type
+                receipt_type,
+                customer_name,
+                notes,
+                amount_received,
+                None
             ))
 
-            sale_id = (
-                cursor.fetchone()[0]
-            )
+            sale_id = cursor.fetchone()[0]
+
 
             # =================================================
-            # SAVE MANUAL RECEIPT ALERT
+            # SAVE RECEIPT ALERT
             # =================================================
 
             if receipt_alert:
@@ -469,13 +575,25 @@ def record_sale():
                     receipt_alert
                 ))
 
+
             # =================================================
             # PROCESS PRODUCTS
             # =================================================
 
             total_amount = Decimal("0.00")
 
+
             for item in items:
+
+                if not isinstance(item, dict):
+
+                    connection.rollback()
+
+                    return jsonify({
+                        "error":
+                            "Invalid sale item."
+                    }), 400
+
 
                 product_id = item.get(
                     "product_id"
@@ -484,6 +602,7 @@ def record_sale():
                 quantity = item.get(
                     "quantity"
                 )
+
 
                 if (
                     product_id is None
@@ -498,6 +617,7 @@ def record_sale():
                             "Each sale item needs "
                             "a product and quantity."
                     }), 400
+
 
                 try:
 
@@ -522,9 +642,10 @@ def record_sale():
                             "Invalid product ID or quantity."
                     }), 400
 
-                # -------------------------------------------------
-                # SALE QUANTITY MUST BE A WHOLE NUMBER
-                # -------------------------------------------------
+
+                # =================================================
+                # WHOLE NUMBER QUANTITY
+                # =================================================
 
                 if (
                     quantity <= 0
@@ -541,6 +662,7 @@ def record_sale():
                             "a whole number greater "
                             "than zero."
                     }), 400
+
 
                 # =================================================
                 # GET PRODUCT
@@ -561,9 +683,8 @@ def record_sale():
                     product_id,
                 ))
 
-                product = (
-                    cursor.fetchone()
-                )
+                product = cursor.fetchone()
+
 
                 if product is None:
 
@@ -575,6 +696,7 @@ def record_sale():
                             f"not found or inactive."
                     }), 404
 
+
                 (
                     product_id_db,
                     product_name,
@@ -583,8 +705,9 @@ def record_sale():
                     available_quantity
                 ) = product
 
+
                 # =================================================
-                # CHECK STOCK
+                # STOCK CHECK
                 # =================================================
 
                 if quantity > available_quantity:
@@ -599,8 +722,9 @@ def record_sale():
                             f"{available_quantity}"
                     }), 400
 
+
                 # =================================================
-                # CALCULATE SUBTOTAL
+                # SUBTOTAL
                 # =================================================
 
                 subtotal = (
@@ -610,10 +734,9 @@ def record_sale():
 
                 total_amount += subtotal
 
+
                 # =================================================
-                # STOCK IS NOT DEDUCTED YET
-                #
-                # Stock is deducted when the sale is released.
+                # STOCK IS NOT DEDUCTED HERE
                 # =================================================
 
                 cursor.execute("""
@@ -644,20 +767,56 @@ def record_sale():
                     subtotal
                 ))
 
+
             # =================================================
-            # UPDATE SALE TOTAL
+            # CASH CHANGE
+            # =================================================
+
+            change_amount = None
+
+
+            if payment_method == "CASH":
+
+                if amount_received < total_amount:
+
+                    connection.rollback()
+
+                    return jsonify({
+                        "error":
+                            f"Amount received "
+                            f"({amount_received}) "
+                            f"is less than the sale total "
+                            f"({total_amount})."
+                    }), 400
+
+
+                change_amount = (
+                    amount_received -
+                    total_amount
+                )
+
+
+            # =================================================
+            # UPDATE SALE
             # =================================================
 
             cursor.execute("""
                 UPDATE sales
-                SET total_amount = %s
+                SET
+                    total_amount = %s,
+                    amount_received = %s,
+                    change_amount = %s
                 WHERE id = %s;
             """, (
                 total_amount,
+                amount_received,
+                change_amount,
                 sale_id
             ))
 
+
         connection.commit()
+
 
         response = {
 
@@ -679,17 +838,40 @@ def record_sale():
             "total_amount":
                 str(total_amount),
 
+            "payment_method":
+                payment_method,
+
+            "customer_name":
+                customer_name,
+
+            "notes":
+                notes,
+
+            "amount_received":
+                (
+                    str(amount_received)
+                    if amount_received is not None
+                    else None
+                ),
+
+            "change_amount":
+                (
+                    str(change_amount)
+                    if change_amount is not None
+                    else None
+                ),
+
             "delivery_status":
                 "NOT RELEASED"
         }
 
-        if receipt_alert:
 
-            response[
-                "receipt_alert"
-            ] = receipt_alert
+        if receipt_alert:
+            response["receipt_alert"] = receipt_alert
+
 
         return jsonify(response), 201
+
 
     except Exception as e:
 
@@ -706,7 +888,9 @@ def record_sale():
                 "Could not record sale."
         }), 500
 
+
     finally:
+
         connection.close()
 
 
@@ -733,10 +917,6 @@ def release_sale(sale_id):
 
         with connection.cursor() as cursor:
 
-            # =================================================
-            # LOCK SALE
-            # =================================================
-
             cursor.execute("""
                 SELECT
                     id,
@@ -754,6 +934,7 @@ def release_sale(sale_id):
 
             sale = cursor.fetchone()
 
+
             if sale is None:
 
                 connection.rollback()
@@ -762,6 +943,7 @@ def release_sale(sale_id):
                     "error":
                         "Sale not found."
                 }), 404
+
 
             (
                 sale_id_db,
@@ -772,9 +954,6 @@ def release_sale(sale_id):
                 receipt_book_id
             ) = sale
 
-            # =================================================
-            # SALE MUST BE PAID
-            # =================================================
 
             if payment_status != "PAID":
 
@@ -785,9 +964,6 @@ def release_sale(sale_id):
                         "Only paid sales can be released."
                 }), 400
 
-            # =================================================
-            # PREVENT DOUBLE RELEASE
-            # =================================================
 
             if delivery_status == "RELEASED":
 
@@ -798,9 +974,6 @@ def release_sale(sale_id):
                         "This sale has already been released."
                 }), 400
 
-            # =================================================
-            # GET SALE ITEMS
-            # =================================================
 
             cursor.execute("""
                 SELECT
@@ -819,6 +992,7 @@ def release_sale(sale_id):
 
             items = cursor.fetchall()
 
+
             if not items:
 
                 connection.rollback()
@@ -827,6 +1001,7 @@ def release_sale(sale_id):
                     "error":
                         "This sale has no products."
                 }), 400
+
 
             # =================================================
             # CHECK STOCK FIRST
@@ -840,6 +1015,7 @@ def release_sale(sale_id):
                     product_name,
                     current_quantity
                 ) = item
+
 
                 if quantity > current_quantity:
 
@@ -855,6 +1031,7 @@ def release_sale(sale_id):
                             f"{quantity}."
                     }), 400
 
+
             # =================================================
             # DEDUCT STOCK
             # =================================================
@@ -868,14 +1045,12 @@ def release_sale(sale_id):
                     current_quantity
                 ) = item
 
+
                 new_quantity = (
                     current_quantity -
                     quantity
                 )
 
-                # =================================================
-                # UPDATE PRODUCT
-                # =================================================
 
                 cursor.execute("""
                     UPDATE products
@@ -888,20 +1063,12 @@ def release_sale(sale_id):
                     product_id
                 ))
 
-                # =================================================
-                # RECORD STOCK TRANSACTION
-                #
-                # Employee release:
-                #     employee_id populated
-                #
-                # Admin release:
-                #     admin_id populated
-                # =================================================
 
                 release_reason = (
                     f"Released Sale - "
                     f"Receipt {receipt_number}"
                 )
+
 
                 if session.get("role") == "EMPLOYEE":
 
@@ -979,16 +1146,10 @@ def release_sale(sale_id):
                         release_reason
                     ))
 
-            # =================================================
-            # MARK SALE AS RELEASED
-            # =================================================
 
-            #
-            # NOTE:
-            # We keep your existing released_by field behavior
-            # unchanged here because its database type/schema
-            # has not been provided.
-            #
+            # =================================================
+            # MARK RELEASED
+            # =================================================
 
             cursor.execute("""
                 UPDATE sales
@@ -1002,7 +1163,9 @@ def release_sale(sale_id):
                 sale_id
             ))
 
+
         connection.commit()
+
 
         return jsonify({
 
@@ -1023,6 +1186,7 @@ def release_sale(sale_id):
 
         }), 200
 
+
     except Exception as e:
 
         connection.rollback()
@@ -1038,20 +1202,14 @@ def release_sale(sale_id):
                 "Could not release sale."
         }), 500
 
+
     finally:
+
         connection.close()
 
 
 # =========================================================
 # GET SALES
-#
-# EMPLOYEE:
-#     ONLY THEIR OWN SALES
-#
-# ADMIN:
-#     ALL SALES
-#
-# Both released and unreleased sales are returned.
 # =========================================================
 
 @sales_routes.route(
@@ -1067,7 +1225,9 @@ def get_sales():
                 "Login required."
         }), 401
 
+
     role = session.get("role")
+
 
     if role not in [
         "EMPLOYEE",
@@ -1079,17 +1239,13 @@ def get_sales():
                 "Unauthorized access."
         }), 403
 
+
     connection = get_db_connection()
+
 
     try:
 
         with connection.cursor() as cursor:
-
-            # =================================================
-            # EMPLOYEE
-            #
-            # ONLY SALES CREATED BY THIS EMPLOYEE
-            # =================================================
 
             if role == "EMPLOYEE":
 
@@ -1104,26 +1260,21 @@ def get_sales():
                         s.sale_date,
                         s.delivery_status,
                         s.receipt_type,
+                        s.customer_name,
+                        s.notes,
+                        s.amount_received,
+                        s.change_amount,
                         e.full_name AS employee_name
                     FROM sales s
-
                     JOIN employees e
                         ON s.employee_id = e.id
-
                     WHERE s.employee_id = %s
-
                     ORDER BY
                         s.sale_date DESC,
                         s.id DESC;
                 """, (
                     session["user_id"],
                 ))
-
-            # =================================================
-            # ADMIN
-            #
-            # ALL SALES
-            # =================================================
 
             else:
 
@@ -1138,20 +1289,25 @@ def get_sales():
                         s.sale_date,
                         s.delivery_status,
                         s.receipt_type,
+                        s.customer_name,
+                        s.notes,
+                        s.amount_received,
+                        s.change_amount,
                         e.full_name AS employee_name
                     FROM sales s
-
                     JOIN employees e
                         ON s.employee_id = e.id
-
                     ORDER BY
                         s.sale_date DESC,
                         s.id DESC;
                 """)
 
+
             rows = cursor.fetchall()
 
+
             sales = []
+
 
             for row in rows:
 
@@ -1184,13 +1340,71 @@ def get_sales():
                     "receipt_type":
                         row[8],
 
+                    "customer_name":
+                        row[9],
+
+                    "notes":
+                        row[10],
+
+                    "amount_received":
+                        (
+                            str(row[11])
+                            if row[11] is not None
+                            else None
+                        ),
+
+                    "change_amount":
+                        (
+                            str(row[12])
+                            if row[12] is not None
+                            else None
+                        ),
+
                     "employee_name":
-                        row[9]
+                        row[13]
+
                 })
 
-        return jsonify({
+
+            # =================================================
+            # TODAY'S TOTAL FOR EMPLOYEE
+            # =================================================
+
+            today_total = None
+
+
+            if role == "EMPLOYEE":
+
+                cursor.execute("""
+                    SELECT
+                        COALESCE(
+                            SUM(total_amount),
+                            0
+                        )
+                    FROM sales
+                    WHERE employee_id = %s
+                      AND sale_date::date = CURRENT_DATE;
+                """, (
+                    session["user_id"],
+                ))
+
+                today_total =cursor.fetchone()[0]
+
+
+        response = {
             "sales": sales
-        }), 200
+        }
+
+
+        if role == "EMPLOYEE":
+
+            response["today_total"] = str(
+                today_total
+            )
+
+
+        return jsonify(response), 200
+
 
     except Exception as e:
 
@@ -1205,18 +1419,111 @@ def get_sales():
                 "Could not retrieve sales."
         }), 500
 
+
     finally:
+
+        connection.close()
+
+
+# =========================================================
+# GET TODAY'S TOTAL SALES
+# =========================================================
+
+@sales_routes.route(
+    "/api/sales/today-total",
+    methods=["GET"]
+)
+def get_today_total_sales():
+
+    if "user_id" not in session:
+
+        return jsonify({
+            "error":
+                "Login required."
+        }), 401
+
+
+    role = session.get("role")
+
+
+    if role not in [
+        "EMPLOYEE",
+        "ADMIN"
+    ]:
+
+        return jsonify({
+            "error":
+                "Unauthorized access."
+        }), 403
+
+
+    connection = get_db_connection()
+
+
+    try:
+
+        with connection.cursor() as cursor:
+
+            if role == "EMPLOYEE":
+
+                cursor.execute("""
+                    SELECT
+                        COALESCE(
+                            SUM(total_amount),
+                            0
+                        )
+                    FROM sales
+                    WHERE employee_id = %s
+                      AND sale_date::date =
+                          CURRENT_DATE;
+                """, (
+                    session["user_id"],
+                ))
+
+            else:
+
+                cursor.execute("""
+                    SELECT
+                        COALESCE(
+                            SUM(total_amount),
+                            0
+                        )
+                    FROM sales
+                    WHERE sale_date::date =
+                          CURRENT_DATE;
+                """)
+
+
+            total = cursor.fetchone()[0]
+
+
+        return jsonify({
+            "total_sales":
+                str(total)
+        }), 200
+
+
+    except Exception as e:
+
+        print(
+            "TODAY TOTAL SALES ERROR:",
+            type(e).__name__,
+            str(e)
+        )
+
+        return jsonify({
+            "error":
+                "Could not retrieve today's sales total."
+        }), 500
+
+
+    finally:
+
         connection.close()
 
 
 # =========================================================
 # GET RECEIPT
-#
-# ADMIN:
-#     Can view any receipt.
-#
-# EMPLOYEE:
-#     Can view only their own receipt.
 # =========================================================
 
 @sales_routes.route(
@@ -1232,7 +1539,9 @@ def get_receipt(sale_id):
                 "Login required."
         }), 401
 
+
     role = session.get("role")
+
 
     if role not in [
         "EMPLOYEE",
@@ -1244,15 +1553,13 @@ def get_receipt(sale_id):
                 "Unauthorized access."
         }), 403
 
+
     connection = get_db_connection()
+
 
     try:
 
         with connection.cursor() as cursor:
-
-            # =================================================
-            # GET SALE
-            # =================================================
 
             cursor.execute("""
                 SELECT
@@ -1266,18 +1573,22 @@ def get_receipt(sale_id):
                     s.sale_date,
                     s.delivery_status,
                     s.receipt_type,
+                    s.customer_name,
+                    s.notes,
+                    s.amount_received,
+                    s.change_amount,
                     e.full_name AS employee_name
                 FROM sales s
-
                 JOIN employees e
                     ON s.employee_id = e.id
-
                 WHERE s.id = %s;
             """, (
                 sale_id,
             ))
 
+
             sale = cursor.fetchone()
+
 
             if sale is None:
 
@@ -1285,6 +1596,7 @@ def get_receipt(sale_id):
                     "error":
                         "Sale not found."
                 }), 404
+
 
             (
                 sale_id_db,
@@ -1297,12 +1609,13 @@ def get_receipt(sale_id):
                 sale_date,
                 delivery_status,
                 receipt_type,
+                customer_name,
+                notes,
+                amount_received,
+                change_amount,
                 employee_name
             ) = sale
 
-            # =================================================
-            # EMPLOYEE OWNERSHIP CHECK
-            # =================================================
 
             if (
                 role == "EMPLOYEE"
@@ -1316,9 +1629,6 @@ def get_receipt(sale_id):
                         "Access denied."
                 }), 403
 
-            # =================================================
-            # GET SALE ITEMS
-            # =================================================
 
             cursor.execute("""
                 SELECT
@@ -1327,23 +1637,21 @@ def get_receipt(sale_id):
                     si.selling_price,
                     si.subtotal
                 FROM sale_items si
-
                 JOIN products p
                     ON si.product_id = p.id
-
                 WHERE si.sale_id = %s
-
                 ORDER BY
                     si.id;
             """, (
                 sale_id,
             ))
 
-            item_rows = (
-                cursor.fetchall()
-            )
+
+            item_rows = cursor.fetchall()
+
 
             items = []
+
 
             for row in item_rows:
 
@@ -1360,7 +1668,9 @@ def get_receipt(sale_id):
 
                     "subtotal":
                         str(row[3])
+
                 })
+
 
         receipt = {
 
@@ -1391,16 +1701,37 @@ def get_receipt(sale_id):
             "receipt_type":
                 receipt_type,
 
+            "customer_name":
+                customer_name,
+
+            "notes":
+                notes,
+
+            "amount_received":
+                (
+                    str(amount_received)
+                    if amount_received is not None
+                    else None
+                ),
+
+            "change_amount":
+                (
+                    str(change_amount)
+                    if change_amount is not None
+                    else None
+                ),
+
             "employee_name":
                 employee_name,
 
             "items":
                 items
+
         }
 
-        return jsonify(
-            receipt
-        ), 200
+
+        return jsonify(receipt), 200
+
 
     except Exception as e:
 
@@ -1415,14 +1746,14 @@ def get_receipt(sale_id):
                 "Could not generate receipt."
         }), 500
 
+
     finally:
+
         connection.close()
 
 
 # =========================================================
 # GET RECEIPT ALERTS
-#
-# ADMIN ONLY
 # =========================================================
 
 @sales_routes.route(
@@ -1438,6 +1769,7 @@ def get_receipt_alerts():
                 "Login required."
         }), 401
 
+
     if session.get("role") != "ADMIN":
 
         return jsonify({
@@ -1445,7 +1777,9 @@ def get_receipt_alerts():
                 "Admin access required."
         }), 403
 
+
     connection = get_db_connection()
+
 
     try:
 
@@ -1465,27 +1799,24 @@ def get_receipt_alerts():
                     ra.created_at,
                     ra.resolved_at,
                     e.full_name AS employee_name
-
                 FROM receipt_alerts ra
-
                 JOIN receipt_books rb
                     ON ra.receipt_book_id = rb.id
-
                 JOIN sales s
                     ON ra.sale_id = s.id
-
                 JOIN employees e
                     ON s.employee_id = e.id
-
                 WHERE ra.status = 'UNRESOLVED'
-
                 ORDER BY
                     ra.created_at DESC;
             """)
 
+
             rows = cursor.fetchall()
 
+
             alerts = []
+
 
             for row in rows:
 
@@ -1530,11 +1861,14 @@ def get_receipt_alerts():
 
                     "employee_name":
                         row[11]
+
                 })
+
 
         return jsonify({
             "alerts": alerts
         }), 200
+
 
     except Exception as e:
 
@@ -1549,14 +1883,14 @@ def get_receipt_alerts():
                 "Could not retrieve receipt alerts."
         }), 500
 
+
     finally:
+
         connection.close()
 
 
 # =========================================================
 # RESOLVE RECEIPT ALERT
-#
-# ADMIN ONLY
 # =========================================================
 
 @sales_routes.route(
@@ -1572,6 +1906,7 @@ def resolve_receipt_alert(alert_id):
                 "Login required."
         }), 401
 
+
     if session.get("role") != "ADMIN":
 
         return jsonify({
@@ -1579,7 +1914,9 @@ def resolve_receipt_alert(alert_id):
                 "Admin access required."
         }), 403
 
+
     connection = get_db_connection()
+
 
     try:
 
@@ -1595,7 +1932,9 @@ def resolve_receipt_alert(alert_id):
                 alert_id,
             ))
 
+
             alert = cursor.fetchone()
+
 
             if alert is None:
 
@@ -1604,12 +1943,14 @@ def resolve_receipt_alert(alert_id):
                         "Receipt alert not found."
                 }), 404
 
+
             if alert[1] == "RESOLVED":
 
                 return jsonify({
                     "message":
                         "Receipt alert is already resolved."
                 }), 200
+
 
             cursor.execute("""
                 UPDATE receipt_alerts
@@ -1621,12 +1962,15 @@ def resolve_receipt_alert(alert_id):
                 alert_id,
             ))
 
+
         connection.commit()
+
 
         return jsonify({
             "message":
                 "Receipt alert resolved successfully."
         }), 200
+
 
     except Exception as e:
 
@@ -1643,7 +1987,9 @@ def resolve_receipt_alert(alert_id):
                 "Could not resolve receipt alert."
         }), 500
 
+
     finally:
+
         connection.close()
 
 
@@ -1657,6 +2003,7 @@ def resolve_receipt_alert(alert_id):
 def receipt_page():
 
     if "user_id" not in session:
+
         return "Login required.", 401
 
     return render_template(
@@ -1674,6 +2021,7 @@ def receipt_page():
 def sales_page():
 
     if "user_id" not in session:
+
         return "Login required.", 401
 
     return render_template(

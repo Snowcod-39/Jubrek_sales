@@ -473,6 +473,48 @@
         }
 
         /* =====================================================
+           TOTAL STOCK VALUE
+        ===================================================== */
+
+        .stock-value-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid rgba(23, 105, 170, 0.20);
+            border-radius: 10px;
+            background: #eef0ef;
+        }
+
+        .stock-value-info {
+            min-width: 0;
+        }
+
+        .stock-value-title {
+            margin-bottom: 4px;
+            color: var(--primary-text);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .stock-value-description {
+            color: var(--secondary-text);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .stock-value-amount {
+            flex-shrink: 0;
+            color: var(--action-blue);
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        /* =====================================================
            PRODUCT TOOLBAR
         ===================================================== */
 
@@ -1213,6 +1255,18 @@
                 margin-top: 16px;
             }
 
+            .stock-value-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .stock-value-amount {
+                font-size: 20px;
+                text-align: left;
+            }
+
             .products-toolbar {
                 flex-direction: column;
                 align-items: stretch;
@@ -1813,6 +1867,35 @@
             Low-stock products appear first. Select a product after choosing a stock action from the sidebar.
         </p>
 
+
+        <!-- =================================================
+             TOTAL STOCK VALUE
+        ================================================= -->
+
+        <div class="stock-value-card">
+
+            <div class="stock-value-info">
+
+                <div class="stock-value-title">
+                    Total Stock Value
+                </div>
+
+                <div class="stock-value-description">
+                    Current stock value based on buying price.
+                </div>
+
+            </div>
+
+            <div
+                class="stock-value-amount"
+                id="totalStockValue"
+            >
+                KSh 0.00
+            </div>
+
+        </div>
+
+
         <div class="products-toolbar">
 
             <div class="search-wrapper">
@@ -2217,6 +2300,42 @@ function showMessage(message, type) {
 
 
 /* =========================================================
+   TOTAL STOCK VALUE
+========================================================= */
+
+function updateTotalStockValue() {
+
+    const totalStockValue =
+        allProducts.reduce(
+            (total, product) => {
+
+                const quantity =
+                    Number(product.quantity) || 0;
+
+                const buyingPrice =
+                    Number(product.buying_price) || 0;
+
+                return total +
+                    (quantity * buyingPrice);
+
+            },
+            0
+        );
+
+    document
+        .getElementById("totalStockValue")
+        .textContent =
+        `KSh ${totalStockValue.toLocaleString(
+            "en-KE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        )}`;
+}
+
+
+/* =========================================================
    SIDEBAR STOCK ACTION
 ========================================================= */
 
@@ -2434,6 +2553,15 @@ async function loadProducts() {
 
         allProducts =
             data.products || [];
+
+        /*
+         * Calculate the total stock value using:
+         *
+         * Current Quantity × Buying Price
+         *
+         * for every product returned by the API.
+         */
+        updateTotalStockValue();
 
         sortProducts();
 
