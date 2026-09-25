@@ -1,13 +1,10 @@
-
-from flask import Blueprint, request, jsonify, session, render_template
 from decimal import Decimal, InvalidOperation
 from datetime import date
+from flask import Blueprint, request, jsonify, session, render_template
 
 from db import get_db_connection
 
-
 expenses_routes = Blueprint("expenses_routes", __name__)
-
 
 # =========================================================
 # ADD EXPENSE
@@ -15,14 +12,11 @@ expenses_routes = Blueprint("expenses_routes", __name__)
 
 @expenses_routes.route("/api/expenses", methods=["POST"])
 def add_expense():
-
-    # User must be logged in
     if "user_id" not in session:
         return jsonify({
             "error": "Login required."
         }), 401
 
-    # Only ADMIN and EMPLOYEE can add expenses
     if session.get("role") not in ["ADMIN", "EMPLOYEE"]:
         return jsonify({
             "error": "Invalid user role."
@@ -61,7 +55,6 @@ def add_expense():
             "error": "Expense date is required."
         }), 400
 
-    # Keep the current application values
     if expense_type not in [
         "JUBREK_ENTERPRISES",
         "ADDITIONAL_EXPENSES"
@@ -72,7 +65,6 @@ def add_expense():
 
     try:
         amount = Decimal(str(amount))
-
     except (ValueError, TypeError, InvalidOperation):
         return jsonify({
             "error": "Invalid amount."
@@ -84,10 +76,7 @@ def add_expense():
         }), 400
 
     try:
-        expense_date = date.fromisoformat(
-            str(expense_date)
-        )
-
+        expense_date = date.fromisoformat(str(expense_date))
     except (ValueError, TypeError):
         return jsonify({
             "error": "Invalid expense date. Use YYYY-MM-DD."
@@ -96,29 +85,17 @@ def add_expense():
     connection = None
 
     try:
-
         connection = get_db_connection()
 
         with connection.cursor() as cursor:
-
-            # -------------------------------------------------
-            # Determine who created the expense
-            # -------------------------------------------------
-
             created_by_admin_id = None
             created_by_employee_id = None
 
             if session.get("role") == "ADMIN":
-
                 created_by_admin_id = session["user_id"]
 
             elif session.get("role") == "EMPLOYEE":
-
                 created_by_employee_id = session["user_id"]
-
-            # -------------------------------------------------
-            # INSERT EXPENSE
-            # -------------------------------------------------
 
             cursor.execute(
                 """
@@ -166,22 +143,16 @@ def add_expense():
         }), 201
 
     except Exception as e:
-
         if connection:
             connection.rollback()
 
-        print(
-            "EXPENSE ADD ERROR:",
-            type(e).__name__,
-            str(e)
-        )
+        print("EXPENSE ADD ERROR:", type(e).__name__, str(e))
 
         return jsonify({
             "error": "Could not add expense."
         }), 500
 
     finally:
-
         if connection:
             connection.close()
 
@@ -192,8 +163,6 @@ def add_expense():
 
 @expenses_routes.route("/api/expenses", methods=["GET"])
 def get_expenses():
-
-    # User must be logged in
     if "user_id" not in session:
         return jsonify({
             "error": "Login required."
@@ -206,20 +175,11 @@ def get_expenses():
             "error": "Invalid user role."
         }), 403
 
-    # -----------------------------------------------------
-    # OPTIONAL DATE FILTER
-    #
-    # Example:
-    # /api/expenses?date=2026-09-24
-    # -----------------------------------------------------
-
     selected_date = request.args.get("date")
 
     if selected_date:
         try:
-            selected_date = date.fromisoformat(
-                str(selected_date)
-            )
+            selected_date = date.fromisoformat(str(selected_date))
         except (ValueError, TypeError):
             return jsonify({
                 "error": "Invalid date. Use YYYY-MM-DD."
@@ -228,20 +188,14 @@ def get_expenses():
     connection = None
 
     try:
-
         connection = get_db_connection()
 
         with connection.cursor() as cursor:
-
             # =================================================
             # EMPLOYEE
-            # Only show expenses created by logged-in employee
             # =================================================
-
             if role == "EMPLOYEE":
-
                 if selected_date:
-
                     cursor.execute(
                         """
                         SELECT
@@ -250,7 +204,11 @@ def get_expenses():
                             e.amount,
                             e.expense_date,
                             e.created_at,
-                            e.expense_type,
+
+                            COALESCE(
+                                e.expense_type,
+                                'JUBREK_ENTERPRISES'
+                            ) AS expense_type,
 
                             CASE
                                 WHEN e.created_by_employee_id IS NOT NULL
@@ -291,9 +249,7 @@ def get_expenses():
                             selected_date
                         )
                     )
-
                 else:
-
                     cursor.execute(
                         """
                         SELECT
@@ -302,7 +258,11 @@ def get_expenses():
                             e.amount,
                             e.expense_date,
                             e.created_at,
-                            e.expense_type,
+
+                            COALESCE(
+                                e.expense_type,
+                                'JUBREK_ENTERPRISES'
+                            ) AS expense_type,
 
                             CASE
                                 WHEN e.created_by_employee_id IS NOT NULL
@@ -338,18 +298,16 @@ def get_expenses():
                             e.expense_date DESC,
                             e.id DESC;
                         """,
-                        (session["user_id"],)
+                        (
+                            session["user_id"],
+                        )
                     )
 
             # =================================================
             # ADMIN
-            # Admin can see ALL expenses
             # =================================================
-
             else:
-
                 if selected_date:
-
                     cursor.execute(
                         """
                         SELECT
@@ -358,7 +316,11 @@ def get_expenses():
                             e.amount,
                             e.expense_date,
                             e.created_at,
-                            e.expense_type,
+
+                            COALESCE(
+                                e.expense_type,
+                                'JUBREK_ENTERPRISES'
+                            ) AS expense_type,
 
                             CASE
                                 WHEN e.created_by_employee_id IS NOT NULL
@@ -393,11 +355,11 @@ def get_expenses():
                         ORDER BY
                             e.id DESC;
                         """,
-                        (selected_date,)
+                        (
+                            selected_date,
+                        )
                     )
-
                 else:
-
                     cursor.execute(
                         """
                         SELECT
@@ -406,7 +368,11 @@ def get_expenses():
                             e.amount,
                             e.expense_date,
                             e.created_at,
-                            e.expense_type,
+
+                            COALESCE(
+                                e.expense_type,
+                                'JUBREK_ENTERPRISES'
+                            ) AS expense_type,
 
                             CASE
                                 WHEN e.created_by_employee_id IS NOT NULL
@@ -447,23 +413,19 @@ def get_expenses():
         # -----------------------------------------------------
         # FORMAT RESPONSE
         # -----------------------------------------------------
-
         expenses = []
-
         total_amount = Decimal("0.00")
 
         for row in rows:
-
             amount = Decimal(str(row[2]))
-
             total_amount += amount
 
             expenses.append({
                 "id": row[0],
                 "description": row[1],
                 "amount": str(amount),
-                "expense_date": row[3].isoformat(),
-                "created_at": row[4].isoformat(),
+                "expense_date": row[3].isoformat() if row[3] else None,
+                "created_at": row[4].isoformat() if row[4] else None,
                 "expense_type": row[5],
                 "created_by": row[6],
                 "created_by_role": row[7]
@@ -480,19 +442,13 @@ def get_expenses():
         })
 
     except Exception as e:
-
-        print(
-            "EXPENSE GET ERROR:",
-            type(e).__name__,
-            str(e)
-        )
+        print("EXPENSE GET ERROR:", type(e).__name__, str(e))
 
         return jsonify({
             "error": "Could not load expenses."
         }), 500
 
     finally:
-
         if connection:
             connection.close()
 
@@ -503,11 +459,7 @@ def get_expenses():
 
 @expenses_routes.route("/expenses")
 def expenses_page():
-
     if "user_id" not in session:
         return "Login required.", 401
 
-    return render_template(
-        "expenses.html"
-    )
-
+    return render_template("expenses.html")
