@@ -318,10 +318,31 @@ def report_summary():
 
                 COALESCE(
                     SUM(
-                        si.quantity * si.buying_price
+                        CASE
+                            WHEN s.payment_method = 'CASH'
+                            THEN si.subtotal
+                            ELSE 0
+                        END          
                     ),
                     0
-                ) AS cost_of_goods_sold
+                ) AS cash_sales,
+
+
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN s.payment_method = 'MPESA'
+                            THEN si.subtotal
+                            ELSE 0
+                        END          
+                    ),
+                    0
+                ) AS mpesa_sales,
+
+                 COALESCE(
+                    SUM(si.quantity * si.buying_price),
+                        0
+                  ) AS cost_of_goods_sold
 
             FROM sales s
 
@@ -343,7 +364,9 @@ def report_summary():
 
         total_sales = sales_data[0]
         sales_revenue = sales_data[1]
-        cost_of_goods_sold = sales_data[2]
+        cash_sales = sales_data[2]
+        mpesa_sales = sales_data[3]
+        cost_of_goods_sold = sales_data[4]
 
         # =================================================
         # EXPENSE SUMMARY
@@ -512,7 +535,13 @@ def report_summary():
                     total_sales,
 
                 "sales_revenue":
-                    str(sales_revenue),
+                    str(sales_revenue), 
+
+                "cash_sales":
+                   str(cash_sales),
+                    
+                "mpesa_sales":
+                     str(mpesa_sales),
 
                 "cost_of_goods_sold":
                     str(cost_of_goods_sold),
@@ -554,6 +583,275 @@ def report_summary():
         if connection:
             connection.close()
 
+@reports_routes.route("/api/reports/stock-transactions", methods=["GET"])
+def stock_transactions_report():
+
+    if not admin_required():
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    period = request.args.get("period", "daily")
+    selected_date = request.args.get("date")
+
+    valid_periods = [
+        "daily",
+        "weekly",
+        "monthly",
+        "annually",
+        "all"
+    ]
+
+    if period not in valid_periods:
+        return jsonify({
+            "error": "Invalid report period."
+        }), 400
+
+    connection = get_db_connection()
+
+    try:
+
+        with connection.cursor() as cursor:
+
+            # =====================================================
+            # DATE CONDITION
+            # =====================================================
+
+            if selected_date:
+
+                try:
+                    report_date = datetime.strptime(
+                        selected_date,
+                        "%Y-%m-%d"
+                    ).date()
+
+                except ValueError:
+
+                    return jsonify({
+                        "error": "Invalid date format."
+                    }), 400
+
+                date_condition = """
+                    (
+                        st.transaction_date
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date = %s
+                """
+
+                date_params = (
+                    report_date,
+                )
+
+            elif period == "daily":
+
+                date_condition = """
+                    (
+                        st.transaction_date
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date =
+                    (
+                        CURRENT_TIMESTAMP
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                """
+
+                date_params = ()
+
+            elif period == "weekly":
+
+                date_condition = """
+                    (
+                        st.transaction_date
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                    BETWEEN
+                    (
+                        (
+                            CURRENT_TIMESTAMP
+                            AT TIME ZONE 'Africa/Nairobi'
+                        )::date
+                        -
+                        EXTRACT(
+                            DOW FROM
+                            (
+                                CURRENT_TIMESTAMP
+                                AT TIME ZONE 'Africa/Nairobi'
+                            )::date
+                        )::integer
+                    )
+                    AND
+                    (
+                        CURRENT_TIMESTAMP
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                """
+
+                date_params = ()
+
+            elif period == "monthly":
+
+                date_condition = """
+                    (
+                        st.transaction_date
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                    BETWEEN
+                    DATE_TRUNC(
+                        'month',
+                        (
+                            CURRENT_TIMESTAMP
+                            AT TIME ZONE 'Africa/Nairobi'
+                        )::date
+                    )::date
+                    AND
+                    (
+                        CURRENT_TIMESTAMP
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                """
+
+                date_params = ()
+
+            elif period == "annually":
+
+                date_condition = """
+                    (
+                        st.transaction_date
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                    BETWEEN
+                    DATE_TRUNC(
+                        'year',
+                        (
+                            CURRENT_TIMESTAMP
+                            AT TIME ZONE 'Africa/Nairobi'
+                        )::date
+                    )::date
+                    AND
+                    (
+                        CURRENT_TIMESTAMP
+                        AT TIME ZONE 'Africa/Nairobi'
+                    )::date
+                """
+
+                date_params = ()
+
+            else:
+
+                date_condition = "TRUE"
+                date_params = ()
+
+            # =====================================================
+            # STOCK TRANSACTIONS
+            # =====================================================
+
+            cursor.execute(
+                f"""
+                    SELECT
+                        st.id,
+                        st.product_id,
+                        p.product_name,
+                        st.employee_id,
+                        e.full_name,
+                        st.admin_id,
+                        a.full_name,
+                        st.transaction_type,
+                        st.quantity,
+                        st.previous_quantity,
+                        st.new_quantity,
+                        st.reason,
+                        st.transaction_date
+
+                    FROM stock_transactions st
+
+                    JOIN products p
+                        ON st.product_id = p.id
+
+                    LEFT JOIN employees e
+                        ON st.employee_id = e.id
+
+                    LEFT JOIN admins a
+                        ON st.admin_id = a.id
+
+                    WHERE {date_condition}
+
+                    ORDER BY
+                        st.transaction_date DESC,
+                        st.id DESC;
+                """,
+                date_params
+            )
+
+            transactions = cursor.fetchall()
+
+        return jsonify({
+            "period": period,
+            "selected_date": selected_date,
+            "transactions": [
+
+                {
+                    "id": transaction[0],
+
+                    "product_id":
+                        transaction[1],
+
+                    "product_name":
+                        transaction[2],
+
+                    "employee_id":
+                        transaction[3],
+
+                    "employee_name":
+                        transaction[4],
+
+                    "admin_id":
+                        transaction[5],
+
+                    "admin_name":
+                        transaction[6],
+
+                    "transaction_type":
+                        transaction[7],
+
+                    "quantity":
+                        str(transaction[8]),
+
+                    "previous_quantity":
+                        str(transaction[9]),
+
+                    "new_quantity":
+                        str(transaction[10]),
+
+                    "reason":
+                        transaction[11],
+
+                    "transaction_date":
+                        transaction[12].isoformat()
+                        if transaction[12]
+                        else None
+                }
+
+                for transaction in transactions
+            ]
+        })
+
+    except Exception as e:
+
+        print(
+            "STOCK TRANSACTIONS REPORT ERROR:",
+            type(e).__name__,
+            str(e)
+        )
+
+        return jsonify({
+            "error":
+                "Could not load stock transactions."
+        }), 500
+
+    finally:
+
+        connection.close()            
+
 
 # =========================================================
 # REPORT PAGE
@@ -566,3 +864,6 @@ def reports_page():
         return "Admin access required.", 403
 
     return render_template("reports.html")
+
+
+    

@@ -452,7 +452,100 @@ def get_expenses():
         if connection:
             connection.close()
 
+# =========================================================
+# DELETE EXPENSE
+# ADMIN ONLY
+# =========================================================
 
+@expenses_routes.route(
+    "/api/expenses/<int:expense_id>",
+    methods=["DELETE"]
+)
+def delete_expense(expense_id):
+
+    # -----------------------------------------------------
+    # ADMIN CHECK
+    # -----------------------------------------------------
+
+    if "user_id" not in session:
+        return jsonify({
+            "error": "Login required."
+        }), 401
+
+    if session.get("role") != "ADMIN":
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    connection = None
+
+    try:
+        connection = get_db_connection()
+
+        with connection.cursor() as cursor:
+
+            # -------------------------------------------------
+            # CHECK THAT EXPENSE EXISTS
+            # -------------------------------------------------
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    description,
+                    amount,
+                    expense_date
+                FROM expenses
+                WHERE id = %s;
+                """,
+                (expense_id,)
+            )
+
+            expense = cursor.fetchone()
+
+            if not expense:
+                return jsonify({
+                    "error": "Expense not found."
+                }), 404
+
+            # -------------------------------------------------
+            # DELETE EXPENSE
+            # -------------------------------------------------
+
+            cursor.execute(
+                """
+                DELETE FROM expenses
+                WHERE id = %s;
+                """,
+                (expense_id,)
+            )
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Expense deleted successfully.",
+            "expense_id": expense_id
+        }), 200
+
+    except Exception as e:
+
+        if connection:
+            connection.rollback()
+
+        print(
+            "EXPENSE DELETE ERROR:",
+            type(e).__name__,
+            str(e)
+        )
+
+        return jsonify({
+            "error": "Could not delete expense."
+        }), 500
+
+    finally:
+
+        if connection:
+            connection.close()
 # =========================================================
 # EXPENSE PAGE
 # =========================================================

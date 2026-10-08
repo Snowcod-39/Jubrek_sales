@@ -1147,6 +1147,42 @@
 
         }
 
+       /* =========================================================
+   STOCK TRANSACTIONS
+========================================================= */
+
+.stock-transaction-type {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.stock-in {
+    background: #d8f0e8;
+    color: #176b4d;
+}
+
+.stock-removal {
+    background: #f4d8d8;
+    color: #8a2020;
+}
+
+.stock-adjustment {
+    background: #e8dfc7;
+    color: #6d5615;
+}
+
+.stock-admin {
+    font-weight: bold;
+}
+
+.stock-employee {
+    font-weight: bold;
+}
+
 
         /* =========================================================
            VERY SMALL PHONES
@@ -1526,26 +1562,46 @@
 
 
                 <div class="card">
+    <div class="card-title">
+        Money from Sales
+    </div>
 
-                    <div class="card-title">
-                        Money from Sales
-                    </div>
+    <div
+        id="salesRevenue"
+        class="card-value"
+    >
+        KSh 0.00
+    </div>
 
+    <div class="card-description">
+        Total money received from sales
+    </div>
 
-                    <div
-                        id="salesRevenue"
-                        class="card-value"
-                    >
-                        KSh 0.00
-                    </div>
+    <div
+        style="
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(32, 36, 33, 0.15);
+            font-size: 12px;
+            line-height: 1.8;
+            color: #353b37;
+        "
+    >
+        <div>
+            Cash:
+            <strong id="cashSales">
+                KSh 0.00
+            </strong>
+        </div>
 
-
-                    <div class="card-description">
-                        Total money received from sales
-                    </div>
-
-                </div>
-
+        <div>
+            M-Pesa:
+            <strong id="mpesaSales">
+                KSh 0.00
+            </strong>
+        </div>
+    </div>
+</div>
 
                 <div class="card">
 
@@ -1745,6 +1801,78 @@
             </div>
 
 
+            <!-- =============================================
+     STOCK TRANSACTIONS
+================================================ -->
+
+<div class="section">
+
+    <h3>
+        Stock Transactions
+    </h3>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr>
+
+                    <th>
+                        Date / Time
+                    </th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Transaction
+                    </th>
+
+                    <th>
+                        Quantity
+                    </th>
+
+                    <th>
+                        Previous Stock
+                    </th>
+
+                    <th>
+                        New Stock
+                    </th>
+
+                    <th>
+                        Done By
+                    </th>
+
+                    <th>
+                        Reason
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody id="stockTransactionsBody">
+
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty"
+                    >
+                        Loading stock transactions...
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
         </div>
 
     </main>
@@ -1919,11 +2047,10 @@ function hideLoader() {
 // PERIOD CHANGED
 // ---------------------------------------------------------
 function periodChanged() {
-
-    // Clear manually selected date
     document.getElementById("reportDate").value = "";
 
     loadReport();
+    loadStockTransactions();
 }
 
 
@@ -1937,10 +2064,12 @@ async function loadReportByDate() {
 
     if (!selectedDate) {
         loadReport();
+        loadStockTransactions();
         return;
     }
 
     loadReport(selectedDate);
+    loadStockTransactions(selectedDate);
 }
 
 // ---------------------------------------------------------
@@ -2014,6 +2143,20 @@ async function loadReport(selectedDate = null) {
             `KSh ${formatMoney(
                 summary.sales_revenue
             )}`;
+
+        document.getElementById(
+            "cashSales"
+        ).textContent =
+            `KSh ${formatMoney(
+                summary.cash_sales
+             )}`;
+
+        document.getElementById(
+            "mpesaSales"
+        ).textContent =
+            `KSh ${formatMoney(
+                summary.mpesa_sales
+            )}`;    
 
 
         document.getElementById(
@@ -2206,13 +2349,254 @@ async function loadReport(selectedDate = null) {
     }
 
 }
+// ---------------------------------------------------------
+// LOAD STOCK TRANSACTIONS
+// ---------------------------------------------------------
 
+async function loadStockTransactions(selectedDate = null) {
+
+    const period =
+        document.getElementById("period").value;
+
+    const stockBody =
+        document.getElementById(
+            "stockTransactionsBody"
+        );
+
+    try {
+
+        let url =
+            `/api/reports/stock-transactions?period=${period}`;
+
+        if (selectedDate) {
+
+            url +=
+                `&date=${encodeURIComponent(selectedDate)}`;
+        }
+
+        const response =
+            await fetch(url);
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            stockBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty"
+                    >
+                        ${
+                            data.error ||
+                            "Could not load stock transactions."
+                        }
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        stockBody.innerHTML = "";
+
+        if (
+            !data.transactions ||
+            data.transactions.length === 0
+        ) {
+
+            stockBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty"
+                    >
+                        No stock transactions recorded for this period.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.transactions.forEach(
+            transaction => {
+
+                const row =
+                    document.createElement("tr");
+
+                let transactionClass = "";
+
+                if (
+                    transaction.transaction_type ===
+                    "STOCK_IN"
+                ) {
+
+                    transactionClass =
+                        "stock-in";
+
+                } else if (
+                    transaction.transaction_type ===
+                    "STOCK_REMOVAL"
+                ) {
+
+                    transactionClass =
+                        "stock-removal";
+
+                } else if (
+                    transaction.transaction_type ===
+                    "STOCK_ADJUSTMENT"
+                ) {
+
+                    transactionClass =
+                        "stock-adjustment";
+                }
+
+                let transactionLabel =
+                    transaction.transaction_type;
+
+                if (
+                    transaction.transaction_type ===
+                    "STOCK_IN"
+                ) {
+
+                    transactionLabel =
+                        "STOCK IN";
+
+                } else if (
+                    transaction.transaction_type ===
+                    "STOCK_REMOVAL"
+                ) {
+
+                    transactionLabel =
+                        "REMOVAL";
+
+                } else if (
+                    transaction.transaction_type ===
+                    "STOCK_ADJUSTMENT"
+                ) {
+
+                    transactionLabel =
+                        "ADJUSTMENT";
+                }
+
+                let doneBy = "Unknown";
+
+                if (
+                    transaction.employee_name
+                ) {
+
+                    doneBy =
+                        `${transaction.employee_name} (Employee)`;
+
+                } else if (
+                    transaction.admin_name
+                ) {
+
+                    doneBy =
+                        `${transaction.admin_name} (Admin)`;
+                }
+
+                let formattedDate = "—";
+
+                if (
+                    transaction.transaction_date
+                ) {
+
+                    const date =
+                        new Date(
+                            transaction.transaction_date
+                        );
+
+                    formattedDate =
+                        date.toLocaleString(
+                            "en-KE",
+                            {
+                                dateStyle: "short",
+                                timeStyle: "short"
+                            }
+                        );
+                }
+
+                row.innerHTML = `
+                    <td>
+                        ${formattedDate}
+                    </td>
+
+                    <td>
+                        ${
+                            transaction.product_name ||
+                            "Unknown Product"
+                        }
+                    </td>
+
+                    <td>
+                        <span
+                            class="stock-transaction-type ${transactionClass}"
+                        >
+                            ${transactionLabel}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${transaction.quantity}
+                    </td>
+
+                    <td>
+                        ${transaction.previous_quantity}
+                    </td>
+
+                    <td>
+                        ${transaction.new_quantity}
+                    </td>
+
+                    <td class="stock-admin">
+                        ${doneBy}
+                    </td>
+
+                    <td>
+                        ${
+                            transaction.reason ||
+                            "—"
+                        }
+                    </td>
+                `;
+
+                stockBody.appendChild(row);
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "STOCK TRANSACTIONS LOAD ERROR:",
+            error
+        );
+
+        stockBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    Could not load stock transactions.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// ---------------------------------------------------------
+// INITIAL LOAD
+// ---------------------------------------------------------
 
 // ---------------------------------------------------------
 // INITIAL LOAD
 // ---------------------------------------------------------
 
 loadReport();
+loadStockTransactions();
 
 </script>
 

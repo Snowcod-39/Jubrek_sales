@@ -863,6 +863,65 @@
             margin: 0;
         }
 
+        .history-filters {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        }
+
+        .history-date-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 190px;
+        }
+
+        .history-date-group label {
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .history-date-group input {
+            margin: 0;
+            height: 38px;
+        }
+
+        .history-filter-button {
+            height: 38px;
+            padding: 0 13px;
+            border: 1px solid var(--action-blue);
+            border-radius: 7px;
+            background: var(--action-blue);
+            color: var(--white);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: inherit;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .history-filter-button:hover {
+            background: var(--tiffany-blue);
+            border-color: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
+        .history-filter-button.secondary {
+            background: var(--action-blue);
+            border-color: var(--action-blue);
+            color: var(--primary-text);
+        }
+        
+        .history-filter-button.secondary:hover {
+            background: var(--tiffany-blue);
+            border-color: var(--tiffany-blue);
+            color: var(--primary-text);
+        }
+
         .refresh-button {
             background:
                 var(--action-blue);
@@ -1060,6 +1119,19 @@
             .current-stock-button {
                 width: 100%;
             }
+
+            .history-filters {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.history-date-group {
+    width: 100%;
+}
+
+.history-filter-button {
+    width: 100%;
+}
 
         }
 
@@ -1385,29 +1457,65 @@
 
         <div class="history-header">
 
-            <div>
+    <div>
 
-                <h3>
-                    My Stock History
-                </h3>
+        <h3>
+            My Stock History
+        </h3>
 
-                <p class="card-description">
-                    Only stock movements recorded by your
-                    account are shown here.
-                </p>
+        <p class="card-description">
+            Only stock movements recorded by your
+            account are shown here.
+        </p>
 
-            </div>
+    </div>
+
+</div>
 
 
-            <button
-                type="button"
-                onclick="loadStockHistory()"
-                class="refresh-button"
-            >
-                ↻ Refresh
-            </button>
+<div class="history-filters">
 
-        </div>
+    <div class="history-date-group">
+
+        <label for="stockHistoryDate">
+            Select Date
+        </label>
+
+        <input
+            type="date"
+            id="stockHistoryDate"
+        >
+
+    </div>
+
+
+    <button
+        type="button"
+        onclick="loadTodayStockHistory()"
+        class="history-filter-button"
+    >
+        Today
+    </button>
+
+
+    <button
+        type="button"
+        onclick="loadAllStockHistory()"
+        class="history-filter-button secondary"
+    >
+        View All
+    </button>
+
+
+    <button
+        type="button"
+        onclick="loadStockHistory()"
+        class="history-filter-button"
+    >
+        ↻ Refresh
+    </button>
+
+</div>
 
 
         <div id="stockHistory">
@@ -2588,12 +2696,26 @@ async function loadCurrentStock() {
    STOCK HISTORY
 ========================================================= */
 
+/* =========================================================
+   STOCK HISTORY
+========================================================= */
+
 async function loadStockHistory() {
 
     const container =
         document.getElementById(
             "stockHistory"
         );
+
+    const dateInput =
+        document.getElementById(
+            "stockHistoryDate"
+        );
+
+    const selectedDate =
+        dateInput
+            ? dateInput.value
+            : "";
 
 
     container.innerHTML = `
@@ -2607,10 +2729,22 @@ async function loadStockHistory() {
 
     try {
 
+        let url =
+            "/api/stock";
+
+
+        if (selectedDate) {
+
+            url +=
+                `?date=${encodeURIComponent(
+                    selectedDate
+                )}`;
+
+        }
+
+
         const response =
-            await fetch(
-                "/api/stock"
-            );
+            await fetch(url);
 
 
         const result =
@@ -2636,7 +2770,13 @@ async function loadStockHistory() {
             container.innerHTML = `
 
                 <div class="empty">
-                    No stock transactions found.
+
+                    ${
+                        selectedDate
+                            ? `No stock transactions found for ${escapeHtml(selectedDate)}.`
+                            : "No stock transactions found."
+                    }
+
                 </div>
 
             `;
@@ -2801,6 +2941,81 @@ async function loadStockHistory() {
     }
 
 }
+
+/* =========================================================
+   TODAY'S STOCK HISTORY
+========================================================= */
+
+function loadTodayStockHistory() {
+
+    const dateInput =
+        document.getElementById(
+            "stockHistoryDate"
+        );
+
+
+    const today =
+        new Date();
+
+
+    const year =
+        today.getFullYear();
+
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2, "0");
+
+
+    dateInput.value =
+        `${year}-${month}-${day}`;
+
+
+    loadStockHistory();
+
+}
+
+
+/* =========================================================
+   VIEW ALL STOCK HISTORY
+========================================================= */
+
+function loadAllStockHistory() {
+
+    const dateInput =
+        document.getElementById(
+            "stockHistoryDate"
+        );
+
+
+    dateInput.value = "";
+
+
+    loadStockHistory();
+
+}
+
+/* =========================================================
+   DATE FILTER CHANGE
+========================================================= */
+
+document
+    .getElementById("stockHistoryDate")
+    .addEventListener(
+        "change",
+        function() {
+
+            loadStockHistory();
+
+        }
+    );
 
 
 /* =========================================================

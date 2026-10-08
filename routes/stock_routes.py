@@ -797,6 +797,11 @@ def get_stock_transactions():
             "error": "Login required."
         }), 401
 
+    # Optional date filter.
+    # Example:
+    # /api/stock?date=2026-10-07
+    selected_date = request.args.get("date")
+
     connection = get_db_connection()
 
     try:
@@ -805,75 +810,161 @@ def get_stock_transactions():
 
             if session.get("role") == "EMPLOYEE":
 
-                cursor.execute("""
-                    SELECT
-                        st.id,
-                        st.product_id,
-                        p.product_name,
-                        st.employee_id,
-                        e.full_name,
-                        st.admin_id,
-                        a.full_name,
-                        st.transaction_type,
-                        st.quantity,
-                        st.previous_quantity,
-                        st.new_quantity,
-                        st.reason,
-                        st.transaction_date
+                if selected_date:
 
-                    FROM stock_transactions st
+                    cursor.execute("""
+                        SELECT
+                            st.id,
+                            st.product_id,
+                            p.product_name,
+                            st.employee_id,
+                            e.full_name,
+                            st.admin_id,
+                            a.full_name,
+                            st.transaction_type,
+                            st.quantity,
+                            st.previous_quantity,
+                            st.new_quantity,
+                            st.reason,
+                            st.transaction_date
 
-                    JOIN products p
-                        ON st.product_id = p.id
+                        FROM stock_transactions st
 
-                    LEFT JOIN employees e
-                        ON st.employee_id = e.id
+                        JOIN products p
+                            ON st.product_id = p.id
 
-                    LEFT JOIN admins a
-                        ON st.admin_id = a.id
+                        LEFT JOIN employees e
+                            ON st.employee_id = e.id
 
-                    WHERE st.employee_id = %s
+                        LEFT JOIN admins a
+                            ON st.admin_id = a.id
 
-                    ORDER BY
-                        st.transaction_date DESC,
-                        st.id DESC;
-                """, (
-                    session["user_id"],
-                ))
+                        WHERE st.employee_id = %s
+                        AND DATE(st.transaction_date) = %s
+
+                        ORDER BY
+                            st.transaction_date DESC,
+                            st.id DESC;
+                    """, (
+                        session["user_id"],
+                        selected_date
+                    ))
+
+                else:
+
+                    cursor.execute("""
+                        SELECT
+                            st.id,
+                            st.product_id,
+                            p.product_name,
+                            st.employee_id,
+                            e.full_name,
+                            st.admin_id,
+                            a.full_name,
+                            st.transaction_type,
+                            st.quantity,
+                            st.previous_quantity,
+                            st.new_quantity,
+                            st.reason,
+                            st.transaction_date
+
+                        FROM stock_transactions st
+
+                        JOIN products p
+                            ON st.product_id = p.id
+
+                        LEFT JOIN employees e
+                            ON st.employee_id = e.id
+
+                        LEFT JOIN admins a
+                            ON st.admin_id = a.id
+
+                        WHERE st.employee_id = %s
+
+                        ORDER BY
+                            st.transaction_date DESC,
+                            st.id DESC;
+                    """, (
+                        session["user_id"],
+                    ))
 
             else:
 
-                cursor.execute("""
-                    SELECT
-                        st.id,
-                        st.product_id,
-                        p.product_name,
-                        st.employee_id,
-                        e.full_name,
-                        st.admin_id,
-                        a.full_name,
-                        st.transaction_type,
-                        st.quantity,
-                        st.previous_quantity,
-                        st.new_quantity,
-                        st.reason,
-                        st.transaction_date
+                # Admin still sees all transactions.
+                # If a date is supplied, filter all transactions
+                # to that date.
 
-                    FROM stock_transactions st
+                if selected_date:
 
-                    JOIN products p
-                        ON st.product_id = p.id
+                    cursor.execute("""
+                        SELECT
+                            st.id,
+                            st.product_id,
+                            p.product_name,
+                            st.employee_id,
+                            e.full_name,
+                            st.admin_id,
+                            a.full_name,
+                            st.transaction_type,
+                            st.quantity,
+                            st.previous_quantity,
+                            st.new_quantity,
+                            st.reason,
+                            st.transaction_date
 
-                    LEFT JOIN employees e
-                        ON st.employee_id = e.id
+                        FROM stock_transactions st
 
-                    LEFT JOIN admins a
-                        ON st.admin_id = a.id
+                        JOIN products p
+                            ON st.product_id = p.id
 
-                    ORDER BY
-                        st.transaction_date DESC,
-                        st.id DESC;
-                """)
+                        LEFT JOIN employees e
+                            ON st.employee_id = e.id
+
+                        LEFT JOIN admins a
+                            ON st.admin_id = a.id
+
+                        WHERE DATE(st.transaction_date) = %s
+
+                        ORDER BY
+                            st.transaction_date DESC,
+                            st.id DESC;
+                    """, (
+                        selected_date,
+                    ))
+
+                else:
+
+                    cursor.execute("""
+                        SELECT
+                            st.id,
+                            st.product_id,
+                            p.product_name,
+                            st.employee_id,
+                            e.full_name,
+                            st.admin_id,
+                            a.full_name,
+                            st.transaction_type,
+                            st.quantity,
+                            st.previous_quantity,
+                            st.new_quantity,
+                            st.reason,
+                            st.transaction_date
+
+                        FROM stock_transactions st
+
+                        JOIN products p
+                            ON st.product_id = p.id
+
+                        LEFT JOIN employees e
+                            ON st.employee_id = e.id
+
+                        LEFT JOIN admins a
+                            ON st.admin_id = a.id
+
+                        ORDER BY
+                            st.transaction_date DESC,
+                            st.id DESC;
+                    """)
 
             transactions = cursor.fetchall()
 

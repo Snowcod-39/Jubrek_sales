@@ -813,7 +813,7 @@
 
             width: 100%;
 
-            min-width: 760px;
+            min-width: 850px;
 
             border-collapse:
                 collapse;
@@ -905,6 +905,52 @@
             font-size: 11px;
 
             font-weight: bold;
+        }
+
+
+        /* =====================================================
+           DELETE BUTTON
+        ===================================================== */
+
+        .delete-expense-button {
+
+            border:
+                1px solid
+                #a33a3a;
+
+            background:
+                #a33a3a;
+
+            color:
+                var(--white);
+
+            border-radius:
+                6px;
+
+            padding:
+                7px 10px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .delete-expense-button:hover {
+
+            background:
+                #7f2929;
+
+            border-color:
+                #7f2929;
         }
 
 
@@ -1033,6 +1079,28 @@
 
             overflow-wrap:
                 anywhere;
+        }
+
+
+        .mobile-delete-wrapper {
+
+            margin-top:
+                12px;
+
+            padding-top:
+                12px;
+
+            border-top:
+                1px solid
+                #c7ccca;
+        }
+
+
+        .mobile-delete-wrapper .delete-expense-button {
+
+            width: 100%;
+
+            height: 38px;
         }
 
 
@@ -1173,8 +1241,6 @@
             }
 
 
-            /* Date controls stay neat on phone */
-
             .history-date-controls {
 
                 width: 100%;
@@ -1252,7 +1318,7 @@
 </head>
 
 
-<body>
+<body data-role="{{ session.get('role', '') }}">
 
 
 <!-- =========================================================
@@ -1508,13 +1574,12 @@
                 </button>
 
                 <button
-                type="button"
-                class="today-button"
-                onclick="loadAllExpenses()"
+                    type="button"
+                    class="today-button"
+                    onclick="loadAllExpenses()"
                 >
-                
-                View All
-            </button>
+                    View All
+                </button>
 
             </div>
 
@@ -1618,6 +1683,12 @@
                                 Role
                             </th>
 
+                            {% if session.get("role") == "ADMIN" %}
+                            <th>
+                                Action
+                            </th>
+                            {% endif %}
+
                         </tr>
 
                     </thead>
@@ -1657,10 +1728,17 @@
 <script>
 
 
+/* =========================================================
+   USER ROLE
+========================================================= */
+
+
 let allExpenses = [];
 
 let currentExpenseTab =
     "JUBREK_ENTERPRISES";
+
+const isAdmin = document.body.dataset.role === "ADMIN";    
 
 
 const form =
@@ -1894,6 +1972,109 @@ function updateTotals() {
 
 
 /* =========================================================
+   DELETE EXPENSE
+========================================================= */
+
+async function deleteExpense(expenseId) {
+
+    const expense =
+        allExpenses.find(
+            item =>
+                Number(item.id) ===
+                Number(expenseId)
+        );
+
+
+    if (!expense) {
+
+        return;
+    }
+
+
+    const confirmed =
+        window.confirm(
+            `Are you sure you want to permanently delete this expense?\n\n` +
+            `Description: ${expense.description}\n` +
+            `Amount: KSh ${formatMoney(expense.amount)}\n` +
+            `Date: ${expense.expense_date}\n\n` +
+            `This action cannot be undone.`
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/expenses/${encodeURIComponent(
+                    expenseId
+                )}`,
+                {
+                    method:
+                        "DELETE"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.textContent =
+                data.error ||
+                "Could not delete expense.";
+
+            message.className =
+                "message error";
+
+            message.style.display =
+                "block";
+
+            return;
+        }
+
+
+        message.textContent =
+            "Expense deleted successfully.";
+
+        message.className =
+            "message success";
+
+        message.style.display =
+            "block";
+
+
+        await loadExpenses();
+
+
+    } catch (error) {
+
+        console.error(
+            "EXPENSE DELETE ERROR:",
+            error
+        );
+
+
+        message.textContent =
+            "Could not delete expense.";
+
+        message.className =
+            "message error";
+
+        message.style.display =
+            "block";
+    }
+}
+
+
+/* =========================================================
    RENDER EXPENSES
 ========================================================= */
 
@@ -1943,6 +2124,31 @@ function renderExpenses() {
                 );
 
 
+            let actionCell = "";
+
+
+            if (isAdmin) {
+
+                actionCell = `
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="delete-expense-button"
+                            onclick="deleteExpense(${Number(
+                                expense.id
+                            )})"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                `;
+            }
+
+
             row.innerHTML = `
 
                 <td>
@@ -1981,6 +2187,8 @@ function renderExpenses() {
 
                 </td>
 
+                ${actionCell}
+
             `;
 
 
@@ -2001,6 +2209,28 @@ function renderExpenses() {
 
             card.className =
                 "expense-card";
+
+
+            const mobileDelete =
+                isAdmin
+                    ? `
+
+                        <div class="mobile-delete-wrapper">
+
+                            <button
+                                type="button"
+                                class="delete-expense-button"
+                                onclick="deleteExpense(${Number(
+                                    expense.id
+                                )})"
+                            >
+                                Delete Expense
+                            </button>
+
+                        </div>
+
+                    `
+                    : "";
 
 
             card.innerHTML = `
@@ -2102,6 +2332,8 @@ function renderExpenses() {
 
 
                 </div>
+
+                ${mobileDelete}
 
             `;
 
@@ -2219,6 +2451,8 @@ async function loadTodayExpenses() {
 
     await loadExpenses();
 }
+
+
 /* =========================================================
    LOAD ALL EXPENSES
 ========================================================= */
@@ -2382,12 +2616,6 @@ form.addEventListener(
                 );
 
 
-            /*
-             * After adding the expense, automatically
-             * switch the history calendar to the date
-             * of the newly added expense.
-             */
-
             historyDate.value =
                 expenseDate;
 
@@ -2462,4 +2690,3 @@ initializePage();
 </body>
 
 </html>
-
