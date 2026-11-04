@@ -15,6 +15,7 @@ from routes.expenses_routes import expenses_routes
 from routes.reports_routes import reports_routes
 from routes.receipt_books_routes import receipt_books_routes
 from routes.orders_routes import orders_routes
+from routes.dashboard_routes import dashboard_routes
 
 load_dotenv()
 
@@ -30,6 +31,7 @@ app.register_blueprint(expenses_routes)
 app.register_blueprint(reports_routes)
 app.register_blueprint(receipt_books_routes)
 app.register_blueprint(orders_routes)
+app.register_blueprint(dashboard_routes)
 
 
 @app.route("/")

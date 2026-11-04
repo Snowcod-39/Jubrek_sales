@@ -711,3 +711,419 @@ button:hover {
     } 
  
 } 
+
+
+/* =====================================================
+   NEW DASHBOARD SUMMARY CARDS
+===================================================== */
+
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 145px;
+    padding: 20px;
+    background: var(--jubrek-card);
+    border: 1px solid var(--jubrek-border-light);
+    border-radius: var(--jubrek-radius);
+    text-decoration: none;
+    box-shadow: var(--jubrek-shadow);
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.summary-card,
+.summary-card .summary-label,
+.summary-card strong,
+.summary-card small {
+    color: #000000;
+}
+.summary-card strong {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.summary-card:hover {
+    background: var(--jubrek-card-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--jubrek-shadow-hover);
+}
+
+.summary-card-label {
+    color: var(--jubrek-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.summary-card-value {
+    margin: 14px 0 7px;
+    color: var(--jubrek-charcoal);
+    font-size: 29px;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.summary-card-description {
+    color: var(--jubrek-secondary);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+
+/* =====================================================
+   DASHBOARD PANELS
+===================================================== */
+
+.dashboard-panel {
+    margin-bottom: 22px;
+    padding: 22px;
+    background: var(--jubrek-card);
+    border: 1px solid var(--jubrek-border-light);
+    border-radius: var(--jubrek-radius);
+    box-shadow: var(--jubrek-shadow);
+}
+
+.dashboard-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.dashboard-panel-header h2 {
+    margin: 0 0 6px;
+    color: var(--jubrek-charcoal);
+    font-size: 18px;
+}
+
+.dashboard-panel-header p {
+    margin: 0;
+    color: var(--jubrek-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   PROFIT GRAPH FILTERS
+===================================================== */
+
+.profit-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.period-btn {
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid var(--jubrek-border-light);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--jubrek-charcoal);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.period-btn:hover,
+.period-btn.active {
+    background: var(--jubrek-blue);
+    border-color: var(--jubrek-blue);
+    color: var(--jubrek-white);
+}
+
+.custom-date-controls {
+    display: none;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    width: 100%;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--jubrek-border-light);
+}
+
+.custom-date-controls.visible {
+    display: flex;
+}
+
+.date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.date-field label {
+    color: var(--jubrek-charcoal);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.date-field input {
+    min-height: 38px;
+    padding: 7px 10px;
+    border: 1px solid var(--jubrek-border-light);
+    border-radius: 6px;
+    background: var(--jubrek-white);
+    color: var(--jubrek-charcoal);
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.apply-date-btn {
+    min-height: 38px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background: var(--jubrek-blue);
+    color: var(--jubrek-white);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.apply-date-btn:hover {
+    background: var(--jubrek-blue-dark);
+}
+
+
+/* =====================================================
+   PROFIT GRAPH
+===================================================== */
+
+.profit-chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    overflow: hidden;
+}
+
+#profitChart {
+    display: block;
+    width: 100%;
+    min-height: 280px;
+}
+
+.chart-message {
+    display: none;
+    padding: 35px 10px;
+    color: var(--jubrek-secondary);
+    text-align: center;
+    font-size: 13px;
+}
+
+.chart-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--jubrek-border-light);
+}
+
+.chart-summary small,
+.chart-summary strong {
+    color: #000000;
+}
+
+.chart-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.chart-summary-item span {
+    color: var(--jubrek-secondary);
+    font-size: 11px;
+}
+
+.chart-summary-item strong {
+    color: var(--jubrek-charcoal);
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   BEST-SELLING PRODUCTS
+===================================================== */
+
+.best-sellers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.best-seller-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px 15px;
+    border: 1px solid var(--jubrek-border-light);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.38);
+}
+
+.best-seller-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.best-seller-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: var(--jubrek-blue);
+    color: var(--jubrek-white);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.best-seller-name {
+    color: var(--jubrek-charcoal);
+    font-size: 13px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.best-seller-quantity {
+    flex-shrink: 0;
+    color: var(--jubrek-blue-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.dashboard-empty {
+    padding: 25px 12px;
+    color: var(--jubrek-secondary);
+    text-align: center;
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   DASHBOARD LOADING / ERROR
+===================================================== */
+
+.dashboard-status {
+    margin-bottom: 15px;
+    color: var(--jubrek-secondary);
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   TABLET DASHBOARD
+===================================================== */
+
+@media (max-width: 1100px) {
+    .dashboard-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =====================================================
+   MOBILE DASHBOARD
+===================================================== */
+
+@media (max-width: 700px) {
+    .dashboard-summary {
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .summary-card {
+        min-height: 130px;
+        padding: 15px;
+    }
+
+    .summary-card-value {
+        font-size: 24px;
+    }
+
+    .summary-card-label {
+        font-size: 11px;
+    }
+
+    .summary-card-description {
+        font-size: 10px;
+    }
+
+    .dashboard-panel {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .dashboard-panel-header {
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .dashboard-panel-header h2 {
+        font-size: 16px;
+    }
+
+    .profit-controls {
+        width: 100%;
+    }
+
+    .period-btn {
+        flex: 1;
+        padding: 8px 9px;
+    }
+
+    .profit-chart-container,
+    #profitChart {
+        min-height: 240px;
+    }
+
+    .chart-summary {
+        gap: 16px;
+    }
+
+    .best-seller-item {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        min-height: 115px;
+    }
+
+    .custom-date-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-field input,
+    .apply-date-btn {
+        width: 100%;
+    }
+}

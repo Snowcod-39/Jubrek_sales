@@ -1010,11 +1010,11 @@
             <div class="dashboard-title">
 
                 <h2>
-                    Admin Dashboard
+                    Welcome Back, {{ session["full_name"]}}
                 </h2>
 
                 <p>
-                    Manage your business operations from one place.
+                    Here's an overview of your business today.
                 </p>
 
             </div>
@@ -1058,30 +1058,115 @@
                  LOW STOCK
             ================================================== -->
 
-            <section class="low-stock-section">
+            
+<!-- DASHBOARD SUMMARY CARDS -->
+<section class="dashboard-summary">
 
-                <div class="low-stock-content">
+    <a href="{{ url_for('product_routes.product_management') }}" class="summary-card">
+        <span class="summary-label">Active Products</span>
+        <strong id="activeProductsValue">—</strong>
+        <small>Active product records</small>
+    </a>
 
-                    <h2>
-                        Low Stock
-                    </h2>
+    <a href="{{ url_for('product_routes.product_management') }}" class="summary-card">
+        <span class="summary-label">Total Stock</span>
+        <strong id="totalStockValue">—</strong>
+        <small>Units across active variants</small>
+    </a>
 
-                    <p>
-                        View products that have reached or fallen
-                        below their minimum stock level.
-                    </p>
+    <a href="{{ url_for('sales_routes.sales_page') }}" class="summary-card">
+        <span class="summary-label">Sales Today</span>
+        <strong id="salesTodayValue">—</strong>
+        <small>Released sales revenue</small>
+    </a>
 
-                </div>
+    <a href="{{ url_for('product_routes.product_management') }}" class="summary-card">
+        <span class="summary-label">Low-stock Variants</span>
+        <strong id="lowStockValue">—</strong>
+        <small>At or below the stock alert level</small>
+    </a>
 
+</section>
 
-                <a
-                    href="{{ url_for('product_routes.product_management') }}"
-                    class="low-stock-button"
-                >
-                    View All Low Stock
-                </a>
+<!-- PROFIT AFTER EXPENSES -->
+<section class="dashboard-panel">
 
-            </section>
+    <div class="dashboard-panel-header">
+        <div>
+            <h2>Profit After Expenses</h2>
+            <p>Revenue minus product costs and expenses</p>
+        </div>
+    </div>
+
+    <div class="profit-controls">
+        <button type="button" class="period-btn active" data-period="today">Today</button>
+        <button type="button" class="period-btn" data-period="week">This Week</button>
+        <button type="button" class="period-btn" data-period="month">This Month</button>
+        <button type="button" class="period-btn" data-period="year">This Year</button>
+        <button type="button" class="period-btn" data-period="custom">Custom Range</button>
+    </div>
+
+    <div id="customDateControls" class="custom-date-controls" style="display: none;">
+        <label class="date-field">
+            From
+            <input type="date" id="fromDate">
+        </label>
+
+        <label class="date-field">
+            To
+            <input type="date" id="toDate">
+        </label>
+
+        <button type="button" id="applyCustomDates" class="apply-date-btn">
+            Apply
+        </button>
+    </div>
+
+    <div class="profit-chart-container">
+        <svg id="profitChart" viewBox="0 0 900 300"
+             role="img" aria-label="Profit after expenses chart">
+        </svg>
+
+        <p id="chartMessage" class="chart-message">Loading dashboard data...</p>
+    </div>
+
+    <div class="chart-summary">
+        <div>
+            <small>Total Sales</small>
+            <strong id="chartRevenue">KSh 0</strong>
+        </div>
+
+        <div>
+            <small>Total Expenses</small>
+            <strong id="chartExpenses">KSh 0</strong>
+        </div>
+
+        <div>
+            <small>Profit After Expenses</small>
+            <strong id="chartProfit">KSh 0</strong>
+        </div>
+    </div>
+
+</section>
+
+<!-- BEST-SELLING PRODUCTS -->
+<section class="dashboard-panel">
+
+    <div class="dashboard-panel-header">
+        <div>
+            <h2>Best-Selling Products</h2>
+            <p>Top five products by quantity sold in the selected period</p>
+        </div>
+    </div>
+
+    <div id="bestSellersList" class="best-sellers-list">
+        <p class="dashboard-empty">Loading best-selling products...</p>
+    </div>
+
+</section>
+
+<p id="dashboardStatus" class="dashboard-status" role="status"></p>
+
 
         </main>
 
@@ -1367,6 +1452,394 @@ async function resolveReceiptAlert(alertId) {
 /* =========================================================
    LOAD DASHBOARD
 ========================================================= */
+
+// =====================================================
+// ADMIN DASHBOARD DATA
+// =====================================================
+
+const dashboardNumber = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+};
+
+const dashboardFormat = (value, decimals = 2) => {
+    return dashboardNumber(value).toLocaleString("en-KE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: decimals
+    });
+};
+
+const dashboardCurrency = (value) => {
+    return "KSh " + dashboardFormat(value);
+};
+
+
+// =====================================================
+// UPDATE SUMMARY CARDS
+// =====================================================
+
+function updateDashboardSummary(summary) {
+    document.getElementById("activeProductsValue").textContent =
+        dashboardFormat(summary.active_products, 0);
+
+    document.getElementById("totalStockValue").textContent =
+        dashboardFormat(summary.total_stock, 3);
+
+    document.getElementById("salesTodayValue").textContent =
+        dashboardCurrency(summary.sales_today);
+
+    document.getElementById("lowStockValue").textContent =
+        dashboardFormat(summary.low_stock_variants, 0);
+}
+
+
+// =====================================================
+// UPDATE CHART TOTALS
+// =====================================================
+
+function updateChartSummary(profitData) {
+    const totals = profitData.reduce((result, item) => {
+        result.revenue += dashboardNumber(item.revenue);
+        result.expenses += dashboardNumber(item.expenses);
+        result.profit += dashboardNumber(item.net_profit);
+        return result;
+    }, {
+        revenue: 0,
+        expenses: 0,
+        profit: 0
+    });
+
+    document.getElementById("chartRevenue").textContent =
+        dashboardCurrency(totals.revenue);
+
+    document.getElementById("chartExpenses").textContent =
+        dashboardCurrency(totals.expenses);
+
+    document.getElementById("chartProfit").textContent =
+        dashboardCurrency(totals.profit);
+}
+
+
+// =====================================================
+// DRAW PROFIT GRAPH
+// =====================================================
+
+function drawProfitChart(profitData) {
+    const svg = document.getElementById("profitChart");
+    const message = document.getElementById("chartMessage");
+
+    svg.innerHTML = "";
+
+    if (!profitData || profitData.length === 0) {
+        message.textContent = "No profit data available for this period.";
+        return;
+    }
+
+    message.textContent = "";
+
+    const width = 900;
+    const height = 300;
+
+    const margin = {
+        top: 25,
+        right: 30,
+        bottom: 55,
+        left: 85
+    };
+
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const values = profitData.map(item =>
+        dashboardNumber(item.net_profit)
+    );
+
+    let minimum = Math.min(0, ...values);
+    let maximum = Math.max(0, ...values);
+
+    if (minimum === maximum) {
+        maximum = 1;
+        minimum = 0;
+    }
+
+    const range = maximum - minimum;
+    const padding = range * 0.12;
+
+    minimum -= padding;
+    maximum += padding;
+
+    const xPosition = index => {
+        if (profitData.length === 1) {
+            return margin.left + chartWidth / 2;
+        }
+
+        return margin.left +
+            (index / (profitData.length - 1)) * chartWidth;
+    };
+
+    const yPosition = value => {
+        return margin.top +
+            ((maximum - value) / (maximum - minimum)) * chartHeight;
+    };
+
+    const createSvgElement = (tag, attributes, content) => {
+        const element = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            tag
+        );
+
+        Object.entries(attributes).forEach(([key, value]) => {
+            element.setAttribute(key, value);
+        });
+
+        if (content !== undefined) {
+            element.textContent = content;
+        }
+
+        svg.appendChild(element);
+        return element;
+    };
+
+    // Horizontal grid lines and Y-axis labels
+    for (let i = 0; i <= 4; i++) {
+        const value = maximum - (i / 4) * (maximum - minimum);
+        const y = yPosition(value);
+
+        createSvgElement("line", {
+            x1: margin.left,
+            y1: y,
+            x2: width - margin.right,
+            y2: y,
+            stroke: "#c5c9c7",
+            "stroke-width": 1
+        });
+
+        createSvgElement("text", {
+            x: margin.left - 12,
+            y: y + 4,
+            "text-anchor": "end",
+            fill: "#737a75",
+            "font-size": 12
+        }, dashboardFormat(value, 0));
+    }
+
+    // Zero-profit reference line
+    if (minimum < 0 && maximum > 0) {
+        const zeroY = yPosition(0);
+
+        createSvgElement("line", {
+            x1: margin.left,
+            y1: zeroY,
+            x2: width - margin.right,
+            y2: zeroY,
+            stroke: "#737a75",
+            "stroke-width": 1.5,
+            "stroke-dasharray": "5 5"
+        });
+    }
+
+    // Profit line
+    const points = profitData.map((item, index) => ({
+        x: xPosition(index),
+        y: yPosition(dashboardNumber(item.net_profit)),
+        value: dashboardNumber(item.net_profit),
+        date: item.date
+    }));
+
+    const path = points.map((point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`
+    ).join(" ");
+
+    createSvgElement("path", {
+        d: path,
+        fill: "none",
+        stroke: "#1769aa",
+        "stroke-width": 3,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round"
+    });
+
+    // Date labels: show up to approximately six labels
+    const labelStep = Math.max(
+        1,
+        Math.ceil(profitData.length / 6)
+    );
+
+    points.forEach((point, index) => {
+        if (
+            index % labelStep === 0 ||
+            index === points.length - 1
+        ) {
+            createSvgElement("text", {
+                x: point.x,
+                y: height - 18,
+                "text-anchor": "middle",
+                fill: "#737a75",
+                "font-size": 11
+            }, point.date.slice(5));
+        }
+    });
+}
+
+
+// =====================================================
+// DISPLAY BEST-SELLING PRODUCTS
+// =====================================================
+
+function updateBestSellers(products) {
+    const container = document.getElementById("bestSellersList");
+    container.innerHTML = "";
+
+    if (!products || products.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "dashboard-empty";
+        empty.textContent = "No released sales recorded for this period.";
+        container.appendChild(empty);
+        return;
+    }
+
+    products.forEach((product, index) => {
+        const item = document.createElement("div");
+        item.className = "best-seller-item";
+
+        const left = document.createElement("div");
+        left.className = "best-seller-left";
+
+        const rank = document.createElement("span");
+        rank.className = "best-seller-rank";
+        rank.textContent = index + 1;
+
+        const name = document.createElement("span");
+        name.className = "best-seller-name";
+        name.textContent = product.product_name;
+
+        const quantity = document.createElement("span");
+        quantity.className = "best-seller-quantity";
+        quantity.textContent =
+            dashboardFormat(product.quantity_sold, 3) + " sold";
+
+        left.appendChild(rank);
+        left.appendChild(name);
+
+        item.appendChild(left);
+        item.appendChild(quantity);
+
+        container.appendChild(item);
+    });
+}
+
+
+// =====================================================
+// LOAD DASHBOARD DATA
+// =====================================================
+
+async function loadDashboardData(period, fromDate = null, toDate = null) {
+    const status = document.getElementById("dashboardStatus");
+    const chartMessage = document.getElementById("chartMessage");
+
+    status.textContent = "";
+    chartMessage.textContent = "Loading dashboard data...";
+
+    let url = `/api/admin/dashboard/data?period=${encodeURIComponent(period)}`;
+
+    if (period === "custom") {
+        url += `&from=${encodeURIComponent(fromDate)}`;
+        url += `&to=${encodeURIComponent(toDate)}`;
+    }
+
+    try {
+        const response = await fetch(url);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not load dashboard data.");
+        }
+
+        updateDashboardSummary(data.summary);
+        updateChartSummary(data.profit);
+        drawProfitChart(data.profit);
+        updateBestSellers(data.best_sellers);
+
+    } catch (error) {
+        console.error("Dashboard loading error:", error);
+        status.textContent = error.message ||
+            "Unable to load dashboard data.";
+
+        chartMessage.textContent = "Unable to load the profit chart.";
+    }
+}
+
+
+// =====================================================
+// DASHBOARD PERIOD FILTERS
+// =====================================================
+
+const periodButtons = document.querySelectorAll(".period-btn");
+const customDateControls = document.getElementById("customDateControls");
+
+const fromDateInput = document.getElementById("fromDate");
+const toDateInput = document.getElementById("toDate");
+
+const todayDate = new Date();
+const todayString = [
+    todayDate.getFullYear(),
+    String(todayDate.getMonth() + 1).padStart(2, "0"),
+    String(todayDate.getDate()).padStart(2, "0")
+].join("-");
+
+fromDateInput.value = todayString;
+toDateInput.value = todayString;
+
+periodButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const period = button.dataset.period;
+
+        periodButtons.forEach(item =>
+            item.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        if (period === "custom") {
+            customDateControls.style.display = "flex";
+            return;
+        }
+
+        customDateControls.style.display = "none";
+        loadDashboardData(period);
+    });
+});
+
+document.getElementById("applyCustomDates").addEventListener("click", () => {
+    const from = fromDateInput.value;
+    const to = toDateInput.value;
+
+    if (!from || !to) {
+        alert("Please select both dates.");
+        return;
+    }
+
+    if (from > to) {
+        alert("The From date cannot be after the To date.");
+        return;
+    }
+
+    const difference =
+        (new Date(to + "T00:00:00") - new Date(from + "T00:00:00")) /
+        (1000 * 60 * 60 * 24);
+
+    if (difference > 365) {
+        alert("Please select a date range of 366 days or less.");
+        return;
+    }
+
+    loadDashboardData("custom", from, to);
+});
+
+
+// Load today's dashboard when the page opens
+loadDashboardData("today");
 
 loadReceiptAlerts();
 
